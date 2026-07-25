@@ -827,19 +827,24 @@ Donne une PROJECTION_MIN et une PROJECTION_MAX (deux nombres entiers en euros, s
 symbole euro, juste les chiffres) pour les 12 prochains mois, basee sur le secteur, les
 points forts/faibles, et un taux de croissance TYPIQUE ET REALISTE pour ce type
 d'activite (reste prudent, ne sois pas optimiste par defaut). Dans PROJECTION_TEXTE,
-explique en 1-2 phrases COURTES et FACTUELLES l'hypothese de croissance utilisee
-(ex: pourcentage, comparables). Ton neutre et informatif, PAS alarmiste, sans repeter
-de mise en garde generale (elle figure deja ailleurs sur la page)."""
+DEROULE LE CALCUL PRECIS qui mene a cette fourchette : pars du chiffre d'affaires
+actuel ({ca_actuel} euros), indique le taux de croissance retenu et pourquoi (ex:
+"+15 a +40%, typique pour ce secteur en croissance"), puis montre le resultat
+arithmetique. Exemple de style : "En partant de vos {ca_actuel} euros actuels, avec
+une croissance de 15 a 40% typique pour ce secteur, vous pourriez atteindre entre X et
+Y euros." Ton neutre, factuel, precis — PAS de mise en garde dans ce texte (elle
+figure deja ailleurs sur la page)."""
         elif projet_pre_lancement:
             consigne_projection = """Le site n'a pas encore de chiffre d'affaires reel (projet en developpement
 ou tout juste lance). Donne quand meme une PROJECTION_MIN et une PROJECTION_MAX (deux
 nombres entiers en euros, sans symbole) pour les 12 premiers mois d'activite, basee
-UNIQUEMENT sur des reperes de marche typiques pour ce secteur et ce type de produit
-(pas sur des chiffres reels de l'utilisateur, puisqu'il n'y en a pas). Dans
-PROJECTION_TEXTE, explique en 1-2 phrases COURTES et FACTUELLES sur quels reperes de
-marche se base ce calcul (ex: taux de conversion moyen, panier moyen observe pour des
-outils similaires). Ton neutre et informatif, PAS alarmiste, sans repeter de mise en
-garde generale (elle figure deja ailleurs sur la page)."""
+UNIQUEMENT sur des reperes de marche typiques pour ce secteur et ce type de produit.
+Dans PROJECTION_TEXTE, DEROULE LE CALCUL PRECIS : indique le tarif moyen estime pour ce
+type de produit, le nombre de clients estime sur 12 mois pour ce type de niche, et
+montre le resultat arithmetique. Exemple de style : "En estimant un tarif moyen de X
+euros/mois et Y clients d'ici 12 mois pour ce type d'outil, cela donnerait entre A et B
+euros." Ton neutre, factuel, precis — PAS de mise en garde dans ce texte (elle figure
+deja ailleurs sur la page)."""
         else:
             consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
 developpement n'est pas cochee. Mets PROJECTION_MIN et PROJECTION_MAX a 0, et dans
