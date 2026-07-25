@@ -1944,7 +1944,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             """
                         st.markdown(plan_html, unsafe_allow_html=True)
 
-                    st.caption("⚠️ Cette estimation se base uniquement sur le contenu visible du site — elle ne prend pas en compte des facteurs déterminants comme le financement, l'équipe, la concurrence réelle ou le timing du marché.")
+st.caption("⚠️ Cette estimation, y compris la projection financière, se base sur le contenu visible du site et des repères de marché généraux — elle ne constitue pas une garantie de résultat et ne prend pas en compte des facteurs déterminants comme le financement, l'équipe, la concurrence réelle ou le timing du marché.")
 
                     if st.button("Régénérer l'estimation", key=f"btn_regen_potentiel_{idx}"):
                         secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
