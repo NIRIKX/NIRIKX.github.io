@@ -1730,6 +1730,30 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
             else:
                 cle_potentiel = f"potentiel_croissance_{result['final_url'].strip().lower()}"
 
+                with st.expander("💶 Ajouter mes données pour une projection financière plus précise"):
+                    st.caption("Optionnel — ces informations servent uniquement à ancrer l'estimation dans votre réalité, elles ne sont pas rendues publiques.")
+                    col_form1, col_form2, col_form3 = st.columns(3)
+                    with col_form1:
+                        nb_clients_input = st.number_input("Nombre de clients actuels", min_value=0, value=0, step=1, key=f"nb_clients_{idx}")
+                    with col_form2:
+                        ca_actuel_input = st.number_input("Chiffre d'affaires actuel (€/an)", min_value=0, value=0, step=100, key=f"ca_actuel_{idx}")
+                    with col_form3:
+                        anciennete_input = st.number_input("Ancienneté (années)", min_value=0, value=0, step=1, key=f"anciennete_{idx}")
+                    if st.button("Calculer avec mes données", key=f"btn_calc_donnees_{idx}"):
+                        secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
+                        secteur = secteur_info.get("secteur", "Autre")
+                        with st.spinner("L'IA recalcule avec vos données..."):
+                            estimation = estimer_potentiel_croissance(
+                                result, secteur,
+                                nb_clients=nb_clients_input or None,
+                                ca_actuel=ca_actuel_input or None,
+                                anciennete_annees=anciennete_input or None
+                            )
+                        st.session_state[cle_potentiel] = estimation
+                        if estimation.get("score") is not None:
+                            sauvegarder_historique(result["final_url"], estimation)
+                        st.rerun()
+
                 if cle_potentiel not in st.session_state:
                     secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
                     secteur = secteur_info.get("secteur", "Autre")
@@ -1765,9 +1789,17 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     </div>
                     """, unsafe_allow_html=True)
 
+                    projection = estimation.get("projection") or "Non disponible."
+                    st.markdown(f"""
+                    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:16px">
+                        <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.6rem">💶 Projection financière à 12 mois</div>
+                        <div style="color:#e0e0e0;font-size:0.9rem;line-height:1.6">{projection}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
                     historique = lire_historique(result["final_url"])
                     if len(historique) >= 2:
-                        st.markdown("**📈 Évolution dans le temps**")
+                        st.markdown('<div style="font-size:0.95rem;font-weight:700;color:#e0e0e0;margin-bottom:0.6rem">📈 Évolution dans le temps</div>', unsafe_allow_html=True)
                         historique_ordre = list(reversed(historique))
                         dates_str = [h["date"].strftime("%d/%m/%Y") for h in historique_ordre]
                         scores_historique = [h["score"] for h in historique_ordre]
@@ -1790,7 +1822,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             height=250,
                             margin=dict(l=40, r=20, t=20, b=40)
                         )
-                        st.plotly_chart(fig_evolution, use_container_width=True, key=f"evolution_{idx}",  config={'displayModeBar': False, 'staticPlot': True})
+                        st.plotly_chart(fig_evolution, use_container_width=True, key=f"evolution_{idx}", config={'displayModeBar': False, 'staticPlot': True})
 
                         ecart_historique = scores_historique[-1] - scores_historique[0]
                         premiere_date = historique_ordre[0]["date"].strftime("%d/%m/%Y")
@@ -1807,7 +1839,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 
                     criteres = estimation.get("criteres") or {}
                     if criteres:
-                        st.markdown("**📊 Profil de croissance sur 5 critères**")
+                        st.markdown('<div style="font-size:0.95rem;font-weight:700;color:#e0e0e0;margin-bottom:0.4rem">📊 Profil de croissance sur 5 critères</div>', unsafe_allow_html=True)
                         st.caption("Plus la zone colorée est grande et équilibrée, plus le potentiel est solide sur l'ensemble des critères — un seul pic isolé ne suffit pas à garantir une vraie croissance.")
                         import plotly.graph_objects as go
                         noms = list(criteres.keys())
@@ -1852,29 +1884,43 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 
                     concurrents_cibles = estimation.get("concurrents_cibles") or []
                     if concurrents_cibles:
-                        st.markdown("**🎯 Concurrents à dépasser (ambitieux mais imaginable)**")
-                        st.markdown(", ".join(concurrents_cibles))
-                        st.markdown("")
+                        chips = "".join([f'<span style="display:inline-block;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.4);color:#c0b8f0;padding:4px 12px;border-radius:20px;font-size:0.85rem;margin:2px 4px 2px 0">{c}</span>' for c in concurrents_cibles])
+                        st.markdown(f"""
+                        <div style="margin-bottom:16px">
+                            <div style="font-size:0.95rem;font-weight:700;color:#e0e0e0;margin-bottom:0.5rem">🎯 Concurrents à dépasser (ambitieux mais imaginable)</div>
+                            <div>{chips}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
 
                     col_f1, col_f2 = st.columns(2)
                     with col_f1:
-                        st.markdown("**✅ Points forts**")
+                        st.markdown('<div style="font-size:0.9rem;font-weight:700;color:#28a745;margin-bottom:0.5rem">✅ Points forts</div>', unsafe_allow_html=True)
                         for pf in (estimation.get("points_forts") or []):
-                            st.markdown(f"- {pf}")
+                            st.markdown(f'<div class="issue-item issue-ok">{pf}</div>', unsafe_allow_html=True)
                     with col_f2:
-                        st.markdown("**⚠️ Points faibles**")
+                        st.markdown('<div style="font-size:0.9rem;font-weight:700;color:#ffc107;margin-bottom:0.5rem">⚠️ Points faibles</div>', unsafe_allow_html=True)
                         for pfa in (estimation.get("points_faibles") or []):
-                            st.markdown(f"- {pfa}")
+                            st.markdown(f'<div class="issue-item issue-warning">{pfa}</div>', unsafe_allow_html=True)
 
                     st.markdown("")
-                    st.markdown(estimation["analyse"])
+                    st.markdown(f"""
+                    <div style="background:rgba(124,106,247,0.08);border-left:3px solid #7c6af7;padding:1rem 1.2rem;border-radius:0 8px 8px 0;margin:1rem 0;color:#e0e0e0;font-size:0.9rem;line-height:1.6">
+                        {estimation["analyse"]}
+                    </div>
+                    """, unsafe_allow_html=True)
 
                     plan_action = estimation.get("plan_action") or []
                     if plan_action:
-                        st.markdown("")
-                        st.markdown("**📋 Plan d'action prioritaire**")
+                        st.markdown('<div style="font-size:0.95rem;font-weight:700;color:#e0e0e0;margin-bottom:0.6rem">📋 Plan d\'action prioritaire</div>', unsafe_allow_html=True)
+                        plan_html = ""
                         for i, action in enumerate(plan_action):
-                            st.markdown(f"{i+1}. {action}")
+                            plan_html += f"""
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;background:#1a1a2e;border:1px solid #2a2a4e;border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.5rem">
+                                <div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700">{i+1}</div>
+                                <div style="color:#e0e0e0;font-size:0.88rem;line-height:1.5;padding-top:2px">{action}</div>
+                            </div>
+                            """
+                        st.markdown(plan_html, unsafe_allow_html=True)
 
                     st.caption("⚠️ Cette estimation se base uniquement sur le contenu visible du site — elle ne prend pas en compte des facteurs déterminants comme le financement, l'équipe, la concurrence réelle ou le timing du marché.")
 
@@ -1884,7 +1930,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 
                     st.divider()
                     st.caption("💡 Vous connaissez un concurrent précis et voulez voir exactement quoi améliorer pour arriver à son niveau ? Utilisez l'onglet **Mode comparatif** dans le menu de gauche.")
-
+                    
 # ── HERO ─────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero-header">
