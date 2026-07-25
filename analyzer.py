@@ -765,21 +765,21 @@ def extraire_signaux_concrets(html: str) -> list:
             signaux_uniques.append(s)
     return signaux_uniques[:10]
 
-def estimer_potentiel_croissance(result: dict, secteur: str = "Autre") -> dict:
+def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_clients=None, ca_actuel=None, anciennete_annees=None) -> dict:
     """
-    Demande a l'IA une estimation approximative du potentiel de croissance,
-    avec 5 criteres notes separement (pour un graphique radar) et un plan
-    d'action de 3 recommandations priorisees. Cherche d'abord les vrais
-    chiffres deja publies sur le site. L'IA n'a JAMAIS le droit d'inventer
-    un chiffre d'affaires precis sans base reelle. C'est une approximation
-    d'expert, pas une prediction garantie.
+    Demande a l'IA une estimation approximative du potentiel de croissance.
+    Si l'utilisateur fournit son vrai chiffre d'affaires actuel, l'IA donne
+    en plus une PROJECTION sous forme de fourchette sur 12 mois, avec
+    l'hypothese de croissance explicitement indiquee. Sans ces donnees,
+    aucun chiffre en euros n'est invente. C'est une approximation d'expert,
+    jamais une garantie.
     """
     try:
         import requests as req
         import os
         api_key = os.environ.get("MISTRAL_API_KEY", "")
         if not api_key:
-            return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "analyse": None, "signaux_concrets": [], "error": "Cle API manquante"}
+            return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection": None, "analyse": None, "signaux_concrets": [], "error": "Cle API manquante"}
 
         titre = result.get("seo", {}).get("title", "") or ""
         meta = result.get("seo", {}).get("meta_description", "") or ""
@@ -800,6 +800,30 @@ def estimer_potentiel_croissance(result: dict, secteur: str = "Autre") -> dict:
         signaux_traction = [m for m in mots_traction if m in texte_complet]
         traction_str = ", ".join(signaux_traction) if signaux_traction else "aucun signal de traction detecte"
 
+        donnees_utilisateur = []
+        if nb_clients is not None and nb_clients > 0:
+            donnees_utilisateur.append(f"{nb_clients} clients actuels")
+        if ca_actuel is not None and ca_actuel > 0:
+            donnees_utilisateur.append(f"chiffre d'affaires annuel actuel : {ca_actuel} euros")
+        if anciennete_annees is not None and anciennete_annees > 0:
+            donnees_utilisateur.append(f"{anciennete_annees} annee(s) d'existence")
+        donnees_str = ", ".join(donnees_utilisateur) if donnees_utilisateur else "aucune donnee reelle fournie par l'utilisateur"
+
+        peut_projeter = ca_actuel is not None and ca_actuel > 0
+
+        if peut_projeter:
+            consigne_projection = f"""L'utilisateur a fourni son vrai chiffre d'affaires actuel ({ca_actuel} euros/an). Donne une
+PROJECTION sous forme de FOURCHETTE (pas un chiffre unique) pour les 12 prochains mois,
+basee sur le secteur, les points forts/faibles, et un taux de croissance TYPIQUE ET
+REALISTE pour ce type d'activite (reste prudent, ne sois pas optimiste par defaut).
+Indique EXPLICITEMENT l'hypothese de croissance utilisee (ex: "en supposant une
+croissance de X% a Y%, typique pour ce secteur"). Rappelle que ce n'est qu'une
+estimation basee sur des hypotheses, pas une garantie."""
+        else:
+            consigne_projection = """Aucune donnee financiere reelle n'a ete fournie. NE DONNE AUCUN chiffre en euros.
+Ecris simplement : "Non disponible — renseignez votre chiffre d'affaires actuel pour
+obtenir une projection chiffree." """
+
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         prompt = f"""Tu es un investisseur experimente qui evalue rapidement des entreprises a partir de leur site web.
 
@@ -809,6 +833,7 @@ Description : {meta}
 Secteur detecte : {secteur}
 Chiffres et signaux concrets REELLEMENT trouves sur le site : {signaux_str}
 Autres signaux de traction : {traction_str}
+Donnees reelles fournies par l'utilisateur : {donnees_str}
 
 Identifie toi-meme 2-3 concurrents AMBITIEUX MAIS REALISTES (interdiction de citer des
 geants generalistes hors-sujet type Google, Wikipedia, Amazon, sauf si pertinent).
@@ -824,16 +849,19 @@ Note aussi ce site sur 5 CRITERES separes, chacun de 0 a 100 :
 
 Donne un PLAN D'ACTION de 3 a 5 recommandations concretes et priorisees, autant que pertinent.
 
-Reponds en 7 parties EXACTEMENT, sans markdown, texte brut :
+{consigne_projection}
+
+Reponds en 8 parties EXACTEMENT, sans markdown, texte brut :
 SCORE: [chiffre entre 0 et 100]
 CRITERES: [5 chiffres entre 0 et 100 separes par des virgules, dans l'ordre NOTORIETE,DIFFERENCIATION,TRACTION,SCALABILITE,PRESENTATION]
 CONCURRENTS: [2-3 concurrents, separes par des virgules]
-FORTS: [3 a 5 points forts, autant que pertinent, separes par des points-virgules]
-FAIBLES: [3 a 5 points faibles, autant que pertinent, separes par des points-virgules]
-PLAN: [3 a 5 recommandations, autant que pertinent, separees par des points-virgules]
+FORTS: [3 a 5 points forts, separes par des points-virgules]
+FAIBLES: [3 a 5 points faibles, separes par des points-virgules]
+PLAN: [3 a 5 recommandations, separees par des points-virgules]
+PROJECTION: [la fourchette avec hypothese explicite, ou le message "non disponible", en 2-3 phrases]
 ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
 
-        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 600}
+        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 700}
         r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
         contenu = r.json()["choices"][0]["message"]["content"]
         contenu = contenu.replace("**", "").replace("*", "")
@@ -844,6 +872,7 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
         points_forts = []
         points_faibles = []
         plan_action = []
+        projection = "Non disponible."
         analyse = contenu
 
         try:
@@ -865,9 +894,11 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
             if "FAIBLES:" in contenu and "PLAN:" in contenu:
                 partie_faibles = contenu.split("FAIBLES:")[1].split("PLAN:")[0].strip()
                 points_faibles = [p.strip(" -;") for p in partie_faibles.split(";") if p.strip(" -;")]
-            if "PLAN:" in contenu and "ANALYSE:" in contenu:
-                partie_plan = contenu.split("PLAN:")[1].split("ANALYSE:")[0].strip()
+            if "PLAN:" in contenu and "PROJECTION:" in contenu:
+                partie_plan = contenu.split("PLAN:")[1].split("PROJECTION:")[0].strip()
                 plan_action = [p.strip(" -;") for p in partie_plan.split(";") if p.strip(" -;")]
+            if "PROJECTION:" in contenu and "ANALYSE:" in contenu:
+                projection = contenu.split("PROJECTION:")[1].split("ANALYSE:")[0].strip()
             if "ANALYSE:" in contenu:
                 analyse = contenu.split("ANALYSE:")[1].strip()
         except Exception:
@@ -880,18 +911,21 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
             "points_forts": points_forts,
             "points_faibles": points_faibles,
             "plan_action": plan_action,
+            "projection": projection,
             "analyse": analyse,
             "signaux_concrets": signaux_concrets,
             "error": None,
         }
     except Exception as e:
-        return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "analyse": None, "signaux_concrets": [], "error": str(e)}
+        return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection": None, "analyse": None, "signaux_concrets": [], "error": str(e)}
+
 
 def get_connexion_historique():
     """
-    Ouvre une connexion a la base de donnees Neon et cree la table
-    d'historique si elle n'existe pas encore. Retourne None si la
-    connexion echoue (pas de secret configure, ou probleme reseau).
+    Ouvre une connexion a la base de donnees Neon, cree la table
+    d'historique si elle n'existe pas, et ajoute la colonne "projection"
+    si elle manque (site deja utilise avant cet ajout). Retourne None si
+    la connexion echoue.
     """
     try:
         import psycopg2
@@ -915,6 +949,9 @@ def get_connexion_historique():
                 analyse TEXT
             )
         """)
+        cur.execute("""
+            ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection TEXT
+        """)
         conn.commit()
         cur.close()
         return conn
@@ -925,8 +962,7 @@ def get_connexion_historique():
 def sauvegarder_historique(url: str, estimation: dict) -> bool:
     """
     Enregistre un nouveau resultat d'estimation dans l'historique permanent.
-    Retourne True si la sauvegarde a reussi, False sinon (ne bloque jamais
-    l'affichage meme si ca echoue).
+    Ne bloque jamais l'affichage meme si la sauvegarde echoue.
     """
     conn = get_connexion_historique()
     if not conn:
@@ -937,8 +973,8 @@ def sauvegarder_historique(url: str, estimation: dict) -> bool:
         cur = conn.cursor()
         cur.execute("""
             INSERT INTO historique_potentiel
-                (url, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, analyse)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                (url, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, projection, analyse)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             url_normalisee,
             estimation.get("score"),
@@ -947,6 +983,7 @@ def sauvegarder_historique(url: str, estimation: dict) -> bool:
             json.dumps(estimation.get("points_forts") or []),
             json.dumps(estimation.get("points_faibles") or []),
             json.dumps(estimation.get("plan_action") or []),
+            estimation.get("projection") or "",
             estimation.get("analyse") or "",
         ))
         conn.commit()
@@ -964,8 +1001,7 @@ def sauvegarder_historique(url: str, estimation: dict) -> bool:
 def lire_historique(url: str, limite: int = 10) -> list:
     """
     Relit les N derniers resultats stockes pour un site donne, du plus
-    recent au plus ancien. Retourne une liste vide si rien n'est trouve
-    ou si la connexion echoue.
+    recent au plus ancien.
     """
     conn = get_connexion_historique()
     if not conn:
@@ -974,7 +1010,7 @@ def lire_historique(url: str, limite: int = 10) -> list:
         url_normalisee = url.strip().lower().replace("https://", "").replace("http://", "").replace("www.", "").rstrip("/")
         cur = conn.cursor()
         cur.execute("""
-            SELECT date_analyse, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, analyse
+            SELECT date_analyse, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, projection, analyse
             FROM historique_potentiel
             WHERE url = %s
             ORDER BY date_analyse DESC
@@ -994,7 +1030,8 @@ def lire_historique(url: str, limite: int = 10) -> list:
                 "points_forts": ligne[4],
                 "points_faibles": ligne[5],
                 "plan_action": ligne[6],
-                "analyse": ligne[7],
+                "projection": ligne[7],
+                "analyse": ligne[8],
             })
         return historique
     except Exception:
