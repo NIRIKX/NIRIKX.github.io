@@ -1731,13 +1731,17 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                 cle_potentiel = f"potentiel_croissance_{result['final_url'].strip().lower()}"
 
                 if cle_potentiel not in st.session_state:
-                    secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
-                    secteur = secteur_info.get("secteur", "Autre")
-                    with st.spinner("L'IA évalue le potentiel de votre entreprise..."):
-                        estimation = estimer_potentiel_croissance(result, secteur)
-                    st.session_state[cle_potentiel] = estimation
-                    if estimation.get("score") is not None:
-                        sauvegarder_historique(result["final_url"], estimation)
+                    historique_precedent = lire_historique(result["final_url"], limite=1)
+                    if historique_precedent:
+                        st.session_state[cle_potentiel] = historique_precedent[0]
+                    else:
+                        secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
+                        secteur = secteur_info.get("secteur", "Autre")
+                        with st.spinner("L'IA évalue le potentiel de votre entreprise..."):
+                            estimation = estimer_potentiel_croissance(result, secteur)
+                        st.session_state[cle_potentiel] = estimation
+                        if estimation.get("score") is not None:
+                            sauvegarder_historique(result["final_url"], estimation)
 
                 estimation = st.session_state[cle_potentiel]
 
@@ -1765,23 +1769,38 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     </div>
                     """, unsafe_allow_html=True)
 
-                    projection = estimation.get("projection") or "Non disponible."
-                    st.markdown(f"""
-                    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
-                        <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.6rem">💶 Projection financière à 12 mois</div>
-                        <div style="color:#e0e0e0;font-size:0.9rem;line-height:1.6">{projection}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    projection_min = estimation.get("projection_min") or 0
+                    projection_max = estimation.get("projection_max") or 0
+                    projection_texte = estimation.get("projection_texte") or estimation.get("projection") or "Non disponible."
 
-                    with st.expander("👉 Remplir mes données pour affiner cette projection"):
+                    if projection_min > 0 or projection_max > 0:
+                        projection_min_fmt = f"{int(projection_min):,}".replace(",", " ")
+                        projection_max_fmt = f"{int(projection_max):,}".replace(",", " ")
+                        st.markdown(f"""
+                        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
+                            <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Projection financière à 12 mois</div>
+                            <div style="font-size:28px;font-weight:700;color:#c0b8f0;margin-bottom:0.6rem">{projection_min_fmt} € — {projection_max_fmt} €</div>
+                            <div style="color:#e0e0e0;font-size:0.85rem;line-height:1.6">{projection_texte}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
+                            <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.6rem">Projection financière à 12 mois</div>
+                            <div style="color:#e0e0e0;font-size:0.9rem;line-height:1.6">{projection_texte}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                    with st.expander("Remplir mes données pour affiner cette projection"):
                         st.caption("Optionnel — ces informations servent uniquement à ancrer l'estimation dans votre réalité, elles ne sont pas rendues publiques.")
+                        prelancement_input = st.checkbox("Mon site n'est pas encore lancé ou n'a pas encore de revenus — donnez-moi quand même une estimation basée sur des repères de marché", key=f"prelancement_{idx}")
                         col_form1, col_form2, col_form3 = st.columns(3)
                         with col_form1:
-                            nb_clients_input = st.number_input("👥 Nombre de clients actuels", min_value=0, value=0, step=1, key=f"nb_clients_{idx}")
+                            nb_clients_input = st.number_input("Nombre de clients actuels", min_value=0, value=0, step=1, key=f"nb_clients_{idx}")
                         with col_form2:
-                            ca_actuel_input = st.number_input("💰 Chiffre d'affaires actuel (€/an)", min_value=0, value=0, step=100, key=f"ca_actuel_{idx}")
+                            ca_actuel_input = st.number_input("Chiffre d'affaires annuel actuel (€)", min_value=0, value=0, step=100, key=f"ca_actuel_{idx}")
                         with col_form3:
-                            anciennete_input = st.number_input("📅 Ancienneté (années)", min_value=0, value=0, step=1, key=f"anciennete_{idx}")
+                            anciennete_input = st.number_input("Ancienneté (années)", min_value=0, value=0, step=1, key=f"anciennete_{idx}")
                         if st.button("Calculer avec mes données", key=f"btn_calc_donnees_{idx}"):
                             secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
                             secteur = secteur_info.get("secteur", "Autre")
@@ -1790,7 +1809,8 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                                     result, secteur,
                                     nb_clients=nb_clients_input or None,
                                     ca_actuel=ca_actuel_input or None,
-                                    anciennete_annees=anciennete_input or None
+                                    anciennete_annees=anciennete_input or None,
+                                    projet_pre_lancement=prelancement_input
                                 )
                             st.session_state[cle_potentiel] = nouvelle_estimation
                             if nouvelle_estimation.get("score") is not None:
@@ -1927,7 +1947,23 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     st.caption("⚠️ Cette estimation se base uniquement sur le contenu visible du site — elle ne prend pas en compte des facteurs déterminants comme le financement, l'équipe, la concurrence réelle ou le timing du marché.")
 
                     if st.button("Régénérer l'estimation", key=f"btn_regen_potentiel_{idx}"):
-                        del st.session_state[cle_potentiel]
+                        secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
+                        secteur = secteur_info.get("secteur", "Autre")
+                        nb_clients_prec = st.session_state.get(f"nb_clients_{idx}", 0)
+                        ca_actuel_prec = st.session_state.get(f"ca_actuel_{idx}", 0)
+                        anciennete_prec = st.session_state.get(f"anciennete_{idx}", 0)
+                        prelancement_prec = st.session_state.get(f"prelancement_{idx}", False)
+                        with st.spinner("L'IA réévalue le potentiel de votre entreprise..."):
+                            nouvelle_estimation = estimer_potentiel_croissance(
+                                result, secteur,
+                                nb_clients=nb_clients_prec or None,
+                                ca_actuel=ca_actuel_prec or None,
+                                anciennete_annees=anciennete_prec or None,
+                                projet_pre_lancement=prelancement_prec
+                            )
+                        st.session_state[cle_potentiel] = nouvelle_estimation
+                        if nouvelle_estimation.get("score") is not None:
+                            sauvegarder_historique(result["final_url"], nouvelle_estimation)
                         st.rerun()
 
                     st.divider()
