@@ -1790,7 +1790,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             height=250,
                             margin=dict(l=40, r=20, t=20, b=40)
                         )
-                        st.plotly_chart(fig_evolution, use_container_width=True, key=f"evolution_{idx}", config={'displayModeBar': False})
+                        st.plotly_chart(fig_evolution, use_container_width=True, key=f"evolution_{idx}",  config={'displayModeBar': False, 'staticPlot': True})
 
                         ecart_historique = scores_historique[-1] - scores_historique[0]
                         premiere_date = historique_ordre[0]["date"].strftime("%d/%m/%Y")
@@ -1833,7 +1833,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             height=350,
                             margin=dict(l=60, r=60, t=30, b=30)
                         )
-                        st.plotly_chart(fig, use_container_width=True, key=f"radar_{idx}", config={'displayModeBar': False})
+                        st.plotly_chart(fig, use_container_width=True, key=f"radar_{idx}", config={'displayModeBar': False, 'staticPlot': True})
 
                         with st.expander("Que signifie chaque critère ?"):
                             st.markdown("""
