@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import os
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance
+    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, generic_before_after, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
@@ -1736,6 +1736,8 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     with st.spinner("L'IA évalue le potentiel de votre entreprise..."):
                         estimation = estimer_potentiel_croissance(result, secteur)
                     st.session_state[cle_potentiel] = estimation
+                    if estimation.get("score") is not None:
+                        sauvegarder_historique(result["final_url"], estimation)
 
                 estimation = st.session_state[cle_potentiel]
 
@@ -1762,6 +1764,46 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
+
+                    historique = lire_historique(result["final_url"])
+                    if len(historique) >= 2:
+                        st.markdown("**📈 Évolution dans le temps**")
+                        historique_ordre = list(reversed(historique))
+                        dates_str = [h["date"].strftime("%d/%m/%Y") for h in historique_ordre]
+                        scores_historique = [h["score"] for h in historique_ordre]
+
+                        import plotly.graph_objects as go
+                        fig_evolution = go.Figure()
+                        fig_evolution.add_trace(go.Scatter(
+                            x=dates_str,
+                            y=scores_historique,
+                            mode='lines+markers',
+                            line=dict(color='#7c6af7', width=2),
+                            marker=dict(size=8, color='#7c6af7')
+                        ))
+                        fig_evolution.update_layout(
+                            yaxis=dict(range=[0, 100], gridcolor='#2a2a4e', title="Score"),
+                            xaxis=dict(gridcolor='#2a2a4e'),
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            font=dict(color='#ccc'),
+                            height=250,
+                            margin=dict(l=40, r=20, t=20, b=40)
+                        )
+                        st.plotly_chart(fig_evolution, use_container_width=True, key=f"evolution_{idx}", config={'displayModeBar': False})
+
+                        ecart_historique = scores_historique[-1] - scores_historique[0]
+                        premiere_date = historique_ordre[0]["date"].strftime("%d/%m/%Y")
+                        if ecart_historique > 0:
+                            st.success(f"📈 Progression de {ecart_historique} points depuis votre première analyse le {premiere_date}")
+                        elif ecart_historique < 0:
+                            st.warning(f"📉 Baisse de {abs(ecart_historique)} points depuis votre première analyse le {premiere_date}")
+                        else:
+                            st.info(f"➡️ Score stable depuis votre première analyse le {premiere_date}")
+                        st.markdown("")
+                    elif len(historique) == 1:
+                        st.caption("📅 Première analyse enregistrée — revenez après avoir appliqué des changements pour voir votre évolution dans le temps.")
+                        st.markdown("")
 
                     criteres = estimation.get("criteres") or {}
                     if criteres:
