@@ -852,13 +852,17 @@ TARIF_MOYEN: [prix mensuel moyen realiste en euros pour ce type de produit, un s
 CLIENTS_MIN: [nombre de clients payants estime dans le pire cas realiste a 12 mois, un seul nombre]
 CLIENTS_MAX: [nombre de clients payants estime dans le meilleur cas realiste a 12 mois, un seul nombre]
 Ces 3 nombres doivent etre COHERENTS entre eux (ne mentionne aucun autre nombre de
-clients ailleurs). Dans PROJECTION_TEXTE, explique en 2-3 phrases, comme un expert qui
-justifie son estimation : pourquoi ce tarif est realiste pour ce secteur/positionnement,
-et pourquoi cette fourchette de clients est atteignable a 12 mois compte tenu du
-secteur, des points forts/faibles et du taux de conversion typique pour ce type
-d'activite. Ton confiant et factuel, comme une vraie analyse d'expert — PAS de mise en
-garde dans ce texte (elle figure deja ailleurs sur la page). Ne calcule pas
-toi-meme le total en euros, contente-toi d'expliquer le raisonnement."""
+clients ailleurs). Dans PROJECTION_TEXTE, explique en 2-3 phrases COURTES, avec des
+MOTS DU QUOTIDIEN, comme si tu parlais a un entrepreneur qui ne connait rien au
+marketing ou a la finance. INTERDICTION d'utiliser des mots comme "positionnement",
+"conversion", "strategie de contenu", "partenariats", "fourchette", "capitaliser" —
+remplace-les par des explications concretes. Dis simplement : a quel prix des
+concurrents similaires vendent deja ce genre de service, et a peu pres combien de
+personnes pourraient l'acheter compte tenu de ce que fait deja le site (bons points et
+points a ameliorer). Ton confiant et simple, comme un ami qui connait bien le sujet et
+qui explique clairement, sans jargon — PAS de mise en garde dans ce texte (elle figure
+deja ailleurs sur la page). Ne calcule pas toi-meme le total en euros, contente-toi
+d'expliquer le raisonnement en langage simple."""
         else:
             consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
 developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0, et
