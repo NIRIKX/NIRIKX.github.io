@@ -897,12 +897,6 @@ developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0
 dans PROJECTION_TEXTE ecris exactement : "Non disponible — renseignez votre chiffre
 d'affaires actuel ou cochez la case projet en developpement pour obtenir une
 projection chiffree." """
-        else:
-            consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
-developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0, et
-dans PROJECTION_TEXTE ecris exactement : "Non disponible — renseignez votre chiffre
-d'affaires actuel ou cochez la case projet en developpement pour obtenir une
-projection chiffree." """
 
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         prompt = f"""Tu es un investisseur experimente qui evalue rapidement des entreprises a partir de leur site web.
