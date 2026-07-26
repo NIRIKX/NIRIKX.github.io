@@ -867,7 +867,11 @@ montrant les avis de vos clients actuels, la croissance peut s'accelerer naturel
 Le potentiel est bien reel, il suffit de continuer sur cette lancee."
 
 Mots du quotidien uniquement, sans argot, sans jargon. Ne calcule pas toi-meme le total
-en euros, contente-toi d'expliquer le raisonnement."""
+en euros, contente-toi d'expliquer le raisonnement. IMPORTANT : ne mentionne JAMAIS un
+prix "par mois" dans ton texte, uniquement des montants sur l'annee entiere ou sans
+precision de periode (ex: dire "un prix autour de 700 euros par client sur l'annee"
+plutot que "59 euros par mois"), pour eviter toute confusion avec le total annuel
+affiche au-dessus de ton texte."""
         elif projet_pre_lancement:
             consigne_projection = """Le site n'a PAS ENCORE de chiffre d'affaires reel (projet en
 developpement). Donne les PARAMETRES bases UNIQUEMENT sur des reperes de marche :
