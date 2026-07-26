@@ -1788,6 +1788,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
                             <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.6rem">Projection financière à 12 mois</div>
                             <div style="color:#e0e0e0;font-size:0.9rem;line-height:1.6">{projection_texte}</div>
+                            <div style="color:#a090f7;font-size:0.85rem;margin-top:0.8rem;font-weight:600">👇 Remplissez le formulaire juste en dessous pour l'obtenir</div>
                         </div>
                         """, unsafe_allow_html=True)
 
