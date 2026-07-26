@@ -1784,7 +1784,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         </div>
                         """, unsafe_allow_html=True)
 
-                    with st.expander("Remplir mes données pour affiner cette projection"):
+                    with st.expander("Découvrir combien vous pourriez gagner dans un an"):
                         st.caption("Optionnel — ces informations servent uniquement à ancrer l'estimation dans votre réalité, elles ne sont pas rendues publiques.")
                         prelancement_input = st.checkbox("Mon site n'est pas encore lancé ou n'a pas encore de revenus — donnez-moi quand même une estimation basée sur des repères de marché", key=f"prelancement_{idx}")
                         col_form1, col_form2, col_form3 = st.columns(3)
