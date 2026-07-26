@@ -844,7 +844,7 @@ def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_client
             donnees_utilisateur.append(f"{anciennete_annees} annee(s) d'existence")
         donnees_str = ", ".join(donnees_utilisateur) if donnees_utilisateur else "aucune donnee reelle fournie par l'utilisateur"
 
-if ca_actuel is not None and ca_actuel > 0:
+        if ca_actuel is not None and ca_actuel > 0:
             base_clients_str = f"{nb_clients} clients actuels" if (nb_clients is not None and nb_clients > 0) else "nombre de clients actuels non precise"
             consigne_projection = f"""Ce site genere DEJA un chiffre d'affaires reel de {ca_actuel} euros par an
 ({base_clients_str}). C'est la VRAIE SITUATION DE DEPART : ne l'ignore surtout pas et
