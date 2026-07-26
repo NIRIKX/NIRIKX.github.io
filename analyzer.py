@@ -844,39 +844,59 @@ def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_client
             donnees_utilisateur.append(f"{anciennete_annees} annee(s) d'existence")
         donnees_str = ", ".join(donnees_utilisateur) if donnees_utilisateur else "aucune donnee reelle fournie par l'utilisateur"
 
-        peut_projeter = (ca_actuel is not None and ca_actuel > 0) or projet_pre_lancement
+if ca_actuel is not None and ca_actuel > 0:
+            base_clients_str = f"{nb_clients} clients actuels" if (nb_clients is not None and nb_clients > 0) else "nombre de clients actuels non precise"
+            consigne_projection = f"""Ce site genere DEJA un chiffre d'affaires reel de {ca_actuel} euros par an
+({base_clients_str}). C'est la VRAIE SITUATION DE DEPART : ne l'ignore surtout pas et
+ne calcule pas comme si l'activite partait de zero.
+TARIF_MOYEN: [prix mensuel moyen coherent avec le chiffre d'affaires actuel fourni, un seul nombre]
+CLIENTS_MIN: [nombre de clients payants estime dans le pire cas realiste a 12 mois, en PARTANT de la situation actuelle, un seul nombre]
+CLIENTS_MAX: [nombre de clients payants estime dans le meilleur cas realiste a 12 mois, en PARTANT de la situation actuelle, un seul nombre]
+Ces 3 nombres doivent etre COHERENTS entre eux et avec le chiffre d'affaires actuel
+fourni. Dans PROJECTION_TEXTE, ecris une VRAIE PETITE HISTOIRE de 5 A 6 PHRASES en
+partant EXPLICITEMENT de la situation actuelle du site ({ca_actuel} euros par an),
+comme si tu racontais a un ami comment faire grandir ce qu'il a deja construit.
 
-        if peut_projeter:
-            consigne_projection = """Donne les PARAMETRES de la projection financiere a 12 mois, PAS le calcul final :
+EXEMPLE A IMITER (adapte au site precis, en partant bien du chiffre d'affaires fourni) :
+"Avec vos {ca_actuel} euros de chiffre d'affaires actuels, vous avez deja une base
+solide sur laquelle construire. Un outil comme le votre se vend generalement entre 30
+et 60 euros par mois une fois la confiance etablie. Pour faire grandir ce que vous avez
+deja, publier 1 a 2 articles par semaine sur des problemes concrets peut attirer de
+nouveaux clients au meme rythme que les precedents. En gardant cette regularite et en
+montrant les avis de vos clients actuels, la croissance peut s'accelerer naturellement.
+Le potentiel est bien reel, il suffit de continuer sur cette lancee."
+
+Mots du quotidien uniquement, sans argot, sans jargon. Ne calcule pas toi-meme le total
+en euros, contente-toi d'expliquer le raisonnement."""
+        elif projet_pre_lancement:
+            consigne_projection = """Le site n'a PAS ENCORE de chiffre d'affaires reel (projet en
+developpement). Donne les PARAMETRES bases UNIQUEMENT sur des reperes de marche :
 TARIF_MOYEN: [prix mensuel moyen realiste en euros pour ce type de produit, un seul nombre]
 CLIENTS_MIN: [nombre de clients payants estime dans le pire cas realiste a 12 mois, un seul nombre]
 CLIENTS_MAX: [nombre de clients payants estime dans le meilleur cas realiste a 12 mois, un seul nombre]
-Ces 3 nombres doivent etre COHERENTS entre eux (ne mentionne aucun autre nombre de
-clients ailleurs). Dans PROJECTION_TEXTE, ecris une VRAIE PETITE HISTOIRE de 5 A 6
-PHRASES (pas 3) qui prend le temps d'expliquer, comme si tu racontais a un ami comment
-son entreprise pourrait grandir. Ne te contente PAS d'enoncer des faits bruts les uns
-apres les autres : developpe chaque idee avec un peu de contexte concret.
+Ces 3 nombres doivent etre COHERENTS entre eux. Dans PROJECTION_TEXTE, ecris une VRAIE
+PETITE HISTOIRE de 5 A 6 PHRASES qui prend le temps d'expliquer, comme si tu racontais a
+un ami comment son entreprise pourrait grandir.
 
-EXEMPLE A IMITER (adapte les details a ce site precis, garde la MEME longueur et le
-MEME esprit) :
+EXEMPLE A IMITER (adapte les details a ce site precis) :
 "Des outils similaires se vendent entre 30 et 60 euros par mois, un prix que les
-clients acceptent parce que ca inclut un vrai suivi et des conseils personnalises, pas
-juste un chiffre brut. Pour attirer les premiers clients, publier 1 a 2 articles par
-semaine sur des problemes concrets que vos clients recherchent deja sur Google est un
-bon point de depart, en montrant a chaque fois des exemples reels ou des avis. Avec
+clients acceptent parce que ca inclut un vrai suivi et des conseils personnalises. Pour
+attirer les premiers clients, publier 1 a 2 articles par semaine sur des problemes
+concrets que vos clients recherchent deja sur Google est un bon point de depart. Avec
 cette regularite, les 15 a 20 premiers clients viennent souvent du bouche-a-oreille et
 des recherches Google directes. Une fois que quelques clients satisfaits laissent des
-avis visibles sur le site, la confiance grandit et attire plus facilement les clients
-suivants, jusqu'a atteindre le haut de la fourchette. Le potentiel est bien reel, il
-suffit de s'y mettre serieusement des maintenant."
+avis visibles, la confiance grandit et attire plus facilement les clients suivants,
+jusqu'a atteindre le haut de la fourchette. Le potentiel est bien reel, il suffit de
+s'y mettre serieusement des maintenant."
 
-Reprends cet esprit et cette longueur pour CE site precis : contexte du marche avec le
-POURQUOI (pas juste le prix), le chemin concret etape par etape pour passer du bas au
-haut de la fourchette, puis OBLIGATOIREMENT une derniere phrase motivante commencant
-par "Le potentiel est bien reel" ou "C'est totalement jouable". Mots du quotidien
-uniquement, sans argot (pas de mots comme "balles", "fric", "thune"), sans jargon (pas
-de "positionnement", "conversion", "strategie de contenu"). Ne calcule pas toi-meme le
-total en euros, contente-toi d'expliquer le raisonnement en langage simple."""
+Mots du quotidien uniquement, sans argot, sans jargon. Ne calcule pas toi-meme le total
+en euros, contente-toi d'expliquer le raisonnement."""
+        else:
+            consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
+developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0, et
+dans PROJECTION_TEXTE ecris exactement : "Non disponible — renseignez votre chiffre
+d'affaires actuel ou cochez la case projet en developpement pour obtenir une
+projection chiffree." """
         else:
             consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
 developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0, et
