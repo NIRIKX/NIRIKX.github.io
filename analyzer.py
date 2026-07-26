@@ -852,24 +852,23 @@ TARIF_MOYEN: [prix mensuel moyen realiste en euros pour ce type de produit, un s
 CLIENTS_MIN: [nombre de clients payants estime dans le pire cas realiste a 12 mois, un seul nombre]
 CLIENTS_MAX: [nombre de clients payants estime dans le meilleur cas realiste a 12 mois, un seul nombre]
 Ces 3 nombres doivent etre COHERENTS entre eux (ne mentionne aucun autre nombre de
-clients ailleurs). Dans PROJECTION_TEXTE, raconte une VRAIE PETITE HISTOIRE en 4-5
-phrases COURTES, avec des MOTS DU QUOTIDIEN, comme si tu parlais a un entrepreneur qui
-ne connait rien au marketing ou a la finance. INTERDICTION d'utiliser des mots comme
-"positionnement", "conversion", "strategie de contenu", "partenariats", "fourchette",
-"capitaliser" — remplace-les par des explications concretes. Structure OBLIGATOIRE en 3
-temps, sans jamais s'arreter avant le 3eme :
-1) Ancre dans le reel : a quel prix des concurrents similaires vendent deja ce genre de
-service.
-2) Le chemin concret : ce que le site devrait faire, avec un exemple precis et imageable
-(ex: "en publiant 2 articles par semaine" plutot que "via du contenu"), pour attirer les
-clients bas et hauts de la fourchette.
-3) La conclusion motivante, OBLIGATOIRE, qui ne manque JAMAIS : termine toujours par une
-phrase qui donne envie d'agir, du type "Et c'est totalement jouable si..." ou "Le
-potentiel est bien reel, il suffit de...". Ne termine JAMAIS sur un fait brut sans cette
-phrase de cloture. Ton confiant, enthousiaste et simple, comme un ami motivant qui
-connait bien le sujet — PAS de mise en garde dans ce texte (elle figure deja ailleurs
-sur la page). Ne calcule pas toi-meme le total en euros, contente-toi d'expliquer le
-raisonnement en langage simple."""
+clients ailleurs). Dans PROJECTION_TEXTE, ecris EXACTEMENT sur ce modele (adapte les
+details a ce site precis, mais garde la MEME structure en 3 phrases et la MEME phrase
+de fin) :
+
+EXEMPLE A IMITER :
+"Des outils similaires se vendent entre 30 et 60 euros par mois. En publiant 2 articles
+par semaine sur des sujets que vos clients recherchent et en montrant des avis clients
+visibles, vous pourriez convaincre entre 20 et 80 clients d'ici un an. Le potentiel est
+bien reel, il suffit de s'y mettre serieusement des maintenant."
+
+Reprends cette structure en 3 phrases pour CE site precis : phrase 1 = prix reel des
+concurrents, phrase 2 = action concrete et imageable a faire + resultat client attendu,
+phrase 3 = OBLIGATOIREMENT une phrase de fin motivante commencant par "Le potentiel est
+bien reel" ou "C'est totalement jouable". Mots du quotidien uniquement, sans argot
+(pas de mots comme "balles", "fric", "thune"), sans jargon (pas de "positionnement",
+"conversion", "strategie de contenu"). Ne calcule pas toi-meme le total en euros,
+contente-toi d'expliquer le raisonnement en langage simple."""
         else:
             consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
 developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0, et
