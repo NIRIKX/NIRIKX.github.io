@@ -776,15 +776,26 @@ def extraire_montant(texte: str) -> int:
     match = re.search(r'\d+', nettoye)
     return int(match.group()) if match else 0
 
+def extraire_montant(texte: str) -> float:
+    """
+    Extrait un nombre (entier ou decimal) depuis un texte libre genere
+    par l'IA. Retourne 0 si aucun chiffre n'est trouve.
+    """
+    if not texte:
+        return 0
+    nettoye = texte.replace("€", "").replace(" ", "").replace("\u00a0", "").replace(",", ".")
+    match = re.search(r'\d+\.?\d*', nettoye)
+    return float(match.group()) if match else 0
+
 
 def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_clients=None, ca_actuel=None, anciennete_annees=None, projet_pre_lancement: bool = False) -> dict:
     """
     Demande a l'IA une estimation approximative du potentiel de croissance.
-    Si l'utilisateur fournit son vrai chiffre d'affaires, donne une PROJECTION
-    chiffree (fourchette) basee dessus. Si le site n'a pas encore de revenus
-    mais que "projet en developpement" est coche, donne une estimation
-    SPECULATIVE basee sur des reperes de marche, clairement identifiee comme
-    telle. Sans donnees ni case cochee, aucun chiffre n'est invente.
+    Pour la projection financiere, l'IA fournit les PARAMETRES (tarif moyen,
+    fourchette de clients estimee) et EXPLIQUE le raisonnement derriere ces
+    parametres. Le calcul arithmetique final (tarif x clients) est fait par
+    le code Python, pas par l'IA, pour garantir que le chiffre affiche
+    corresponde exactement aux hypotheses enoncees, sans incoherence interne.
     """
     try:
         import requests as req
@@ -821,34 +832,25 @@ def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_client
             donnees_utilisateur.append(f"{anciennete_annees} annee(s) d'existence")
         donnees_str = ", ".join(donnees_utilisateur) if donnees_utilisateur else "aucune donnee reelle fournie par l'utilisateur"
 
-        if ca_actuel is not None and ca_actuel > 0:
-            consigne_projection = f"""L'utilisateur a fourni son vrai chiffre d'affaires actuel ({ca_actuel} euros/an).
-Donne une PROJECTION_MIN et une PROJECTION_MAX (deux nombres entiers en euros, sans le
-symbole euro, juste les chiffres) pour les 12 prochains mois, basee sur le secteur, les
-points forts/faibles, et un taux de croissance TYPIQUE ET REALISTE pour ce type
-d'activite (reste prudent, ne sois pas optimiste par defaut). Dans PROJECTION_TEXTE,
-DEROULE LE CALCUL PRECIS qui mene a cette fourchette : pars du chiffre d'affaires
-actuel ({ca_actuel} euros), indique le taux de croissance retenu et pourquoi (ex:
-"+15 a +40%, typique pour ce secteur en croissance"), puis montre le resultat
-arithmetique. Exemple de style : "En partant de vos {ca_actuel} euros actuels, avec
-une croissance de 15 a 40% typique pour ce secteur, vous pourriez atteindre entre X et
-Y euros." Ton neutre, factuel, precis — PAS de mise en garde dans ce texte (elle
-figure deja ailleurs sur la page)."""
-        elif projet_pre_lancement:
-            consigne_projection = """Le site n'a pas encore de chiffre d'affaires reel (projet en developpement
-ou tout juste lance). Donne quand meme une PROJECTION_MIN et une PROJECTION_MAX (deux
-nombres entiers en euros, sans symbole) pour les 12 premiers mois d'activite, basee
-UNIQUEMENT sur des reperes de marche typiques pour ce secteur et ce type de produit.
-Dans PROJECTION_TEXTE, DEROULE LE CALCUL PRECIS : indique le tarif moyen estime pour ce
-type de produit, le nombre de clients estime sur 12 mois pour ce type de niche, et
-montre le resultat arithmetique. Exemple de style : "En estimant un tarif moyen de X
-euros/mois et Y clients d'ici 12 mois pour ce type d'outil, cela donnerait entre A et B
-euros." Ton neutre, factuel, precis — PAS de mise en garde dans ce texte (elle figure
-deja ailleurs sur la page)."""
+        peut_projeter = (ca_actuel is not None and ca_actuel > 0) or projet_pre_lancement
+
+        if peut_projeter:
+            consigne_projection = """Donne les PARAMETRES de la projection financiere a 12 mois, PAS le calcul final :
+TARIF_MOYEN: [prix mensuel moyen realiste en euros pour ce type de produit, un seul nombre]
+CLIENTS_MIN: [nombre de clients payants estime dans le pire cas realiste a 12 mois, un seul nombre]
+CLIENTS_MAX: [nombre de clients payants estime dans le meilleur cas realiste a 12 mois, un seul nombre]
+Ces 3 nombres doivent etre COHERENTS entre eux (ne mentionne aucun autre nombre de
+clients ailleurs). Dans PROJECTION_TEXTE, explique en 2-3 phrases, comme un expert qui
+justifie son estimation : pourquoi ce tarif est realiste pour ce secteur/positionnement,
+et pourquoi cette fourchette de clients est atteignable a 12 mois compte tenu du
+secteur, des points forts/faibles et du taux de conversion typique pour ce type
+d'activite. Ton confiant et factuel, comme une vraie analyse d'expert — PAS de mise en
+garde dans ce texte (elle figure deja ailleurs sur la page). Ne calcule pas
+toi-meme le total en euros, contente-toi d'expliquer le raisonnement."""
         else:
             consigne_projection = """Aucune donnee financiere n'est disponible et l'option projet en
-developpement n'est pas cochee. Mets PROJECTION_MIN et PROJECTION_MAX a 0, et dans
-PROJECTION_TEXTE ecris exactement : "Non disponible — renseignez votre chiffre
+developpement n'est pas cochee. Mets TARIF_MOYEN, CLIENTS_MIN et CLIENTS_MAX a 0, et
+dans PROJECTION_TEXTE ecris exactement : "Non disponible — renseignez votre chiffre
 d'affaires actuel ou cochez la case projet en developpement pour obtenir une
 projection chiffree." """
 
@@ -880,15 +882,16 @@ Donne un PLAN D'ACTION de 3 a 5 recommandations concretes et priorisees, autant 
 
 {consigne_projection}
 
-Reponds en 10 parties EXACTEMENT, sans markdown, texte brut :
+Reponds en 12 parties EXACTEMENT, sans markdown, texte brut :
 SCORE: [chiffre entre 0 et 100]
 CRITERES: [5 chiffres entre 0 et 100 separes par des virgules, dans l'ordre NOTORIETE,DIFFERENCIATION,TRACTION,SCALABILITE,PRESENTATION]
 CONCURRENTS: [2-3 concurrents, separes par des virgules]
 FORTS: [3 a 5 points forts, separes par des points-virgules]
 FAIBLES: [3 a 5 points faibles, separes par des points-virgules]
 PLAN: [3 a 5 recommandations, separees par des points-virgules]
-PROJECTION_MIN: [nombre entier en euros, ou 0]
-PROJECTION_MAX: [nombre entier en euros, ou 0]
+TARIF_MOYEN: [nombre, ou 0]
+CLIENTS_MIN: [nombre, ou 0]
+CLIENTS_MAX: [nombre, ou 0]
 PROJECTION_TEXTE: [explication en 2-3 phrases, ou le message non disponible]
 ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
 
@@ -903,8 +906,9 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
         points_forts = []
         points_faibles = []
         plan_action = []
-        projection_min = 0
-        projection_max = 0
+        tarif_moyen = 0
+        clients_min = 0
+        clients_max = 0
         projection_texte = "Non disponible."
         analyse = contenu
 
@@ -927,21 +931,29 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
             if "FAIBLES:" in contenu and "PLAN:" in contenu:
                 partie_faibles = contenu.split("FAIBLES:")[1].split("PLAN:")[0].strip()
                 points_faibles = [p.strip(" -;") for p in partie_faibles.split(";") if p.strip(" -;")]
-            if "PLAN:" in contenu and "PROJECTION_MIN:" in contenu:
-                partie_plan = contenu.split("PLAN:")[1].split("PROJECTION_MIN:")[0].strip()
+            if "PLAN:" in contenu and "TARIF_MOYEN:" in contenu:
+                partie_plan = contenu.split("PLAN:")[1].split("TARIF_MOYEN:")[0].strip()
                 plan_action = [p.strip(" -;") for p in partie_plan.split(";") if p.strip(" -;")]
-            if "PROJECTION_MIN:" in contenu and "PROJECTION_MAX:" in contenu:
-                partie_min = contenu.split("PROJECTION_MIN:")[1].split("PROJECTION_MAX:")[0].strip()
-                projection_min = extraire_montant(partie_min)
-            if "PROJECTION_MAX:" in contenu and "PROJECTION_TEXTE:" in contenu:
-                partie_max = contenu.split("PROJECTION_MAX:")[1].split("PROJECTION_TEXTE:")[0].strip()
-                projection_max = extraire_montant(partie_max)
+            if "TARIF_MOYEN:" in contenu and "CLIENTS_MIN:" in contenu:
+                partie_tarif = contenu.split("TARIF_MOYEN:")[1].split("CLIENTS_MIN:")[0].strip()
+                tarif_moyen = extraire_montant(partie_tarif)
+            if "CLIENTS_MIN:" in contenu and "CLIENTS_MAX:" in contenu:
+                partie_cmin = contenu.split("CLIENTS_MIN:")[1].split("CLIENTS_MAX:")[0].strip()
+                clients_min = extraire_montant(partie_cmin)
+            if "CLIENTS_MAX:" in contenu and "PROJECTION_TEXTE:" in contenu:
+                partie_cmax = contenu.split("CLIENTS_MAX:")[1].split("PROJECTION_TEXTE:")[0].strip()
+                clients_max = extraire_montant(partie_cmax)
             if "PROJECTION_TEXTE:" in contenu and "ANALYSE:" in contenu:
                 projection_texte = contenu.split("PROJECTION_TEXTE:")[1].split("ANALYSE:")[0].strip()
             if "ANALYSE:" in contenu:
                 analyse = contenu.split("ANALYSE:")[1].strip()
         except Exception:
             pass
+
+        # Le calcul final est fait ici, en Python, pas par l'IA — garantit la
+        # coherence entre le texte explicatif et le chiffre affiche.
+        projection_min = round(tarif_moyen * clients_min * 12) if tarif_moyen > 0 and clients_min > 0 else 0
+        projection_max = round(tarif_moyen * clients_max * 12) if tarif_moyen > 0 and clients_max > 0 else 0
 
         return {
             "score": max(0, min(100, score)),
@@ -953,6 +965,9 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
             "projection_min": projection_min,
             "projection_max": projection_max,
             "projection_texte": projection_texte,
+            "tarif_moyen": tarif_moyen,
+            "clients_min": clients_min,
+            "clients_max": clients_max,
             "analyse": analyse,
             "signaux_concrets": signaux_concrets,
             "error": None,
@@ -1091,3 +1106,4 @@ def lire_historique(url: str, limite: int = 10) -> list:
         except Exception:
             pass
         return []
+
