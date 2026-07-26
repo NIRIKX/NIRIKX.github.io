@@ -788,6 +788,18 @@ def extraire_montant(texte: str) -> float:
     return float(match.group()) if match else 0
 
 
+def extraire_montant(texte: str) -> float:
+    """
+    Extrait un nombre (entier ou decimal) depuis un texte libre genere
+    par l'IA. Retourne 0 si aucun chiffre n'est trouve.
+    """
+    if not texte:
+        return 0
+    nettoye = texte.replace("€", "").replace(" ", "").replace("\u00a0", "").replace(",", ".")
+    match = re.search(r'\d+\.?\d*', nettoye)
+    return float(match.group()) if match else 0
+
+
 def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_clients=None, ca_actuel=None, anciennete_annees=None, projet_pre_lancement: bool = False) -> dict:
     """
     Demande a l'IA une estimation approximative du potentiel de croissance.
@@ -1106,4 +1118,3 @@ def lire_historique(url: str, limite: int = 10) -> list:
         except Exception:
             pass
         return []
-
