@@ -1778,7 +1778,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         projection_max_fmt = f"{int(projection_max):,}".replace(",", " ")
                         st.markdown(f"""
                         <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
-                            <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Ce que vous pourriez gagner cette année</div>
+                            <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Ce que vous pourriez atteindre d'ici 12 mois</div>
                             <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:0.8rem">
                                 <div style="font-size:28px;font-weight:700;color:#c0b8f0">{projection_min_fmt} € — {projection_max_fmt} €</div>
                                 <div style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px">sur 12 mois</div>
