@@ -792,9 +792,9 @@ div[data-stale="true"] { opacity: 1 !important; transition: none !important; }
 .score-bar-bg { background: #2a2a3e; border-radius: 999px; height: 8px; overflow: hidden; }
 .score-bar-fill { height: 100%; border-radius: 999px; }
 .stButton > button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 1rem; padding: 0.7rem 2rem; width: 100%; }
-.stTabs [data-baseweb="tab-list"] { background: #0f0f1a; border-radius: 10px; padding: 4px; gap: 8px; }
-.stTabs [data-baseweb="tab"] { background: #1a1a2e; color: #888; border-radius: 8px; font-weight: 500; padding: 0.4rem 1rem; }
-.stTabs [aria-selected="true"] { background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; }
+.stTabs [data-baseweb="tab-list"], div[role="tablist"] { background: transparent; border-radius: 10px; padding: 4px; gap: 8px; flex-wrap: wrap; }
+.stTabs [data-baseweb="tab"], div[role="tablist"] button[role="tab"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; color: white !important; border-radius: 10px !important; font-weight: 600 !important; padding: 0.5rem 1.2rem !important; border: none !important; opacity: 0.65; }
+.stTabs [aria-selected="true"], div[role="tablist"] button[aria-selected="true"] { opacity: 1 !important; box-shadow: 0 0 14px rgba(124,106,247,0.5); }
 input[type="checkbox"] { accent-color: #667eea !important; }
 </style>
 """, unsafe_allow_html=True)
