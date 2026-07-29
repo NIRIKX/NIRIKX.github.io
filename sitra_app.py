@@ -793,7 +793,8 @@ div[data-stale="true"] { opacity: 1 !important; transition: none !important; }
 .score-bar-fill { height: 100%; border-radius: 999px; }
 .stButton > button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 1rem; padding: 0.7rem 2rem; width: 100%; }
 .stTabs [data-baseweb="tab-list"], div[role="tablist"], [data-testid="stTabs"] { background: transparent; border-radius: 10px; padding: 4px; gap: 8px; flex-wrap: wrap; }
-[data-testid="stTab"]:hover, div[role="tablist"] [role="tab"]:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 6px 16px rgba(124,106,247,0.35); cursor: pointer; }
+[data-testid="stTab"], div[role="tablist"] [role="tab"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; color: white !important; border-radius: 10px !important; font-weight: 600 !important; padding: 0.5rem 1.2rem !important; border: none !important; border-bottom: none !important; text-decoration: none !important; opacity: 1 !important; }
+[data-testid="stTab"]:hover, div[role="tablist"] [role="tab"]:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 6px 16px rgba(124,106,247,0.35); cursor: pointer; }                                                 
 [data-testid="stTab"][aria-selected="true"], div[role="tablist"] [aria-selected="true"] { color: white !important; }
 input[type="checkbox"] { accent-color: #667eea !important; }
 </style>
