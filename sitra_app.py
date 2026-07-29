@@ -599,7 +599,7 @@ with st.sidebar:
             "Mode comparatif",
             "Optimiser mon site",
             "Textes corrigés prêts à copier",
-            "Génération de contenu pour votre marque",
+            "Génération de contenu",
             "Potentiel de croissance",
         ],
         key="menu_choix",
@@ -612,7 +612,7 @@ with st.sidebar:
 mode_comparaison     = (st.session_state.get("menu_choix") == "Mode comparatif")
 show_corriger        = (st.session_state.get("menu_choix") == "Optimiser mon site")
 show_textes          = (st.session_state.get("menu_choix") == "Textes corrigés prêts à copier")
-show_contenu_marque  = (st.session_state.get("menu_choix") == "Génération de contenu pour votre marque")
+show_contenu_marque  = (st.session_state.get("menu_choix") == "Génération de contenu")
 show_potentiel       = (st.session_state.get("menu_choix") == "Potentiel de croissance")
 
 st.markdown("""
