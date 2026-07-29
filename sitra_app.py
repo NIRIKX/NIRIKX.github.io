@@ -1623,7 +1623,46 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                 type_affiche = st.session_state.get(f"contenu_marque_type_{idx}", "")
                 st.markdown("")
                 st.markdown(f"**Résultat — {type_affiche}**")
-                st.code(st.session_state[f"contenu_marque_{idx}"], language=None)
+
+                def nettoyer_contenu_ia(texte):
+                    """Rend le texte lisible en Markdown : évite les hashtags transformés
+                    en titres géants, les --- collés qui créent un faux titre, et les
+                    listes à puces collées au paragraphe du dessus."""
+                    texte = texte.replace("\r\n", "\n")
+                    lignes_propres = []
+                    dans_une_liste = False
+                    for ligne in texte.split("\n"):
+                        sans_espace = ligne.lstrip()
+                        prefixe = ligne[:len(ligne) - len(sans_espace)]
+                        if sans_espace.startswith("#"):
+                            ligne = prefixe + "\\" + sans_espace
+
+                        est_separateur = len(ligne.strip()) >= 3 and set(ligne.strip()) == {"-"}
+                        est_puce = ligne.strip().startswith("- ") or ligne.strip().startswith("• ")
+
+                        if est_separateur:
+                            if lignes_propres and lignes_propres[-1].strip() != "":
+                                lignes_propres.append("")
+                            lignes_propres.append("---")
+                            lignes_propres.append("")
+                            dans_une_liste = False
+                            continue
+
+                        if est_puce:
+                            if not dans_une_liste and lignes_propres and lignes_propres[-1].strip() != "":
+                                lignes_propres.append("")
+                            dans_une_liste = True
+                        elif ligne.strip() != "":
+                            dans_une_liste = False
+
+                        lignes_propres.append(ligne)
+                    return "\n".join(lignes_propres)
+
+                contenu_brut = st.session_state[f"contenu_marque_{idx}"]
+                st.markdown(nettoyer_contenu_ia(contenu_brut))
+
+                with st.expander("Copier le texte brut"):
+                    st.code(contenu_brut, language=None)
 
                 if st.button("Régénérer", key=f"btn_regen_contenu_{idx}"):
                     del st.session_state[f"contenu_marque_{idx}"]
