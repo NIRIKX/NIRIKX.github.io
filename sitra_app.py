@@ -350,121 +350,8 @@ VERSION 2 - Corrections complètes
         return None
 
 # ── CONTENU DE MARQUE IA (inspiré Pomelli) ───────────────────────────────────
-def generer_animation_html(result, objectif):
-    """Génère une animation publicitaire HTML directement en Python — toujours fonctionnel"""
-    titre_site = result['seo']['title'] or result['final_url'].replace("https://","").replace("www.","").split("/")[0]
-
-    # Adapte le message selon l'objectif
-    mots_cles = objectif.lower()
-    if any(w in mots_cles for w in ["client", "vente", "vendre", "achat", "commande"]):
-        ligne1 = "Attirez plus de clients"
-        ligne2 = "dès aujourd'hui"
-        cta = "Découvrir maintenant"
-        emoji = "🚀"
-    elif any(w in mots_cles for w in ["visibilité", "google", "seo", "référencement"]):
-        ligne1 = "Boostez votre visibilité"
-        ligne2 = "sur Google"
-        cta = "Améliorer mon site"
-        emoji = "📈"
-    elif any(w in mots_cles for w in ["confiance", "professionnel", "image", "marque"]):
-        ligne1 = "Une image professionnelle"
-        ligne2 = "qui inspire confiance"
-        cta = "En savoir plus"
-        emoji = "⭐"
-    elif any(w in mots_cles for w in ["rapide", "vitesse", "performance", "chargement"]):
-        ligne1 = "Un site ultra-rapide"
-        ligne2 = "pour ne perdre aucun visiteur"
-        cta = "Optimiser maintenant"
-        emoji = "⚡"
-    else:
-        ligne1 = objectif[:35] + ("..." if len(objectif) > 35 else "")
-        ligne2 = "avec " + titre_site
-        cta = "Découvrir maintenant"
-        emoji = "✨"
-
-    html = f"""<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<style>
-  * {{ margin:0; padding:0; box-sizing:border-box; }}
-  body {{ width:600px; height:300px; overflow:hidden; font-family:'Arial Black',Arial,sans-serif; }}
-  .ad {{
-    width:600px; height:300px; position:relative; overflow:hidden;
-    background:linear-gradient(135deg,#0f0f1a 0%,#1a1a3e 50%,#0f0f1a 100%);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-  }}
-  .bg-glow {{
-    position:absolute; width:400px; height:400px; border-radius:50%;
-    background:radial-gradient(ellipse,rgba(124,106,247,0.25) 0%,transparent 70%);
-    top:50%; left:50%; transform:translate(-50%,-50%);
-    animation:pulse 3s ease-in-out infinite alternate;
-  }}
-  @keyframes pulse {{ from{{transform:translate(-50%,-50%) scale(0.8);opacity:0.5}} to{{transform:translate(-50%,-50%) scale(1.2);opacity:1}} }}
-  .emoji {{ font-size:2.8rem; animation:bounce 2s ease-in-out infinite; position:relative; z-index:2; opacity:0; animation:appear 0.6s ease forwards 0.3s, bounce 2s ease-in-out infinite 1s; }}
-  @keyframes appear {{ from{{opacity:0;transform:translateY(-20px)}} to{{opacity:1;transform:translateY(0)}} }}
-  @keyframes bounce {{ 0%,100%{{transform:translateY(0)}} 50%{{transform:translateY(-8px)}} }}
-  .title {{
-    font-size:2rem; font-weight:900; text-align:center; position:relative; z-index:2;
-    background:linear-gradient(135deg,#7c6af7,#f07cf7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-    opacity:0; animation:slideup 0.7s ease forwards 0.6s;
-    line-height:1.1;
-  }}
-  .subtitle {{
-    font-size:1.1rem; color:#c0b8f0; text-align:center; position:relative; z-index:2;
-    opacity:0; animation:slideup 0.7s ease forwards 0.9s;
-    font-weight:400;
-  }}
-  .brand {{
-    font-size:0.8rem; color:rgba(255,255,255,0.4); position:relative; z-index:2;
-    opacity:0; animation:slideup 0.5s ease forwards 1.1s; text-transform:uppercase; letter-spacing:2px;
-  }}
-  .cta {{
-    background:linear-gradient(135deg,#7c6af7,#f07cf7); color:white; border:none;
-    padding:12px 32px; border-radius:30px; font-size:1rem; font-weight:700; cursor:pointer;
-    position:relative; z-index:2; opacity:0; animation:slideup 0.7s ease forwards 1.2s, ctapulse 2s ease-in-out infinite 2s;
-    box-shadow:0 0 30px rgba(124,106,247,0.5); letter-spacing:0.5px;
-  }}
-  @keyframes slideup {{ from{{opacity:0;transform:translateY(24px)}} to{{opacity:1;transform:translateY(0)}} }}
-  @keyframes ctapulse {{ 0%,100%{{box-shadow:0 0 30px rgba(124,106,247,0.5);transform:scale(1)}} 50%{{box-shadow:0 0 50px rgba(240,124,247,0.8);transform:scale(1.05)}} }}
-  .particles {{ position:absolute; width:100%; height:100%; z-index:1; }}
-  .p {{ position:absolute; border-radius:50%; animation:float linear infinite; }}
-</style>
-</head>
-<body>
-<div class="ad">
-  <div class="bg-glow"></div>
-  <div class="particles" id="pts"></div>
-  <div class="emoji">{emoji}</div>
-  <div class="title">{ligne1}<br>{ligne2}</div>
-  <div class="brand">{titre_site}</div>
-  <button class="cta">{cta}</button>
-</div>
-<script>
-  // Génère des particules flottantes
-  const pts = document.getElementById('pts');
-  for(let i=0;i<18;i++){{
-    const p = document.createElement('div');
-    p.className='p';
-    const size = Math.random()*6+2;
-    const colors = ['rgba(124,106,247,0.6)','rgba(240,124,247,0.6)','rgba(192,100,255,0.4)'];
-    p.style.cssText = `width:${{size}}px;height:${{size}}px;left:${{Math.random()*100}}%;top:${{Math.random()*100}}%;background:${{colors[Math.floor(Math.random()*3)]}};animation-duration:${{Math.random()*8+4}}s;animation-delay:-${{Math.random()*8}}s;`;
-    const ky = document.createElement('style');
-    ky.textContent=`@keyframes float{{0%{{transform:translateY(0) scale(1);opacity:0.7}}50%{{transform:translateY(-${{Math.random()*80+30}}px) scale(1.3);opacity:0.3}}100%{{transform:translateY(-150px) scale(0);opacity:0}}}}`;
-    document.head.appendChild(ky);
-    p.style.animationName='float';
-    pts.appendChild(p);
-  }}
-</script>
-</body>
-</html>"""
-    return html
-
 def generer_contenu_marque(result, type_contenu, objectif):
     """Génère du contenu marketing on-brand basé sur l'analyse du site"""
-    # Pour les animations, on génère directement en Python — fiable et instantané
-    if type_contenu == "Animation publicitaire HTML":
-        return generer_animation_html(result, objectif)
     try:
         import requests as req
         headers = {
@@ -526,24 +413,6 @@ Bonjour [Prénom],
 BOUTON :
 [texte court et motivant, ex : Je veux ça / Je passe à l'action / Je découvre maintenant]""",
             "Texte publicitaire Google Ads": f"{prompt}\n\nRédige 3 annonces Google Ads complètes avec : Titre 1 (max 30 car.) / Titre 2 (max 30 car.) / Description (max 90 car.). Format : ANNONCE 1 / ANNONCE 2 / ANNONCE 3",
-            "Animation publicitaire HTML": f"""Tu es un expert en motion design et publicité digitale. Crée une animation publicitaire HTML/CSS/JS complète et professionnelle pour ce site.
-
-Site : {result['final_url']}
-Nom/Titre du site : {result['seo']['title'] or 'Mon Site'}
-Objectif : {objectif}
-
-RÈGLES OBLIGATOIRES :
-- Taille exacte : 600px largeur x 300px hauteur (format bannière publicitaire)
-- Fond sombre avec dégradé violet/rose (couleurs #7c6af7 → #f07cf7)
-- Le contenu DOIT être directement lié à l'objectif : "{objectif}"
-- Inclure : un titre accrocheur animé, un sous-titre, un bouton CTA qui pulse
-- Animations CSS : texte qui apparaît en fondu, éléments qui bougent, bouton qui pulse
-- Durée : boucle infinie de 4-5 secondes
-- Typographie grande et lisible, style moderne
-- ZERO image externe, 100% CSS/JS
-- Le texte affiché doit correspondre exactement à l'objectif du client
-
-Retourne UNIQUEMENT le code HTML complet sans aucune explication, sans balises markdown, juste le code HTML brut qui commence par <!DOCTYPE html>.""",
         }
 
         prompt_final = types_prompts.get(type_contenu, prompt)
@@ -1714,6 +1583,50 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     for k in [f"textes_corriges_{idx}", f"images_desc_{idx}", f"images_urls_{idx}"]:
                         if k in st.session_state:
                             del st.session_state[k]
+                    st.rerun()
+
+    # ── ONGLET GÉNÉRATION DE CONTENU ──
+    if show_contenu_marque:
+        tab_contenu_idx = tabs_list.index("Génération de contenu")
+        with tabs[tab_contenu_idx]:
+            st.markdown("### Génération de contenu")
+            st.caption("Créez du contenu marketing prêt à publier, à partir de l'analyse de votre site.")
+
+            types_disponibles = [
+                "Post Instagram",
+                "Post LinkedIn",
+                "Post Facebook",
+                "Email marketing",
+                "Texte publicitaire Google Ads",
+            ]
+
+            col_gc1, col_gc2 = st.columns(2)
+            with col_gc1:
+                type_contenu_choisi = st.selectbox("Type de contenu :", types_disponibles, key=f"type_contenu_{idx}")
+            with col_gc2:
+                objectif_choisi = st.text_input("Objectif de la campagne :", placeholder="Ex : attirer plus de clients, annoncer une promo...", key=f"objectif_contenu_{idx}")
+
+            if st.button("Générer le contenu", key=f"btn_gen_contenu_{idx}"):
+                if not objectif_choisi.strip():
+                    st.warning("Merci de préciser un objectif pour la campagne.")
+                else:
+                    with st.spinner("L'IA génère votre contenu..."):
+                        contenu_genere = generer_contenu_marque(result, type_contenu_choisi, objectif_choisi)
+                    if contenu_genere:
+                        st.session_state[f"contenu_marque_{idx}"] = contenu_genere
+                        st.session_state[f"contenu_marque_type_{idx}"] = type_contenu_choisi
+                        st.rerun()
+                    else:
+                        st.error("Impossible de générer le contenu pour le moment. Réessayez dans quelques secondes.")
+
+            if f"contenu_marque_{idx}" in st.session_state:
+                type_affiche = st.session_state.get(f"contenu_marque_type_{idx}", "")
+                st.markdown("")
+                st.markdown(f"**Résultat — {type_affiche}**")
+                st.code(st.session_state[f"contenu_marque_{idx}"], language=None)
+
+                if st.button("Régénérer", key=f"btn_regen_contenu_{idx}"):
+                    del st.session_state[f"contenu_marque_{idx}"]
                     st.rerun()
 
 # ── ONGLET POTENTIEL DE CROISSANCE ──
