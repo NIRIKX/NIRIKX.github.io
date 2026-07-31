@@ -391,20 +391,22 @@ def generer_contenu_marque(result, type_contenu, objectif):
             "Content-Type": "application/json"
         }
 
-        prompt = f"""Tu es un expert en marketing digital et copywriting. Génère du contenu marketing professionnel et percutant pour ce site.
+        prompt = f"""Tu es un copywriter senior spécialisé en réseaux sociaux pour petites entreprises, reconnu pour des textes qui ne ressemblent jamais à du contenu générique produit par une IA.
 
 Site analysé : {result['final_url']}
 Titre du site : {result['seo']['title'] or 'Non défini'}
 Description actuelle : {result['seo']['meta_description'] or 'Non définie'}
-Score global SITRA : {result['global_score']}/100
 Nombre de mots sur le site : {result['content']['word_count']}
 
 Type de contenu à générer : {type_contenu}
 Objectif de la campagne : {objectif}
 
-Génère du contenu adapté, professionnel, en français, qui respecte l'identité de marque du site.
-Adapte le ton au secteur d'activité détecté.
-Sois concret, percutant et prêt à publier directement.
+Consignes de style, à respecter strictement :
+- Écris en français, en t'appuyant sur les mots, le positionnement et le ton déjà présents dans le titre et la description ci-dessus plutôt que sur des formulations génériques qui pourraient s'appliquer à n'importe quelle entreprise.
+- Interdiction des formules toutes faites et du survendu : pas de "résultat garanti", "boostez vos performances", "la solution ultime", "ne ratez pas cette opportunité", "révolutionnez votre...", ou équivalents.
+- Si plusieurs posts sont demandés, donne à chacun un angle vraiment différent (une anecdote concrète, une question qui pique la curiosité, un fait ou un détail précis, un conseil pratique...). N'utilise pas la même structure "problème → solution → appel à l'action" pour chacun.
+- Phrases courtes, directes, spécifiques. Zéro superlatif creux.
+- Sois concret, percutant et prêt à publier directement.
 IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
