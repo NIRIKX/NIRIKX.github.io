@@ -407,8 +407,7 @@ Consignes de style, à respecter strictement :
 - Si plusieurs posts sont demandés, donne à chacun un angle vraiment différent (une anecdote concrète, une question qui pique la curiosité, un fait ou un détail précis, un conseil pratique...). N'utilise pas la même structure "problème → solution → appel à l'action" pour chacun.
 - Phrases courtes, directes, spécifiques. Zéro superlatif creux.
 - Sois concret, percutant et prêt à publier directement.
-- Termine toujours ta réponse par une section "Pourquoi ça marche ?" (3 à 4 puces courtes) qui explique les choix de ton, d'angle et de message faits ci-dessus.
-IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse, y compris dans la section "Pourquoi ça marche ?". Uniquement du texte."""
+IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
             "Post Instagram": f"{prompt}\n\nRédige 3 posts Instagram différents (150-200 caractères chacun + 5 hashtags pertinents). Format : POST 1 / POST 2 / POST 3",
@@ -452,6 +451,8 @@ BOUTON :
         }
 
         prompt_final = types_prompts.get(type_contenu, prompt)
+        prompt_final += "\n\nRappel impératif, quel que soit le format demandé ci-dessus : ta réponse doit impérativement se terminer par une section intitulée \"Pourquoi ça marche ?\" contenant 3 à 4 puces courtes qui expliquent tes choix de ton et d'angle. N'arrête pas ta réponse avant d'avoir écrit cette section, sans emoji."
+
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt_final}], "max_tokens": 1200}
         r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
         contenu = r.json()["choices"][0]["message"]["content"]
