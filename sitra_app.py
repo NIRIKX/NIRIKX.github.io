@@ -350,6 +350,38 @@ VERSION 2 - Corrections complètes
         return None
 
 # ── CONTENU DE MARQUE IA (inspiré Pomelli) ───────────────────────────────────
+import re
+
+_EMOJI_PATTERN = re.compile(
+    "["
+    "\U0001F1E6-\U0001F1FF"
+    "\U0001F300-\U0001F5FF"
+    "\U0001F600-\U0001F64F"
+    "\U0001F680-\U0001F6FF"
+    "\U0001F700-\U0001F7FF"
+    "\U0001F800-\U0001F8FF"
+    "\U0001F900-\U0001F9FF"
+    "\U0001FA00-\U0001FAFF"
+    "\U00002600-\U000026FF"
+    "\U00002700-\U000027BF"
+    "\U00002B00-\U00002BFF"
+    "\U0000FE0F"
+    "\U0000200D"
+    "\U000020E3"
+    "]+",
+    flags=re.UNICODE,
+)
+
+def enlever_emojis(texte):
+    """Retire tout emoji/pictogramme du texte généré par l'IA et nettoie les espaces laissés"""
+    if not texte:
+        return texte
+    texte = _EMOJI_PATTERN.sub("", texte)
+    texte = re.sub(r"[ \t]+", " ", texte)
+    texte = re.sub(r" +\n", "\n", texte)
+    texte = re.sub(r"\n +", "\n", texte)
+    return texte.strip()
+
 def generer_contenu_marque(result, type_contenu, objectif):
     """Génère du contenu marketing on-brand basé sur l'analyse du site"""
     try:
@@ -372,7 +404,8 @@ Objectif de la campagne : {objectif}
 
 Génère du contenu adapté, professionnel, en français, qui respecte l'identité de marque du site.
 Adapte le ton au secteur d'activité détecté.
-Sois concret, percutant et prêt à publier directement."""
+Sois concret, percutant et prêt à publier directement.
+IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
             "Post Instagram": f"{prompt}\n\nRédige 3 posts Instagram différents (150-200 caractères chacun + 5 hashtags pertinents). Format : POST 1 / POST 2 / POST 3",
@@ -418,7 +451,8 @@ BOUTON :
         prompt_final = types_prompts.get(type_contenu, prompt)
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt_final}], "max_tokens": 800}
         r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
-        return r.json()["choices"][0]["message"]["content"]
+        contenu = r.json()["choices"][0]["message"]["content"]
+        return enlever_emojis(contenu)
     except Exception:
         return None
 
