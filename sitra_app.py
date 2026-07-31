@@ -1619,7 +1619,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             del st.session_state[k]
                     st.rerun()
 
-    # ── ONGLET GÉNÉRATION DE CONTENU ──
+# ── ONGLET GÉNÉRATION DE CONTENU ──
     if show_contenu_marque:
         tab_contenu_idx = tabs_list.index("Génération de contenu")
         with tabs[tab_contenu_idx]:
@@ -1694,9 +1694,6 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 
                 contenu_brut = st.session_state[f"contenu_marque_{idx}"]
                 st.markdown(nettoyer_contenu_ia(contenu_brut))
-
-                with st.expander("Copier le texte brut"):
-                    st.code(contenu_brut, language=None)
 
                 if st.button("Régénérer", key=f"btn_regen_contenu_{idx}"):
                     del st.session_state[f"contenu_marque_{idx}"]
