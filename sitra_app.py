@@ -1981,40 +1981,22 @@ if launch:
     urls_to_analyze = [u for u in [url1, url2] if u and u.strip()]
     if not urls_to_analyze:
         st.warning("Merci d'entrer une URL valide.")
-    elif get_analyses_count() >= 2:
-        show_paywall()
     else:
         results_list = []
         for url in urls_to_analyze:
-            # Cle unique pour cette URL
             cache_key = f"result_cache_{url.strip().lower()}"
 
-            # Reutilise le resultat stocke si l'URL est la meme
             if cache_key in st.session_state:
                 result = st.session_state[cache_key]
             else:
                 with st.spinner(f"Analyse de {url} en cours..."):
                     result = cached_full_analysis(url)
-                # Stocke le resultat - il ne changera plus pour cette URL
                 st.session_state[cache_key] = result
 
             results_list.append(result)
 
         st.session_state["results"] = results_list
         st.session_state["mode_comp"] = mode_comparaison
-        increment_analyses_count()
-
-if "results" in st.session_state:
-    results_list = st.session_state["results"]
-    mode_comp = st.session_state.get("mode_comp", False)
-    if mode_comp and len(results_list) == 2:
-        st.divider()
-        st.markdown("## Comparatif")
-        col_r1, col_r2 = st.columns(2)
-        with col_r1:
-            render_result(results_list[0], idx=0)
-        with col_r2:
-            render_result(results_list[1], idx=1)
 
         # ── ANALYSE DE L'ÉCART ──
         st.divider()
