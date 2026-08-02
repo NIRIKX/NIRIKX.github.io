@@ -593,6 +593,8 @@ def envoyer_rapport_email(email: str, result: dict) -> bool:
     buffer.seek(0)
     return buffer.getvalue()
 
+st.set_page_config(page_title="SITRA | Analyseur de Sites Web", page_icon="🅂", layout="wide", initial_sidebar_state="expanded")
+
 # ── LIMITE ANALYSES ───────────────────────────────────────────────────────────
 def get_analyses_count():
     if "analyses_count" not in st.session_state:
