@@ -189,6 +189,71 @@ BOUTON :
         return None
 
 # ── PDF ───────────────────────────────────────────────────────────────────────
+def generer_pdf(result):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    import io
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
+    styles = getSampleStyleSheet()
+    story = []
+
+    title_style = ParagraphStyle('title', fontSize=22, fontName='Helvetica-Bold', textColor=colors.HexColor('#667eea'), spaceAfter=6)
+    sub_style = ParagraphStyle('sub', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#888888'), spaceAfter=20)
+    heading_style = ParagraphStyle('heading', fontSize=13, fontName='Helvetica-Bold', textColor=colors.HexColor('#222222'), spaceAfter=8, spaceBefore=16)
+    normal_style = ParagraphStyle('normal', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#333333'), spaceAfter=4)
+
+    story.append(Paragraph("SITRA — Rapport d'analyse", title_style))
+    story.append(Paragraph(f"Site : {result['final_url']}", sub_style))
+    story.append(Paragraph(f"Date : {time.strftime('%d/%m/%Y')}", sub_style))
+    story.append(Spacer(1, 0.5*cm))
+
+    story.append(Paragraph("Scores", heading_style))
+    data = [
+        ["Categorie", "Score", "Evaluation"],
+        ["Score Global", f"{result['global_score']}/100", get_score_label(result['global_score'])[0]],
+        ["SEO", f"{result['seo']['score']}/100", get_score_label(result['seo']['score'])[0]],
+        ["UX", f"{result['ux']['score']}/100", get_score_label(result['ux']['score'])[0]],
+        ["Contenu", f"{result['content']['score']}/100", get_score_label(result['content']['score'])[0]],
+        ["Design", f"{result['design']['score']}/100", get_score_label(result['design']['score'])[0]],
+        ["Performance", f"{result['performance']['score']}/100", get_score_label(result['performance']['score'])[0]],
+    ]
+    table = Table(data, colWidths=[6*cm, 4*cm, 5*cm])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#667eea')),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 10),
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.HexColor('#f7f7f7'), colors.white]),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#dddddd')),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+    ]))
+    story.append(table)
+    story.append(Spacer(1, 0.5*cm))
+
+    story.append(Paragraph(f"Problemes detectes ({result['total_issues']})", heading_style))
+    cats = {}
+    for item in result['all_issues']:
+        cats.setdefault(item['category'], []).append(item['message'])
+    for cat, msgs in cats.items():
+        story.append(Paragraph(f"<b>{cat}</b>", normal_style))
+        for msg in msgs:
+            story.append(Paragraph(f"- {msg}", normal_style))
+        story.append(Spacer(1, 0.2*cm))
+
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph("Rapport genere par SITRA — Analyseur Intelligent de Sites Web",
+                           ParagraphStyle('footer', fontSize=8, textColor=colors.HexColor('#aaaaaa'))))
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
 def envoyer_rapport_email(email: str, result: dict) -> bool:
     """Envoie le rapport PDF par email via Resend"""
     try:
@@ -257,71 +322,6 @@ def envoyer_rapport_email(email: str, result: dict) -> bool:
 
     except Exception as e:
         return False
-
-    from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib import colors
-    from reportlab.lib.units import cm
-    import io
-
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
-    styles = getSampleStyleSheet()
-    story = []
-
-    title_style = ParagraphStyle('title', fontSize=22, fontName='Helvetica-Bold', textColor=colors.HexColor('#667eea'), spaceAfter=6)
-    sub_style = ParagraphStyle('sub', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#888888'), spaceAfter=20)
-    heading_style = ParagraphStyle('heading', fontSize=13, fontName='Helvetica-Bold', textColor=colors.HexColor('#222222'), spaceAfter=8, spaceBefore=16)
-    normal_style = ParagraphStyle('normal', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#333333'), spaceAfter=4)
-
-    story.append(Paragraph("SITRA — Rapport d'analyse", title_style))
-    story.append(Paragraph(f"Site : {result['final_url']}", sub_style))
-    story.append(Paragraph(f"Date : {time.strftime('%d/%m/%Y')}", sub_style))
-    story.append(Spacer(1, 0.5*cm))
-
-    story.append(Paragraph("Scores", heading_style))
-    data = [
-        ["Categorie", "Score", "Evaluation"],
-        ["Score Global", f"{result['global_score']}/100", get_score_label(result['global_score'])[0]],
-        ["SEO", f"{result['seo']['score']}/100", get_score_label(result['seo']['score'])[0]],
-        ["UX", f"{result['ux']['score']}/100", get_score_label(result['ux']['score'])[0]],
-        ["Contenu", f"{result['content']['score']}/100", get_score_label(result['content']['score'])[0]],
-        ["Design", f"{result['design']['score']}/100", get_score_label(result['design']['score'])[0]],
-        ["Performance", f"{result['performance']['score']}/100", get_score_label(result['performance']['score'])[0]],
-    ]
-    table = Table(data, colWidths=[6*cm, 4*cm, 5*cm])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#667eea')),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0,0), (-1,-1), 10),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.HexColor('#f7f7f7'), colors.white]),
-        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#dddddd')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-    ]))
-    story.append(table)
-    story.append(Spacer(1, 0.5*cm))
-
-    story.append(Paragraph(f"Problemes detectes ({result['total_issues']})", heading_style))
-    cats = {}
-    for item in result['all_issues']:
-        cats.setdefault(item['category'], []).append(item['message'])
-    for cat, msgs in cats.items():
-        story.append(Paragraph(f"<b>{cat}</b>", normal_style))
-        for msg in msgs:
-            story.append(Paragraph(f"- {msg}", normal_style))
-        story.append(Spacer(1, 0.2*cm))
-
-    story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph("Rapport genere par SITRA — Analyseur Intelligent de Sites Web",
-                           ParagraphStyle('footer', fontSize=8, textColor=colors.HexColor('#aaaaaa'))))
-    doc.build(story)
-    buffer.seek(0)
-    return buffer.getvalue()
-
-st.set_page_config(page_title="SITRA | Analyseur de Sites Web", page_icon="🅂", layout="wide", initial_sidebar_state="expanded")
 
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
