@@ -1697,12 +1697,10 @@ if launch:
             results_list.append(result)
 
         st.session_state["results"] = results_list
-        st.session_state["mode_comp"] = mode_comparaison
 
 if "results" in st.session_state:
     results_list = st.session_state["results"]
-    mode_comp = st.session_state.get("mode_comp", False)
-    if mode_comp and len(results_list) == 2:
+    if mode_comparaison and len(results_list) == 2:
         st.divider()
         st.markdown("## Comparatif")
         col_r1, col_r2 = st.columns(2)
