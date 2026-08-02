@@ -595,35 +595,6 @@ def envoyer_rapport_email(email: str, result: dict) -> bool:
 
 st.set_page_config(page_title="SITRA | Analyseur de Sites Web", page_icon="🅂", layout="wide", initial_sidebar_state="expanded")
 
-# ── LIMITE ANALYSES ───────────────────────────────────────────────────────────
-def get_analyses_count():
-    if "analyses_count" not in st.session_state:
-        st.session_state["analyses_count"] = 0
-    return st.session_state["analyses_count"]
-
-def increment_analyses_count():
-    if "analyses_count" not in st.session_state:
-        st.session_state["analyses_count"] = 0
-    st.session_state["analyses_count"] += 1
-
-def show_paywall():
-    st.markdown("""
-    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #667eea;border-radius:16px;padding:3rem;text-align:center;margin:2rem 0">
-        <div style="font-size:2rem;font-weight:800;background:linear-gradient(135deg,#667eea,#f07cf7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem">
-            Vous avez utilisé vos 2 analyses gratuites
-        </div>
-        <p style="color:#aaa;font-size:1rem;margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto">
-            Pour continuer à analyser vos sites et accéder aux recommandations IA, à l'export PDF et à l'analyse concurrentielle, passez au plan Pro.
-        </p>
-        <a href="https://yanisaidoune1-sudo.github.io/mon-audit-seo#pricing" target="_blank"
-           style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:1rem 2.5rem;border-radius:12px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block">
-            Voir les offres
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.set_page_config(page_title="SITRA | Analyseur de Sites Web", page_icon="🅂", layout="wide", initial_sidebar_state="expanded")
-
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
     st.markdown("### Menu")
@@ -1999,6 +1970,18 @@ if launch:
 
         st.session_state["results"] = results_list
         st.session_state["mode_comp"] = mode_comparaison
+
+if "results" in st.session_state:
+    results_list = st.session_state["results"]
+    mode_comp = st.session_state.get("mode_comp", False)
+    if mode_comp and len(results_list) == 2:
+        st.divider()
+        st.markdown("## Comparatif")
+        col_r1, col_r2 = st.columns(2)
+        with col_r1:
+            render_result(results_list[0], idx=0)
+        with col_r2:
+            render_result(results_list[1], idx=1)
 
         # ── ANALYSE DE L'ÉCART ──
         st.divider()
