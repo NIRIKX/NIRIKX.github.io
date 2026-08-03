@@ -375,7 +375,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400;500;600;700;800&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-.stMainBlockContainer, [data-testid="stMainBlockContainer"], .main .block-container { padding-top: 2rem; padding-bottom: 4rem; max-width: 80% !important; }
+.stMainBlockContainer, [data-testid="stMainBlockContainer"], .main .block-container { padding-top: 2rem; padding-bottom: 4rem; max-width: 90% !important; }
 [data-testid="stSidebar"] { background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%); }
 [data-testid="stSidebar"] * { color: #e0e0e0 !important; }
 /* Supprime le rideau transparent de Streamlit */
