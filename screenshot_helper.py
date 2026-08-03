@@ -331,7 +331,8 @@ def _microlink_screenshot(url: str, element=None):
 
         params = {"url": url, "screenshot": "true", "meta": "false"}
         if element:
-            params["screenshot.element"] = element
+            # Microlink attend un seul sélecteur CSS — on garde seulement le premier
+            params["screenshot.element"] = element.split(",")[0].strip()
 
         r = req.get("https://api.microlink.io", params=params, headers=headers, timeout=20)
         if r.status_code != 200:
