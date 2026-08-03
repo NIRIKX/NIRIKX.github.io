@@ -940,20 +940,22 @@ def render_result(result, idx=0):
                 else:
                     # Vraie capture Playwright ou Microlink
                     img_data = None
+                    was_targeted = False
                     try:
                         from playwright_capture import get_screenshot_with_highlight
-                        img_data, _ = get_screenshot_with_highlight(url_site, e["selector"])
+                        img_data, was_targeted = get_screenshot_with_highlight(url_site, e["selector"])
                     except Exception:
                         pass
                     if not img_data:
                         try:
-                            img_data, _ = get_screenshot_zone(url_site, e["selector"])
+                            img_data, was_targeted = get_screenshot_zone(url_site, e["selector"])
                         except Exception:
                             pass
                     if img_data:
+                        label_capture = "Erreur ici" if was_targeted else "Aperçu du site"
                         avant_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{av_c});margin-bottom:8px;height:90px;position:relative">
 <img src="{img_data}" style="width:100%;height:90px;object-fit:cover;object-position:top"/>
-<div style="position:absolute;top:6px;left:6px;background:var(--color-background-{av_c});color:var(--color-text-{av_c});font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-{av_c})">Erreur ici</div>
+<div style="position:absolute;top:6px;left:6px;background:var(--color-background-{av_c});color:var(--color-text-{av_c});font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-{av_c})">{label_capture}</div>
 </div>'''
                         apres_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{ap_c});margin-bottom:8px;height:90px;position:relative">
 <img src="{img_data}" style="width:100%;height:90px;object-fit:cover;object-position:top;filter:brightness(0.45) saturate(0.3)"/>
