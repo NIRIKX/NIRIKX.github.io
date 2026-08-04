@@ -78,22 +78,30 @@ def get_screenshot_with_highlight(url: str, selector: str = None):
                 browser.close()
                 return None, False
 
-            # Masque aussi via CSS les elements qui restent
+            # Essaie de fermer une banniere de consentement cookies generique.
+            # Beaucoup de sites l'integrent directement (pas via un service tiers
+            # bloquable par nom de domaine), donc on tente de cliquer sur un
+            # bouton "Accepter" quel que soit le site, plutot que de deviner
+            # au cas par cas
             try:
-                page.add_style_tag(content="""
-                    [class*="zenchef"], [id*="zenchef"],
-                    [class*="widget"], [class*="popup"],
-                    [class*="modal"]:not(nav), [class*="overlay"],
-                    [class*="cookie"], [id*="cookie"],
-                    [class*="chat"], [id*="chat"],
-                    [class*="intercom"], [id*="intercom"],
-                    iframe[src*="zenchef"], iframe[src*="booking"],
-                    iframe[src*="widget"] {
-                        display: none !important;
-                        visibility: hidden !important;
-                    }
-                """)
-                page.wait_for_timeout(300)
+                boutons_possibles = [
+                    "button:has-text('Accepter')",
+                    "button:has-text('Accept')",
+                    "button:has-text(\"J'accepte\")",
+                    "button:has-text('Tout accepter')",
+                    "a:has-text('Accepter')",
+                    "[id*='accept' i]",
+                    "[class*='accept' i]",
+                ]
+                for sel_bouton in boutons_possibles:
+                    try:
+                        bouton = page.query_selector(sel_bouton)
+                        if bouton and bouton.is_visible():
+                            bouton.click(timeout=2000)
+                            page.wait_for_timeout(400)
+                            break
+                    except Exception:
+                        continue
             except Exception:
                 pass
 
