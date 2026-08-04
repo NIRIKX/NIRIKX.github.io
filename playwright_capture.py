@@ -141,6 +141,37 @@ def get_screenshot_with_highlight(url: str, selector: str = None):
                             page.wait_for_timeout(400)
                             bbox = best[0].bounding_box()
                             was_targeted = True
+                        else:
+                            # Aucune vraie balise <img> trouvee : beaucoup de sites
+                            # utilisent une image de fond CSS (background-image) pour
+                            # les grandes bannieres/photos d'illustration
+                            try:
+                                zone = page.evaluate("""
+                                    () => {
+                                        let best = null, bestArea = 0;
+                                        document.querySelectorAll('*').forEach(el => {
+                                            const style = getComputedStyle(el);
+                                            if (style.backgroundImage && style.backgroundImage !== 'none') {
+                                                const r = el.getBoundingClientRect();
+                                                if (r.width > 150 && r.height > 100) {
+                                                    const area = r.width * r.height;
+                                                    if (area > bestArea) {
+                                                        bestArea = area;
+                                                        best = {x: r.x, y: r.y, width: r.width, height: r.height};
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        return best;
+                                    }
+                                """)
+                                if zone:
+                                    page.evaluate(f"window.scrollTo(0, Math.max(0, {zone['y']} - 100))")
+                                    page.wait_for_timeout(300)
+                                    bbox = zone
+                                    was_targeted = True
+                            except Exception:
+                                pass
                     except Exception:
                         pass
                 else:
