@@ -8,10 +8,31 @@ import io
 import base64
 import streamlit as st
 
+@st.cache_resource(show_spinner=False)
+def _ensure_playwright_browser():
+    """Télécharge le navigateur Chromium de Playwright s'il n'est pas déjà présent.
+    Streamlit Cloud installe bien le paquet Python 'playwright' (via requirements.txt)
+    mais ne lance jamais 'playwright install' — sans ça, le navigateur lui-même
+    n'existe pas et chaque appel échoue silencieusement. Grâce à @st.cache_resource,
+    ce téléchargement ne se fait qu'une seule fois par session de l'app, pas à
+    chaque analyse."""
+    import subprocess
+    import sys
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "playwright", "install", "chromium"],
+            check=True,
+            capture_output=True,
+            timeout=180,
+        )
+        return True
+    except Exception:
+        return False
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_screenshot_with_highlight(url: str, selector: str = None):
     try:
+        _ensure_playwright_browser()
         from playwright.sync_api import sync_playwright
         import PIL.Image
         import PIL.ImageDraw
