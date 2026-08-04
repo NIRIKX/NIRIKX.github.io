@@ -185,7 +185,18 @@ def get_screenshot_with_highlight(url: str, selector: str = None):
             tri = 22
             tx2, ty2 = min(img_w-1, x1+tri), min(img_h-1, y1+tri)
             if tx2 > x1 and ty2 > y1:
-                draw.polygon([(x1, y1), (tx2, y1), (x1, ty2)], fill=(220, 53, 69))
+                draw.polygon([(x1, y1), (tx2, y1), (x1, ty2)], fill=(220, 53, 69)) 
+
+            # Recadre autour de la zone ciblee — sinon la vignette (90px de haut,
+            # cote SITRA) ne montre que le tout haut de la capture entiere,
+            # et le cadre rouge peut se retrouver hors champ
+            marge = 120
+            crop_x1 = max(0, x1 - marge)
+            crop_y1 = max(0, y1 - marge)
+            crop_x2 = min(img_w, x2 + marge)
+            crop_y2 = min(img_h, y2 + marge)
+            if crop_x2 > crop_x1 and crop_y2 > crop_y1:
+                img = img.crop((crop_x1, crop_y1, crop_x2, crop_y2))
 
         buf = io.BytesIO()
         img.save(buf, format="PNG", optimize=True)
