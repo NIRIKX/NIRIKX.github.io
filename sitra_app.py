@@ -953,9 +953,14 @@ def render_result(result, idx=0):
                             pass
                     if img_data:
                         label_capture = "Erreur ici" if was_targeted else "Aperçu du site"
-                        avant_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{av_c});margin-bottom:8px;height:90px;position:relative">
+                        modal_id = f"modal_zoom_{n}"
+                        avant_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{av_c});margin-bottom:8px;height:90px;position:relative;cursor:zoom-in" onclick="document.getElementById('{modal_id}').style.display='flex'">
 <img src="{img_data}" style="width:100%;height:90px;object-fit:cover;object-position:top"/>
 <div style="position:absolute;top:6px;left:6px;background:var(--color-background-{av_c});color:var(--color-text-{av_c});font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-{av_c})">{label_capture}</div>
+<div style="position:absolute;bottom:4px;right:6px;background:rgba(0,0,0,0.6);color:white;font-size:9px;padding:2px 6px;border-radius:8px">Zoomer</div>
+</div>
+<div id="{modal_id}" onclick="this.style.display='none'" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);cursor:zoom-out;align-items:center;justify-content:center;padding:20px">
+<img src="{img_data}" style="max-width:95%;max-height:95%;border:3px solid var(--color-border-{av_c});border-radius:8px"/>
 </div>'''
                         apres_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{ap_c});margin-bottom:8px;height:90px;position:relative">
 <img src="{img_data}" style="width:100%;height:90px;object-fit:cover;object-position:top;filter:brightness(0.45) saturate(0.3)"/>
