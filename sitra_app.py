@@ -835,24 +835,6 @@ def render_result(result, idx=0):
                     "use_icon": True
                 })
 
-            if seo["images_no_alt"] > 0:
-                erreurs.append({
-                    "niveau": "important",
-                    "icone": "ti-photo-x",
-                    "titre": str(seo["images_no_alt"]) + " photo(s) sans description",
-                    "avant_icone": "ti-photo-x",
-                    "avant_label": str(seo["images_no_alt"]) + " photo(s) invisibles pour Google",
-                    "avant_couleur": "warning",
-                    "avant_texte": "Google voit ces photos mais ne sait pas ce qu'elles montrent — impossible de les trouver dans Google Images.",
-                    "apres_icone": "ti-photo-check",
-                    "apres_label": "Photos decrites et indexees",
-                    "apres_couleur": "success",
-                    "apres_texte": "Chaque photo est comprise par Google et peut apparaitre dans Google Images — plus de visibilite pour " + nom_site + ".",
-                    "conseil": "Pour chaque photo, ajoutez une courte description dans le code (attribut alt). Ex : 'Salle de " + nom_site + "'.",
-                    "selector": "img:not([alt]):first-of-type, img[alt='']:first-of-type",
-                    "use_icon": False
-                })
-
             if rt > 2:
                 erreurs.append({
                     "niveau": "important",
@@ -887,6 +869,24 @@ def render_result(result, idx=0):
                     "conseil": "Creez un menu avec 5 liens maximum : Accueil, Services, A propos, Contact.",
                     "selector": "nav:first-of-type",
                     "use_icon": True
+                })
+
+            if seo["images_no_alt"] > 0:
+                erreurs.append({
+                    "niveau": "important",
+                    "icone": "ti-photo-x",
+                    "titre": str(seo["images_no_alt"]) + " photo(s) sans description",
+                    "avant_icone": "ti-photo-x",
+                    "avant_label": str(seo["images_no_alt"]) + " photo(s) invisibles pour Google",
+                    "avant_couleur": "warning",
+                    "avant_texte": "Google voit ces photos mais ne sait pas ce qu'elles montrent — impossible de les trouver dans Google Images.",
+                    "apres_icone": "ti-photo-check",
+                    "apres_label": "Photos decrites et indexees",
+                    "apres_couleur": "success",
+                    "apres_texte": "Chaque photo est comprise par Google et peut apparaitre dans Google Images — plus de visibilite pour " + nom_site + ".",
+                    "conseil": "Pour chaque photo, ajoutez une courte description dans le code (attribut alt). Ex : 'Salle de " + nom_site + "'.",
+                    "selector": "img:not([alt]):first-of-type, img[alt='']:first-of-type",
+                    "use_icon": False
                 })
 
             if not design["has_og_tags"]:
