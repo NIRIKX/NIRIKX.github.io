@@ -249,7 +249,7 @@ def analyze_seo(soup: BeautifulSoup, url: str) -> dict:
 
     # Images sans alt
     images = soup.find_all("img")
-    images_no_alt = [img for img in images if not img.get("alt", "").strip()]
+    images_no_alt = [img for img in images if img.get("alt") is None]
     if images_no_alt:
         pct = int(len(images_no_alt) / max(len(images), 1) * 100)
         issues.append(f"⚠️ {len(images_no_alt)}/{len(images)} images sans attribut alt ({pct}%) — Google ne peut pas les indexer")
