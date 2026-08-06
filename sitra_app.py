@@ -666,8 +666,12 @@ def render_result(result, idx=0):
             surcharge_items = []
             conseils = []
             if result["ux"]["nav_links_count"] > 7:
-                surcharge_items.append(f"Menu surchargé : {result['ux']['nav_links_count']} liens")
-                conseils.append("Réduisez à 5-7 liens maximum — gardez les pages les plus importantes")
+                nb_liens = result["ux"]["nav_links_count"]
+                surcharge_items.append(f"Menu surchargé : {nb_liens} liens")
+                if nb_liens > 15:
+                    conseils.append("Réduisez à 3-5 liens maximum — votre menu est très surchargé, gardez uniquement l'essentiel")
+                else:
+                    conseils.append("Réduisez à 5-7 liens maximum — gardez les pages les plus importantes")
             if result["performance"]["html_size_kb"] > 200:
                 surcharge_items.append(f"Page trop lourde : {result['performance']['html_size_kb']} KB")
                 conseils.append("Supprimez les éléments inutilisés — chaque KB en moins accélère votre site")
