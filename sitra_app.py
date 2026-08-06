@@ -885,8 +885,8 @@ def render_result(result, idx=0):
                     "apres_couleur": "success",
                     "apres_texte": "Chaque photo est comprise par Google et peut apparaitre dans Google Images — plus de visibilite pour " + nom_site + ".",
                     "conseil": "Pour chaque photo, ajoutez une courte description dans le code (attribut alt). Ex : 'Salle de " + nom_site + "'.",
-                    "selector": "img:not([alt]):first-of-type, img[alt='']:first-of-type",
-                    "use_icon": False
+                    "selector": "img:not([alt]):first-of-type",
+                    "use_icon": True
                 })
 
             if not design["has_og_tags"]:
