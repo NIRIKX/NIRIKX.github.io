@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SITRA — Comment améliorer votre site web</title>
-<meta name="description" content="SITRA analyse votre site et vous dit exactement quoi améliorer pour attirer plus de clients.">
-<meta property="og:title" content="SITRA — Comment améliorer votre site web" />
+<title>NIRIKX — Comment améliorer votre site web</title>
+<meta name="description" content="NIRIKX analyse votre site et vous dit exactement quoi améliorer pour attirer plus de clients.">
+<meta property="og:title" content="NIRIKX — Comment améliorer votre site web" />
 <meta property="og:description" content="Analyse, correction automatique, visibilité et sécurité pour votre site web." />
 <meta property="og:image" content="https://yanisaidoune1-sudo.github.io/mon-audit-seo/favicon.svg" />
-<!-- FAVICON : votre SVG depuis le fichier ODT — fond dégradé bleu→violet + S blanc -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea%3Bstop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2%3Bstop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Ctext x='50' y='72' font-family='Arial Black%2Csans-serif' font-size='65' font-weight='900' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<!-- FAVICON : fond dégradé bleu→violet + N blanc -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea%3Bstop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2%3Bstop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Ctext x='50' y='72' font-family='Arial Black%2Csans-serif' font-size='65' font-weight='900' fill='white' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,25 +21,6 @@
   #intro-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:#04040a; display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:1.5rem; }
   .intro-glow { position:absolute; width:400px; height:400px; background:radial-gradient(ellipse,rgba(124,106,247,0.2) 0%,transparent 70%); border-radius:50%; animation:pulse-glow 2s ease-in-out infinite alternate; }
   @keyframes pulse-glow { from{transform:scale(0.9);opacity:0.4} to{transform:scale(1.1);opacity:0.9} }
-
-  /* S — style Arial Black gras comme la photo, dégradé violet→rose */
-  #s-letter {
-    position:relative; z-index:3;
-    font-family:'Arial Black','Impact',sans-serif;
-    font-size:clamp(9rem,26vw,16rem);
-    font-weight:900;
-    line-height:1;
-    background:linear-gradient(160deg,#7c6af7 0%,#b570f5 45%,#f07cf7 100%);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-    filter:drop-shadow(0 0 28px rgba(124,106,247,0.8));
-    opacity:0;
-    animation:s-in 0.55s cubic-bezier(0.22,1,0.36,1) forwards 0.15s;
-  }
-  @keyframes s-in {
-    0%  { opacity:0; transform:scale(0.8) translateY(16px); }
-    65% { opacity:1; transform:scale(1.05) translateY(-3px); }
-    100%{ opacity:1; transform:scale(1) translateY(0); }
-  }
   @keyframes spin { to{transform:rotate(360deg)} }
 
   /* ── NAV ── */
@@ -153,44 +134,17 @@
 </head>
 <body>
 
-<!-- INTRO — S centré, se trace, se remplit, glisse gauche, ITRA apparaissent, explosion -->
+<!-- INTRO — NIRIKX apparait en fondu + zoom, puis explosion de particules -->
 <div id="intro-screen">
   <div class="intro-glow"></div>
   <canvas id="particle-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;display:none"></canvas>
-  <div id="sitra-wrap" style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:100%;transition:all 0.8s cubic-bezier(0.16,1,0.3,1);">
-    <svg id="s-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" style="width:150px;height:165px;flex-shrink:0;overflow:visible;transition:transform 1.1s cubic-bezier(0.16,1,0.3,1);">
-      <defs>
-        <linearGradient id="grad-s" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#7c6af7"/>
-          <stop offset="100%" style="stop-color:#f07cf7"/>
-        </linearGradient>
-      </defs>
-      <text id="s-fill" x="100" y="185" font-family="'Arial Black',Impact,sans-serif" font-size="210" font-weight="900" text-anchor="middle" fill="url(#grad-s)" style="opacity:0">S</text>
-      <text id="s-stroke" x="100" y="185" font-family="'Arial Black',Impact,sans-serif" font-size="210" font-weight="900" text-anchor="middle" fill="none" stroke="url(#grad-s)" stroke-width="2">S</text>
-    </svg>
-    <div id="itra-wrap" style="display:flex;align-items:center;height:165px;opacity:0;overflow:visible;">
-      <span class="il">I</span><span class="il" style="animation-delay:.15s">T</span><span class="il" style="animation-delay:.28s">R</span><span class="il" style="animation-delay:.42s">A</span>
-    </div>
+  <div id="sitra-wrap" style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:100%;">
+    <div id="nirikx-title" style="font-family:'Arial Black',Impact,sans-serif;font-size:clamp(5rem,14vw,8.5rem);font-weight:900;line-height:1;letter-spacing:0.04em;background:linear-gradient(160deg,#7c6af7 0%,#b570f5 45%,#f07cf7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(124,106,247,0.8));opacity:0;transform:scale(0.85) translateY(16px);">NIRIKX</div>
   </div>
 </div>
-<style>
-.il {
-  font-family:'Arial Black',Impact,sans-serif;
-  font-size:clamp(6rem,16vw,9.5rem);
-  font-weight:900;line-height:1;
-  background:linear-gradient(160deg,#7c6af7 0%,#b570f5 50%,#f07cf7 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  opacity:0;display:inline-block;
-}
-@keyframes letter-in{
-  0%  {opacity:0; transform:translateX(30px);}
-  50% {opacity:1;}
-  100%{opacity:1; transform:translateX(0);}
-}
-</style>
 
 <nav>
-  <div class="nav-logo">SITRA</div>
+  <div class="nav-logo">NIRIKX</div>
   <div class="nav-links">
     <a href="#features">Fonctionnalités</a>
     <a href="#pricing">Forfaits</a>
@@ -202,12 +156,12 @@
 <section class="hero" id="top">
   <div class="hero-badge">Analyse gratuite — Résultats en temps réel</div>
   <h1 class="hero-title">Comment améliorer<br><span>votre site web ?</span></h1>
-  <p class="hero-sub">SITRA analyse votre site et vous dit exactement quoi améliorer pour attirer plus de clients — analyse, correction, visibilité, sécurité.</p>
+  <p class="hero-sub">NIRIKX analyse votre site et vous dit exactement quoi améliorer pour attirer plus de clients — analyse, correction, visibilité, sécurité.</p>
   <div class="hero-actions">
     <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="btn-primary" target="_blank">Analyser mon site</a>
     <a href="#pricing" class="btn-secondary">Voir les forfaits</a>
   </div>
-  <div class="views-badge">👁️ <span id="view-count">...</span> personnes ont déjà utilisé SITRA</div>
+  <div class="views-badge">👁️ <span id="view-count">...</span> personnes ont déjà utilisé NIRIKX</div>
 </section>
 
 <div class="separator-bar">
@@ -232,15 +186,15 @@
 </div>
 
 <section class="section" id="features">
-  <div class="section-label">Ce que SITRA analyse</div>
+  <div class="section-label">Ce que NIRIKX analyse</div>
   <h2 class="section-title reveal">Tout ce qui compte pour votre site</h2>
   <div class="features-grid">
-    <div class="feature-card reveal"><div class="feature-num">01</div><div class="feature-title">Boostez votre position sur Google</div><div class="feature-desc">SITRA vérifie tout ce que Google regarde pour vous classer et vous dit exactement quoi améliorer.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">02</div><div class="feature-title">Une expérience agréable pour vos visiteurs</div><div class="feature-desc">Menu, boutons, contact — votre site est-il facile à utiliser ? SITRA détecte ce qui bloque vos visiteurs.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">03</div><div class="feature-title">Un site rapide qui ne fait pas fuir</div><div class="feature-desc">53% des visiteurs partent si votre site met plus de 3 secondes à charger. SITRA mesure et corrige.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">01</div><div class="feature-title">Boostez votre position sur Google</div><div class="feature-desc">NIRIKX vérifie tout ce que Google regarde pour vous classer et vous dit exactement quoi améliorer.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">02</div><div class="feature-title">Une expérience agréable pour vos visiteurs</div><div class="feature-desc">Menu, boutons, contact — votre site est-il facile à utiliser ? NIRIKX détecte ce qui bloque vos visiteurs.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">03</div><div class="feature-title">Un site rapide qui ne fait pas fuir</div><div class="feature-desc">53% des visiteurs partent si votre site met plus de 3 secondes à charger. NIRIKX mesure et corrige.</div></div>
     <div class="feature-card reveal"><div class="feature-num">04</div><div class="feature-title">Une belle première impression</div><div class="feature-desc">Polices, couleurs, aperçu sur les réseaux sociaux — votre site inspire-t-il confiance ?</div></div>
-    <div class="feature-card reveal"><div class="feature-num">05</div><div class="feature-title">Comparez aux références de votre secteur</div><div class="feature-desc">SITRA détecte votre secteur et compare votre site aux meilleurs acteurs de votre domaine.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">06</div><div class="feature-title">Génération de contenu pour votre marque</div><div class="feature-desc">SITRA génère automatiquement des emails et contenus marketing adaptés à votre identité de marque, prêts à envoyer.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">05</div><div class="feature-title">Comparez aux références de votre secteur</div><div class="feature-desc">NIRIKX détecte votre secteur et compare votre site aux meilleurs acteurs de votre domaine.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">06</div><div class="feature-title">Génération de contenu pour votre marque</div><div class="feature-desc">NIRIKX génère automatiquement des emails et contenus marketing adaptés à votre identité de marque, prêts à envoyer.</div></div>
   </div>
 </section>
 
@@ -250,9 +204,9 @@
     <h2 class="section-title reveal">Simple. Rapide. Efficace.</h2>
     <div class="steps">
       <div class="step reveal"><div class="step-number">01</div><div class="step-title">Entrez votre URL</div><div class="step-desc">Collez l'adresse de votre site et lancez l'analyse.</div></div>
-      <div class="step reveal"><div class="step-number">02</div><div class="step-title">Analyse en temps réel</div><div class="step-desc">SITRA visite votre site et vérifie tous les points essentiels en quelques secondes.</div></div>
+      <div class="step reveal"><div class="step-number">02</div><div class="step-title">Analyse en temps réel</div><div class="step-desc">NIRIKX visite votre site et vérifie tous les points essentiels en quelques secondes.</div></div>
       <div class="step reveal"><div class="step-number">03</div><div class="step-title">Rapport clair</div><div class="step-desc">Score par catégorie et liste des problèmes expliqués simplement.</div></div>
-      <div class="step reveal"><div class="step-number">04</div><div class="step-title">Propositions de corrections</div><div class="step-desc">SITRA propose 2 versions de corrections adaptées à votre site.</div></div>
+      <div class="step reveal"><div class="step-number">04</div><div class="step-title">Propositions de corrections</div><div class="step-desc">NIRIKX propose 2 versions de corrections adaptées à votre site.</div></div>
     </div>
   </div>
 </section>
@@ -330,14 +284,14 @@
       L'assistant analyse votre message...
     </div>
     <div id="contact-ai-response" style="display:none;margin-top:1.5rem;background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.3);border-radius:12px;padding:1.2rem">
-      <div style="color:#a090f7;font-weight:600;font-size:0.85rem;margin-bottom:0.6rem">Réponse de l'assistant SITRA</div>
+      <div style="color:#a090f7;font-weight:600;font-size:0.85rem;margin-bottom:0.6rem">Réponse de l'assistant NIRIKX</div>
       <div id="ai-response-text" style="color:#e8e8f0;font-size:0.9rem;line-height:1.6"></div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="footer-logo">SITRA</div>
+  <div class="footer-logo">NIRIKX</div>
   <div class="footer-text">Analyseur intelligent de sites web — Données réelles, recommandations précises</div>
 </footer>
 
@@ -357,58 +311,27 @@
   }
   updateViews();
 
-  // Intro : S centré → tracé → rempli → glisse gauche + ITRA → explosion
+  // Intro : NIRIKX apparait en fondu + zoom, puis explosion de particules
   document.body.style.overflow = 'hidden';
-  const sStroke = document.getElementById('s-stroke');
-  const sFill   = document.getElementById('s-fill');
+  const titleEl = document.getElementById('nirikx-title');
   const sWrap   = document.getElementById('sitra-wrap');
-  const itraWrap= document.getElementById('itra-wrap');
   const canvas  = document.getElementById('particle-canvas');
   const ctx2    = canvas.getContext('2d');
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const sLen = sStroke.getTotalLength ? sStroke.getTotalLength() : 1400;
-  sStroke.style.strokeDasharray  = sLen;
-  sStroke.style.strokeDashoffset = sLen;
-
-  // ÉTAPE 1 — S se trace lentement et avec douceur (2s)
+  // ÉTAPE 1 — le nom apparait en fondu avec un léger zoom
   setTimeout(() => {
-    sStroke.style.transition = 'stroke-dashoffset 2s cubic-bezier(0.25,0.1,0.25,1)';
-    sStroke.style.strokeDashoffset = '0';
+    titleEl.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.22,1,0.36,1)';
+    titleEl.style.opacity = '1';
+    titleEl.style.transform = 'scale(1) translateY(0)';
   }, 300);
 
-  // ÉTAPE 2 — couleur apparaît doucement en fondu
-  setTimeout(() => {
-    sFill.style.transition = 'opacity 0.8s ease-in-out';
-    sFill.style.opacity = '1';
-    sStroke.style.transition = 'opacity 0.6s ease-in-out';
-    sStroke.style.opacity = '0';
-  }, 2400);
-
-  // ÉTAPE 3 — S glisse vers la gauche, ITRA arrivent depuis la droite
-  setTimeout(() => {
-    // Le wrapper passe en flex-start pour que le S parte à gauche
-    sWrap.style.transition = 'justify-content 0s';
-    sWrap.style.justifyContent = 'center';
-
-    // Le S se décale vers la gauche via margin
-    const sSvgEl = document.getElementById('s-svg');
-    sSvgEl.style.transition = 'margin-right 1.1s cubic-bezier(0.16,1,0.3,1)';
-    sSvgEl.style.marginRight = '0px';
-
-    // ITRA apparaissent lettre par lettre depuis la droite
-    itraWrap.style.opacity = '1';
-    document.querySelectorAll('.il').forEach((el, i) => {
-      el.style.animation = `letter-in 1.0s cubic-bezier(0.16,1,0.3,1) forwards ${i * 0.16}s`;
-    });
-  }, 3300);
-
-  // ÉTAPE 4 — léger souffle avant explosion
+  // ÉTAPE 2 — léger souffle avant explosion
   setTimeout(() => {
     sWrap.style.transition = 'transform 0.5s cubic-bezier(0.34,1.2,0.64,1)';
     sWrap.style.transform = 'scale(1.06)';
-  }, 4400);
+  }, 2200);
 
   class Particle {
     constructor(x,y){
@@ -455,13 +378,13 @@
     sWrap.style.opacity='0';
     document.querySelector('.intro-glow').style.transition='opacity 0.5s ease';
     document.querySelector('.intro-glow').style.opacity='0';
-  },4900);
+  },2700);
   setTimeout(()=>{
     const intro=document.getElementById('intro-screen');
     intro.style.transition='opacity 0.6s ease';intro.style.opacity='0';
     document.body.style.overflow='';
     setTimeout(()=>intro.remove(),600);
-  },5600);
+  },3400);
 
   // Contact IA — réponse immédiate + email admin via Resend
   async function sendContactAI(){
@@ -478,14 +401,14 @@
     err.style.display='none'; resp.style.display='none';
     loading.style.display='block'; btn.disabled=true; btn.style.opacity='0.6';
 
-    let aiReply="Merci pour votre message ! Notre équipe SITRA vous répondra dans les plus brefs délais.";
+    let aiReply="Merci pour votre message ! Notre équipe NIRIKX vous répondra dans les plus brefs délais.";
     try{
       const r=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           model:'claude-sonnet-4-20250514', max_tokens:300,
-          messages:[{role:'user',content:`Tu es l'assistant de SITRA, un outil d'analyse et d'optimisation de sites web. Réponds à ce message client en français, de façon professionnelle et utile. Maximum 3 phrases.\n\nNom: ${nom}\nMessage: ${msg}`}]
+          messages:[{role:'user',content:`Tu es l'assistant de NIRIKX, un outil d'analyse et d'optimisation de sites web. Réponds à ce message client en français, de façon professionnelle et utile. Maximum 3 phrases.\n\nNom: ${nom}\nMessage: ${msg}`}]
         })
       });
       const d=await r.json();
@@ -503,10 +426,10 @@
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer YOUR_RESEND_KEY'},
         body:JSON.stringify({
-          from:'SITRA Contact <onboarding@resend.dev>',
+          from:'NIRIKX Contact <onboarding@resend.dev>',
           to:['yanisaidoune1@gmail.com'],
-          subject:`[SITRA Contact] ${nom} — ${email}`,
-          html:`<h2>Nouveau message SITRA</h2><p><b>Nom :</b> ${nom}</p><p><b>Email :</b> ${email}</p><p><b>Message :</b><br>${msg.replace(/\n/g,'<br>')}</p><hr><p><b>Réponse IA envoyée :</b><br>${aiReply}</p>`
+          subject:`[NIRIKX Contact] ${nom} — ${email}`,
+          html:`<h2>Nouveau message NIRIKX</h2><p><b>Nom :</b> ${nom}</p><p><b>Email :</b> ${email}</p><p><b>Message :</b><br>${msg.replace(/\n/g,'<br>')}</p><hr><p><b>Réponse IA envoyée :</b><br>${aiReply}</p>`
         })
       });
     }catch(e){}
