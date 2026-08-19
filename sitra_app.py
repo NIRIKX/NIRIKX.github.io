@@ -59,17 +59,17 @@ Pour chaque version, liste en 4-5 points simples ce qui sera corrigé, expliqué
 
 Format exact :
 VERSION 1 - Corrections essentielles
-• [point 1]
-• [point 2]
-• [point 3]
-• [point 4]
+- [point 1]
+- [point 2]
+- [point 3]
+- [point 4]
 
 VERSION 2 - Corrections complètes
-• [point 1]
-• [point 2]
-• [point 3]
-• [point 4]
-• [point 5]"""
+- [point 1]
+- [point 2]
+- [point 3]
+- [point 4]
+- [point 5]"""
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400}
         r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers_m, json=data, timeout=30)
@@ -207,7 +207,7 @@ def generer_pdf(result):
     heading_style = ParagraphStyle('heading', fontSize=13, fontName='Helvetica-Bold', textColor=colors.HexColor('#222222'), spaceAfter=8, spaceBefore=16)
     normal_style = ParagraphStyle('normal', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#333333'), spaceAfter=4)
 
-    story.append(Paragraph("SITRA — Rapport d'analyse", title_style))
+    story.append(Paragraph("NIRIKX — Rapport d'analyse", title_style))
     story.append(Paragraph(f"Site : {result['final_url']}", sub_style))
     story.append(Paragraph(f"Date : {time.strftime('%d/%m/%Y')}", sub_style))
     story.append(Spacer(1, 0.5*cm))
@@ -247,7 +247,7 @@ def generer_pdf(result):
         story.append(Spacer(1, 0.2*cm))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph("Rapport genere par SITRA — Analyseur Intelligent de Sites Web",
+    story.append(Paragraph("Rapport genere par NIRIKX — Analyseur Intelligent de Sites Web",
                            ParagraphStyle('footer', fontSize=8, textColor=colors.HexColor('#aaaaaa'))))
     doc.build(story)
     buffer.seek(0)
@@ -270,7 +270,7 @@ def envoyer_rapport_email(email: str, result: dict) -> bool:
         html_content = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 2rem; text-align: center; border-radius: 12px 12px 0 0;">
-                <h1 style="color: white; margin: 0; font-size: 2rem;">SITRA</h1>
+                <h1 style="color: white; margin: 0; font-size: 2rem;">NIRIKX</h1>
                 <p style="color: rgba(255,255,255,0.8); margin: 0.5rem 0 0;">Rapport d'analyse de site web</p>
             </div>
             <div style="background: #f7f7f7; padding: 2rem; border-radius: 0 0 12px 12px;">
@@ -296,18 +296,18 @@ def envoyer_rapport_email(email: str, result: dict) -> bool:
                     <a href="https://mon-audit-seo.streamlit.app" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.8rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold;">Relancer une analyse</a>
                 </div>
             </div>
-            <p style="text-align: center; color: #aaa; font-size: 0.8rem; margin-top: 1rem;">SITRA — Analyseur Intelligent de Sites Web</p>
+            <p style="text-align: center; color: #aaa; font-size: 0.8rem; margin-top: 1rem;">NIRIKX — Analyseur Intelligent de Sites Web</p>
         </div>
         """
 
         payload = {
-            "from": "SITRA <onboarding@resend.dev>",
+            "from": "NIRIKX <onboarding@resend.dev>",
             "to": ["yanisaidoune1@gmail.com"],
             "reply_to": email,
-            "subject": f"Rapport SITRA pour {email} — {url_site} — Score : {score}/100",
+            "subject": f"Rapport NIRIKX pour {email} — {url_site} — Score : {score}/100",
             "html": html_content,
             "attachments": [{
-                "filename": f"SITRA_rapport.pdf",
+                "filename": f"NIRIKX_rapport.pdf",
                 "content": pdf_b64
             }]
         }
@@ -322,6 +322,8 @@ def envoyer_rapport_email(email: str, result: dict) -> bool:
 
     except Exception as e:
         return False
+
+st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="🅽", layout="wide", initial_sidebar_state="expanded")
 
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
@@ -346,7 +348,7 @@ with st.sidebar:
     )
 
     st.divider()
-    st.markdown('<div style="color:#666;font-size:0.75rem;text-align:center">SITRA Engine v1.0<br>Analyse en temps réel</div>', unsafe_allow_html=True)
+    st.markdown('<div style="color:#666;font-size:0.75rem;text-align:center">NIRIKX Engine v1.0<br>Analyse en temps réel</div>', unsafe_allow_html=True)
 
 mode_comparaison     = (st.session_state.get("menu_choix") == "Mode comparatif")
 show_corriger        = (st.session_state.get("menu_choix") == "Optimiser mon site")
@@ -360,11 +362,11 @@ st.markdown("""
   var link = document.querySelector("link[rel~='icon']");
   if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
   link.type = 'image/svg+xml';
-  link.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50' y='76' font-family='Arial Black%2C sans-serif' font-size='78' font-weight='900' fill='url(%23g)' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E";
+  link.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50' y='76' font-family='Arial Black%2C sans-serif' font-size='78' font-weight='900' fill='url(%23g)' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E";
 })();
 </script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50' y='76' font-family='Arial Black%2C sans-serif' font-size='78' font-weight='900' fill='url(%23g)' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
-<meta property="og:title" content="SITRA — Analyseur Intelligent de Sites Web" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50' y='76' font-family='Arial Black%2C sans-serif' font-size='78' font-weight='900' fill='url(%23g)' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
+<meta property="og:title" content="NIRIKX — Analyseur Intelligent de Sites Web" />
 <meta property="og:description" content="Analysez votre site gratuitement en 30 secondes. SEO, UX, Performance, Design — 20 critères vérifiés avec des recommandations IA personnalisées." />
 <meta property="og:image" content="https://yanisaidoune1-sudo.github.io/mon-audit-seo/favicon.svg" />
 <meta property="og:url" content="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" />
@@ -444,7 +446,7 @@ def render_issues(issues):
 # ── RENDER RESULT ─────────────────────────────────────────────────────────────
 def render_result(result, idx=0):
     if result.get("error"):
-        st.warning("Impossible d'analyser ce site. Certains grands sites bloquent volontairement les outils d'analyse automatiques. SITRA est conçu pour les sites de PME, artisans, restaurants et portfolios.")
+        st.warning("Impossible d'analyser ce site. Certains grands sites bloquent volontairement les outils d'analyse automatiques. NIRIKX est conçu pour les sites de PME, artisans, restaurants et portfolios.")
         return
 
     label_txt, _, label_color = get_score_label(result["global_score"])
@@ -596,7 +598,7 @@ def render_result(result, idx=0):
         st.divider()
         try:
             pdf_data = generer_pdf(result)
-            st.download_button(label="Télécharger le rapport PDF", data=pdf_data, file_name=f"SITRA_rapport_{idx}.pdf", mime="application/pdf", key=f"download_{idx}")
+            st.download_button(label="Télécharger le rapport PDF", data=pdf_data, file_name=f"NIRIKX_rapport_{idx}.pdf", mime="application/pdf", key=f"download_{idx}")
         except Exception:
             pass
         st.markdown("")
@@ -712,7 +714,7 @@ def render_result(result, idx=0):
         st.markdown("### Partager mes résultats")
         score = result["global_score"]
         url_site = result["final_url"]
-        texte_partage = f"J'ai analysé {url_site} avec SITRA et obtenu un score de {score}/100 ! Analysez votre site sur https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app"
+        texte_partage = f"J'ai analysé {url_site} avec NIRIKX et obtenu un score de {score}/100 ! Analysez votre site sur https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app"
         lien_twitter = f"https://twitter.com/intent/tweet?text={texte_partage}"
         lien_linkedin = f"https://www.linkedin.com/sharing/share-offsite/?url=https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app"
         lien_facebook = f"https://www.facebook.com/sharer/sharer.php?u=https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app&quote={texte_partage}"
@@ -1049,7 +1051,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
         tab_textes_idx = tabs_list.index("Textes corrigés")
         with tabs[tab_textes_idx]:
             st.markdown("### Textes corrigés prêts à copier-coller")
-            st.caption("SITRA génère vos textes corrigés — copiez directement la version verte sur votre site.")
+            st.caption("NIRIKX génère vos textes corrigés — copiez directement la version verte sur votre site.")
 
             seo = result["seo"]
             url_site = result["final_url"]
@@ -1069,7 +1071,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                 desc_images_ok = [d for d in st.session_state.get(f"images_desc_{idx}", []) if d]
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.markdown("**SITRA a généré :**")
+                    st.markdown("**NIRIKX a généré :**")
                     if not titre_ok: st.markdown("- Titre de page Google")
                     if not desc_ok: st.markdown("- Description Google")
                     if not h1_ok: st.markdown("- Titre principal H1")
@@ -1094,7 +1096,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
             else:
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.markdown("**SITRA va générer :**")
+                    st.markdown("**NIRIKX va générer :**")
                     if not titre_ok: st.markdown("- Titre de page Google")
                     if not desc_ok: st.markdown("- Description Google")
                     if not h1_ok: st.markdown("- Titre principal H1")
@@ -1420,7 +1422,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
         tab_potentiel_idx = tabs_list.index("Potentiel de croissance")
         with tabs[tab_potentiel_idx]:
             st.markdown("### Potentiel de croissance de votre entreprise")
-            st.caption("Une estimation approximative — pas une prédiction garantie — basée sur ce que SITRA peut lire sur votre site.")
+            st.caption("Une estimation approximative — pas une prédiction garantie — basée sur ce que NIRIKX peut lire sur votre site.")
 
             with st.spinner("Analyse du potentiel de croissance..."):
                 site_est_produit = is_produit_web(result)
@@ -1668,7 +1670,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 # ── HERO ─────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero-header">
-    <div class="hero-title">SITRA</div>
+    <div class="hero-title">NIRIKX</div>
     <div class="hero-subtitle">Analyseur Intelligent de Sites Web &bull; Données Réelles &bull; Recommandations Précises</div>
 </div>
 """, unsafe_allow_html=True)
@@ -1738,7 +1740,7 @@ if "results" in st.session_state:
             </div>
             """, unsafe_allow_html=True)
 
-            with st.spinner("SITRA analyse l'écart et prépare vos recommandations..."):
+            with st.spinner("NIRIKX analyse l'écart et prépare vos recommandations..."):
                 try:
                     import requests as req
                     headers = {"Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}", "Content-Type": "application/json"}
@@ -1806,13 +1808,13 @@ Sois direct, concret, sans jargon technique."""
 else:
     st.markdown("""
     <div style="text-align:center;color:#444;margin-top:3rem;font-size:0.85rem">
-        <p><strong>SITRA</strong> analyse votre site en temps réel et vous dit exactement quoi améliorer</p>
+        <p><strong>NIRIKX</strong> analyse votre site en temps réel et vous dit exactement quoi améliorer</p>
     </div>
     """, unsafe_allow_html=True)
 
 # ── ASSISTANT IA ──────────────────────────────────────────────────────────────
 st.divider()
-with st.expander("Vous avez une question ? Posez-la à l'assistant SITRA"):
+with st.expander("Vous avez une question ? Posez-la à l'assistant NIRIKX"):
     st.caption("L'assistant peut expliquer les termes techniques, vous aider à comprendre vos résultats et vous donner des conseils.")
 
     if "chat_messages" not in st.session_state:
@@ -1845,7 +1847,7 @@ with st.expander("Vous avez une question ? Posez-la à l'assistant SITRA"):
                     contexte = f"Le site analysé est {r['final_url']} avec un score de {r['global_score']}/100. SEO: {r['seo']['score']}/100, UX: {r['ux']['score']}/100, Performance: {r['performance']['score']}/100."
 
                 messages = [
-                    {"role": "system", "content": f"""Tu es l'assistant de SITRA, un outil d'analyse de sites web. Tu réponds aux questions en langage simple et accessible, sans jargon technique. Tu expliques les termes avec des exemples concrets du quotidien. Tu gardes le contexte de la conversation.
+                    {"role": "system", "content": f"""Tu es l'assistant de NIRIKX, un outil d'analyse de sites web. Tu réponds aux questions en langage simple et accessible, sans jargon technique. Tu expliques les termes avec des exemples concrets du quotidien. Tu gardes le contexte de la conversation.
 IMPORTANT : Tu dois TOUJOURS terminer tes réponses complètement. Ne coupe jamais une phrase en plein milieu. Si tu donnes une liste, termine-la entièrement.
 {f'Contexte du site analysé : {contexte}' if contexte else ''}"""}
                 ]
