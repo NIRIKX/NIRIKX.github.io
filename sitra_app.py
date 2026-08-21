@@ -191,31 +191,41 @@ BOUTON :
 # ── PDF ───────────────────────────────────────────────────────────────────────
 def generer_pdf(result):
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER
     from reportlab.lib import colors
     from reportlab.lib.units import cm
     import io
 
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=1.8*cm, bottomMargin=2*cm)
     styles = getSampleStyleSheet()
     story = []
 
-    title_style = ParagraphStyle('title', fontSize=22, fontName='Helvetica-Bold', textColor=colors.HexColor('#667eea'), spaceAfter=6)
-    sub_style = ParagraphStyle('sub', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#888888'), spaceAfter=20)
+    title_style = ParagraphStyle('title', fontSize=26, fontName='Helvetica-Bold', textColor=colors.HexColor('#667eea'), spaceAfter=10)
+    sub_style = ParagraphStyle('sub', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#888888'), spaceAfter=4)
     heading_style = ParagraphStyle('heading', fontSize=13, fontName='Helvetica-Bold', textColor=colors.HexColor('#222222'), spaceAfter=8, spaceBefore=16)
     normal_style = ParagraphStyle('normal', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#333333'), spaceAfter=4)
 
     story.append(Paragraph("NIRIKX — Rapport d'analyse", title_style))
     story.append(Paragraph(f"Site : {result['final_url']}", sub_style))
     story.append(Paragraph(f"Date : {time.strftime('%d/%m/%Y')}", sub_style))
-    story.append(Spacer(1, 0.5*cm))
+    story.append(Spacer(1, 0.4*cm))
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#e5e7eb')))
+    story.append(Spacer(1, 0.6*cm))
 
-    story.append(Paragraph("Scores", heading_style))
+    score_global = result['global_score']
+    label_global, _, couleur_score = get_score_label(score_global)
+    score_style = ParagraphStyle('score', fontSize=48, fontName='Helvetica-Bold', textColor=colors.HexColor(couleur_score), alignment=TA_CENTER, spaceAfter=2)
+    score_label_style = ParagraphStyle('scorelabel', fontSize=11, fontName='Helvetica-Bold', textColor=colors.HexColor(couleur_score), alignment=TA_CENTER, spaceAfter=0)
+    story.append(Paragraph(f"{score_global}/100", score_style))
+    story.append(Paragraph(label_global.upper(), score_label_style))
+    story.append(Spacer(1, 0.7*cm))
+
+    story.append(Paragraph("Scores par categorie", heading_style))
     data = [
         ["Categorie", "Score", "Evaluation"],
-        ["Score Global", f"{result['global_score']}/100", get_score_label(result['global_score'])[0]],
         ["SEO", f"{result['seo']['score']}/100", get_score_label(result['seo']['score'])[0]],
         ["UX", f"{result['ux']['score']}/100", get_score_label(result['ux']['score'])[0]],
         ["Contenu", f"{result['content']['score']}/100", get_score_label(result['content']['score'])[0]],
@@ -234,7 +244,7 @@ def generer_pdf(result):
         ('BOTTOMPADDING', (0,0), (-1,-1), 6),
     ]))
     story.append(table)
-    story.append(Spacer(1, 0.5*cm))
+    story.append(Spacer(1, 0.6*cm))
 
     story.append(Paragraph(f"Problemes detectes ({result['total_issues']})", heading_style))
     cats = {}
@@ -243,10 +253,12 @@ def generer_pdf(result):
     for cat, msgs in cats.items():
         story.append(Paragraph(f"<b>{cat}</b>", normal_style))
         for msg in msgs:
-            story.append(Paragraph(f"- {msg}", normal_style))
+            story.append(Paragraph(f"•  {enlever_emojis(msg)}", normal_style))
         story.append(Spacer(1, 0.2*cm))
 
     story.append(Spacer(1, 0.5*cm))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor('#e5e7eb')))
+    story.append(Spacer(1, 0.3*cm))
     story.append(Paragraph("Rapport genere par NIRIKX — Analyseur Intelligent de Sites Web",
                            ParagraphStyle('footer', fontSize=8, textColor=colors.HexColor('#aaaaaa'))))
     doc.build(story)
