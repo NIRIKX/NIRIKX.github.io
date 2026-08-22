@@ -610,19 +610,6 @@ def render_result(result, idx=0):
             st.download_button(label="Télécharger le rapport PDF", data=pdf_data, file_name=f"NIRIKX_rapport_{idx}.pdf", mime="application/pdf", key=f"download_{idx}")
         except Exception:
             pass
-        st.markdown("")
-        st.markdown("**Recevoir le rapport par email :**")
-        email_input = st.text_input("Votre email :", placeholder="exemple@email.com", key=f"email_{idx}")
-        if st.button("Envoyer le rapport par email", key=f"send_email_{idx}"):
-            if email_input and "@" in email_input:
-                with st.spinner("Envoi en cours..."):
-                    succes = envoyer_rapport_email(email_input, result)
-                if succes:
-                    st.success(f"✅ Rapport envoyé à {email_input} !")
-                else:
-                    st.warning("L'envoi automatique n'est pas encore disponible. Téléchargez le PDF ci-dessus et envoyez-le manuellement.")
-            else:
-                st.warning("Merci d'entrer un email valide.")
 
     with tabs[4]:
         st.markdown("### Objectifs à atteindre")
