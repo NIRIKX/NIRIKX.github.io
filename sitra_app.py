@@ -188,80 +188,147 @@ BOUTON :
     except Exception:
         return None
 
-# ── PDF ───────────────────────────────────────────────────────────────────────
 def generer_pdf(result):
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import ParagraphStyle
     from reportlab.lib.enums import TA_CENTER
     from reportlab.lib import colors
     from reportlab.lib.units import cm
     import io
 
+    BAND_H = 2.6 * cm
+    BRAND_1 = colors.HexColor('#7c6af7')
+    BRAND_2 = colors.HexColor('#f07cf7')
+    GRAY_TEXT = colors.HexColor('#888888')
+    DARK_TEXT = colors.HexColor('#222222')
+    BODY_TEXT = colors.HexColor('#333333')
+    LINE_GRAY = colors.HexColor('#e5e7eb')
+
+    def tint(hex_color, ratio=0.87):
+        c = colors.HexColor(hex_color)
+        r = c.red + (1 - c.red) * ratio
+        g = c.green + (1 - c.green) * ratio
+        b = c.blue + (1 - c.blue) * ratio
+        return colors.Color(r, g, b)
+
+    def readable_text(hex_color):
+        # le jaune (#ffc107) est trop clair pour rester lisible en texte sur fond
+        # blanc/pastel : on l'assombrit un peu. Les autres couleurs sont inchangees.
+        c = colors.HexColor(hex_color)
+        luminance = 0.299*c.red + 0.587*c.green + 0.114*c.blue
+        if luminance > 0.6:
+            f = 0.35
+            return colors.Color(c.red*(1-f), c.green*(1-f), c.blue*(1-f))
+        return c
+
+    def draw_gradient_band(c, page_w, page_h):
+        steps = 90
+        band_bottom = page_h - BAND_H
+        for i in range(steps):
+            t = i / steps
+            r = BRAND_1.red + (BRAND_2.red - BRAND_1.red) * t
+            g = BRAND_1.green + (BRAND_2.green - BRAND_1.green) * t
+            b = BRAND_1.blue + (BRAND_2.blue - BRAND_1.blue) * t
+            c.setFillColor(colors.Color(r, g, b))
+            x0 = page_w * i / steps
+            x1 = page_w * (i + 1) / steps
+            c.rect(x0, band_bottom, (x1 - x0) + 1, BAND_H, fill=1, stroke=0)
+
+    def header_footer(c, doc_):
+        page_w, page_h = A4
+        draw_gradient_band(c, page_w, page_h)
+        c.setFillColor(colors.white)
+        c.setFont('Helvetica-Bold', 20)
+        c.drawString(2*cm, page_h - 1.55*cm, "NIRIKX")
+        c.setFont('Helvetica', 9)
+        c.setFillColor(colors.HexColor('#f5f3ff'))
+        c.drawString(2*cm, page_h - 2.15*cm, "Rapport d'analyse SEO")
+        c.setStrokeColor(LINE_GRAY)
+        c.setLineWidth(0.5)
+        c.line(2*cm, 1.6*cm, page_w - 2*cm, 1.6*cm)
+        c.setFillColor(GRAY_TEXT)
+        c.setFont('Helvetica', 8)
+        c.drawString(2*cm, 1.2*cm, "Rapport genere par NIRIKX — Analyseur Intelligent de Sites Web")
+        c.drawRightString(page_w - 2*cm, 1.2*cm, f"Page {c.getPageNumber()}")
+
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=1.8*cm, bottomMargin=2*cm)
-    styles = getSampleStyleSheet()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm,
+                             topMargin=BAND_H + 0.9*cm, bottomMargin=2.3*cm)
     story = []
 
-    title_style = ParagraphStyle('title', fontSize=26, fontName='Helvetica-Bold', textColor=colors.HexColor('#667eea'), spaceAfter=10)
-    sub_style = ParagraphStyle('sub', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#888888'), spaceAfter=4)
-    heading_style = ParagraphStyle('heading', fontSize=13, fontName='Helvetica-Bold', textColor=colors.HexColor('#222222'), spaceAfter=8, spaceBefore=16)
-    normal_style = ParagraphStyle('normal', fontSize=10, fontName='Helvetica', textColor=colors.HexColor('#333333'), spaceAfter=4)
+    sub_style = ParagraphStyle('sub', fontSize=10, leading=13, fontName='Helvetica', textColor=GRAY_TEXT, spaceAfter=3)
+    heading_style = ParagraphStyle('heading', fontSize=13, leading=16, fontName='Helvetica-Bold', textColor=DARK_TEXT, spaceAfter=8, spaceBefore=18)
+    normal_style = ParagraphStyle('normal', fontSize=10, leading=14, fontName='Helvetica', textColor=BODY_TEXT,
+                                   spaceAfter=4, leftIndent=14, bulletIndent=0)
+    cat_style = ParagraphStyle('cat', fontSize=10.5, leading=13, fontName='Helvetica-Bold', textColor=BRAND_1, spaceBefore=6, spaceAfter=3)
 
-    story.append(Paragraph("NIRIKX — Rapport d'analyse", title_style))
     story.append(Paragraph(f"Site : {result['final_url']}", sub_style))
     story.append(Paragraph(f"Date : {time.strftime('%d/%m/%Y')}", sub_style))
-    story.append(Spacer(1, 0.4*cm))
-    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#e5e7eb')))
-    story.append(Spacer(1, 0.6*cm))
+    story.append(Spacer(1, 0.5*cm))
 
     score_global = result['global_score']
     label_global, _, couleur_score = get_score_label(score_global)
-    score_style = ParagraphStyle('score', fontSize=48, fontName='Helvetica-Bold', textColor=colors.HexColor(couleur_score), alignment=TA_CENTER, spaceAfter=2)
-    score_label_style = ParagraphStyle('scorelabel', fontSize=11, fontName='Helvetica-Bold', textColor=colors.HexColor(couleur_score), alignment=TA_CENTER, spaceAfter=0)
-    story.append(Paragraph(f"{score_global}/100", score_style))
-    story.append(Paragraph(label_global.upper(), score_label_style))
-    story.append(Spacer(1, 0.7*cm))
+    score_num_style = ParagraphStyle('scorenum', fontSize=42, leading=48, fontName='Helvetica-Bold',
+                                      textColor=readable_text(couleur_score), alignment=TA_CENTER, spaceAfter=0)
+    score_lbl_style = ParagraphStyle('scorelbl', fontSize=11, leading=14, fontName='Helvetica-Bold',
+                                      textColor=readable_text(couleur_score), alignment=TA_CENTER, spaceAfter=0)
+    score_card = Table([[[Paragraph(f"{score_global}/100", score_num_style),
+                          Paragraph(label_global.upper(), score_lbl_style)]]], colWidths=[9*cm])
+    score_card.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), tint(couleur_score)),
+        ('ROUNDEDCORNERS', [10, 10, 10, 10]),
+        ('TOPPADDING', (0,0), (-1,-1), 14),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 14),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    ]))
+    score_card.hAlign = 'CENTER'
+    story.append(score_card)
+    story.append(Spacer(1, 0.8*cm))
 
     story.append(Paragraph("Scores par categorie", heading_style))
-    data = [
-        ["Categorie", "Score", "Evaluation"],
-        ["SEO", f"{result['seo']['score']}/100", get_score_label(result['seo']['score'])[0]],
-        ["UX", f"{result['ux']['score']}/100", get_score_label(result['ux']['score'])[0]],
-        ["Contenu", f"{result['content']['score']}/100", get_score_label(result['content']['score'])[0]],
-        ["Design", f"{result['design']['score']}/100", get_score_label(result['design']['score'])[0]],
-        ["Performance", f"{result['performance']['score']}/100", get_score_label(result['performance']['score'])[0]],
-    ]
+    cat_rows = [("SEO", result['seo']['score']), ("UX", result['ux']['score']),
+                ("Contenu", result['content']['score']), ("Design", result['design']['score']),
+                ("Performance", result['performance']['score'])]
+    data = [["Categorie", "Score", "Evaluation"]]
+    eval_colors = []
+    for name, sc in cat_rows:
+        lbl, _, col = get_score_label(sc)
+        data.append([name, f"{sc}/100", lbl])
+        eval_colors.append(col)
+
     table = Table(data, colWidths=[6*cm, 4*cm, 5*cm])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#667eea')),
+    style_cmds = [
+        ('BACKGROUND', (0,0), (-1,0), BRAND_1),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTNAME', (0,1), (1,-1), 'Helvetica'),
+        ('FONTNAME', (2,1), (2,-1), 'Helvetica-Bold'),
         ('FONTSIZE', (0,0), (-1,-1), 10),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.HexColor('#f7f7f7'), colors.white]),
-        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#dddddd')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-    ]))
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.HexColor('#f7f7fb'), colors.white]),
+        ('LINEBELOW', (0,0), (-1,0), 1, BRAND_1),
+        ('LINEBELOW', (0,1), (-1,-2), 0.5, LINE_GRAY),
+        ('TOPPADDING', (0,0), (-1,-1), 8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+    ]
+    for i, col in enumerate(eval_colors):
+        style_cmds.append(('TEXTCOLOR', (2, i + 1), (2, i + 1), readable_text(col)))
+    table.setStyle(TableStyle(style_cmds))
     story.append(table)
-    story.append(Spacer(1, 0.6*cm))
+    story.append(Spacer(1, 0.3*cm))
 
     story.append(Paragraph(f"Problemes detectes ({result['total_issues']})", heading_style))
     cats = {}
     for item in result['all_issues']:
         cats.setdefault(item['category'], []).append(item['message'])
     for cat, msgs in cats.items():
-        story.append(Paragraph(f"<b>{cat}</b>", normal_style))
+        bloc = [Paragraph(cat, cat_style)]
         for msg in msgs:
-            story.append(Paragraph(f"•  {enlever_emojis(msg)}", normal_style))
-        story.append(Spacer(1, 0.2*cm))
+            bloc.append(Paragraph(enlever_emojis(msg), normal_style, bulletText='•'))
+        bloc.append(Spacer(1, 0.15*cm))
+        story.append(KeepTogether(bloc))
 
-    story.append(Spacer(1, 0.5*cm))
-    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor('#e5e7eb')))
-    story.append(Spacer(1, 0.3*cm))
-    story.append(Paragraph("Rapport genere par NIRIKX — Analyseur Intelligent de Sites Web",
-                           ParagraphStyle('footer', fontSize=8, textColor=colors.HexColor('#aaaaaa'))))
-    doc.build(story)
+    doc.build(story, onFirstPage=header_footer, onLaterPages=header_footer)
     buffer.seek(0)
     return buffer.getvalue()
 
