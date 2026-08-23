@@ -1703,6 +1703,10 @@ else:
     url1 = st.text_input("Votre site :", placeholder="ex : monsite.fr ou https://monsite.fr", key="url1")
     url2 = ""
 
+col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+with col_btn2:
+    launch = st.button("Lancer l'analyse", use_container_width=True)
+
 # ── ANALYSE ───────────────────────────────────────────────────────────────────
 if launch:
     urls_to_analyze = [u for u in [url1, url2] if u and u.strip()]
