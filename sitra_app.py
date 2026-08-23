@@ -1667,7 +1667,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 st.markdown("""
 <div class="hero-header">
     <div class="hero-title">NIRIKX</div>
-    <div class="hero-subtitle">Analyseur Intelligent de Sites Web &bull; Données Réelles &bull; Recommandations Précises</div>
+    <div class="hero-subtitle">Analyseur intelligent de sites web &bull; Données réelles &bull; Recommandations personnalisées</div>
 </div>
 """, unsafe_allow_html=True)
 
