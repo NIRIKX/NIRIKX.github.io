@@ -1739,8 +1739,14 @@ if launch:
             if cache_key in st.session_state:
                 result = st.session_state[cache_key]
             else:
-                with st.spinner(f"Analyse de {url} en cours..."):
+                with st.status(f"NIRIKX analyse {url}...", expanded=False) as status:
                     result = cached_full_analysis(url)
+                    duree = result.get("response_time")
+                    if result.get("error"):
+                        status.update(label=f"Impossible d'analyser {url}", state="error")
+                    else:
+                        label_fin = f"Analyse terminée en {duree}s" if duree else "Analyse terminée"
+                        status.update(label=label_fin, state="complete")
                 st.session_state[cache_key] = result
 
             results_list.append(result)
