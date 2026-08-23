@@ -346,9 +346,9 @@ with st.sidebar:
         "Options :",
         [
             "Aucune option",
-            "Mode comparatif",
             "Optimiser mon site",
             "Textes corrigés prêts à copier",
+            "Mode comparatif",
             "Génération de contenu",
             "Potentiel de croissance",
         ],
