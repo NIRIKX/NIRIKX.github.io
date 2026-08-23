@@ -1684,17 +1684,36 @@ if mode_comparaison:
 
     if url1 and url1.strip():
         if st.button("Pas d'idée de concurrent ? Nous proposer des pistes", key="btn_suggerer_concurrents"):
-            with st.spinner("Recherche de pistes de comparaison..."):
+            with st.spinner("Recherche de pistes qui répondent bien..."):
                 from analyzer import fetch_site
+                import concurrent.futures
+
                 site_info = fetch_site(normalize_url(url1))
                 secteur_info = detect_secteur_et_concurrents(url1, site_info.get("html") or "")
                 domaine_site1 = normalize_url(url1).replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0].lower()
-                st.session_state["concurrents_suggeres"] = [c for c in secteur_info.get("concurrents", []) if c.lower() != domaine_site1]
+                candidats = [c for c in secteur_info.get("concurrents", []) if c.lower() != domaine_site1]
+
+                def teste_domaine(domaine):
+                    try:
+                        r = fetch_site(normalize_url(domaine))
+                        return domaine if r.get("html") else None
+                    except Exception:
+                        return None
+
+                resultats = []
+                if candidats:
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=len(candidats)) as executor:
+                        resultats = list(executor.map(teste_domaine, candidats))
+
+                st.session_state["concurrents_suggeres"] = [d for d in resultats if d][:3]
                 st.session_state["concurrents_suggeres_pour"] = url1.strip().lower()
+
+            if not st.session_state["concurrents_suggeres"]:
+                st.info("Aucune piste n'a pu être analysée automatiquement pour ce secteur — essayez un concurrent que vous connaissez.")
 
         if (st.session_state.get("concurrents_suggeres_pour") == url1.strip().lower()
                 and st.session_state.get("concurrents_suggeres")):
-            st.caption("Quelques pistes pour votre secteur :")
+            st.caption("Quelques pistes pour votre secteur (déjà vérifiées, analysables) :")
             cols_sugg = st.columns(len(st.session_state["concurrents_suggeres"]))
             for i, concurrent in enumerate(st.session_state["concurrents_suggeres"]):
                 with cols_sugg[i]:
