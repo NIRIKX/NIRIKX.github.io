@@ -1704,7 +1704,7 @@ else:
     url2 = ""
 
 # ── ANALYSE ───────────────────────────────────────────────────────────────────
-    if launch:
+if launch:
     urls_to_analyze = [u for u in [url1, url2] if u and u.strip()]
     if not urls_to_analyze:
         st.warning("Merci d'entrer une URL valide.")
