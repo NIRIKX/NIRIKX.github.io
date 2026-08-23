@@ -84,19 +84,18 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
             if scores[secteur_detecte] == 0:
                 secteur_detecte = "Autre"
 
-        # Concurrents par secteur
         concurrents_types = {
-            "Restaurant / Food": ["tripadvisor.fr", "lafourchette.com", "deliveroo.fr"],
-            "E-commerce": ["amazon.fr", "cdiscount.com", "fnac.com"],
-            "Artisan / Services": ["pages-jaunes.fr", "habitatpresto.com", "houzz.fr"],
-            "Santé / Médical": ["doctolib.fr", "ameli.fr", "sante.fr"],
-            "Immobilier": ["seloger.com", "leboncoin.fr", "logic-immo.com"],
-            "Éducation / Formation": ["openclassrooms.com", "coursera.org", "udemy.com"],
-            "Beauté / Bien-être": ["treatwell.fr", "fresha.com", "planity.com"],
-            "Juridique / Finance": ["captain-contrat.com", "legalstart.fr", "shine.fr"],
-            "Tech / Digital": ["malt.fr", "upwork.com", "clutch.co"],
-            "Sport / Mode": ["decathlon.fr", "zalando.fr", "adidas.fr"],
-            "Tourisme / Voyage": ["booking.com", "tripadvisor.fr", "airbnb.fr"],
+            "Restaurant / Food": ["tripadvisor.fr", "lafourchette.com", "deliveroo.fr", "ubereats.com", "yelp.fr"],
+            "E-commerce": ["amazon.fr", "cdiscount.com", "fnac.com", "rueducommerce.fr", "darty.com"],
+            "Artisan / Services": ["pages-jaunes.fr", "habitatpresto.com", "houzz.fr", "travaux.com", "quotatis.fr"],
+            "Santé / Médical": ["doctolib.fr", "ameli.fr", "sante.fr", "qare.fr", "livi.fr"],
+            "Immobilier": ["seloger.com", "leboncoin.fr", "logic-immo.com", "pap.fr", "bienici.com"],
+            "Éducation / Formation": ["openclassrooms.com", "coursera.org", "udemy.com", "cned.fr", "studi.com"],
+            "Beauté / Bien-être": ["treatwell.fr", "fresha.com", "planity.com", "wecasa.fr"],
+            "Juridique / Finance": ["captain-contrat.com", "legalstart.fr", "shine.fr", "qonto.com"],
+            "Tech / Digital": ["malt.fr", "upwork.com", "clutch.co", "codeur.com", "fiverr.com"],
+            "Sport / Mode": ["zalando.fr", "vinted.fr", "asos.com", "spartoo.com"],
+            "Tourisme / Voyage": ["booking.com", "tripadvisor.fr", "airbnb.fr", "abritel.fr"],
             "Autre": ["google.fr", "wikipedia.org", "yelp.fr"],
         }
 
