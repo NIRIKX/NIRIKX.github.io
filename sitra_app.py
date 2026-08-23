@@ -1672,19 +1672,36 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── INPUT ─────────────────────────────────────────────────────────────────────
+def _choisir_concurrent_suggere(domaine):
+    st.session_state["url2"] = domaine
+
 if mode_comparaison:
     col_in1, col_in2 = st.columns(2)
     with col_in1:
         url1 = st.text_input("Votre site :", placeholder="ex : monsite.fr", key="url1")
     with col_in2:
         url2 = st.text_input("Site concurrent :", placeholder="ex : concurrent.fr", key="url2")
+
+    if url1 and url1.strip():
+        if st.button("Pas d'idée de concurrent ? Nous proposer des pistes", key="btn_suggerer_concurrents"):
+            with st.spinner("Recherche de pistes de comparaison..."):
+                from analyzer import fetch_site
+                site_info = fetch_site(normalize_url(url1))
+                secteur_info = detect_secteur_et_concurrents(url1, site_info.get("html") or "")
+                domaine_site1 = normalize_url(url1).replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0].lower()
+                st.session_state["concurrents_suggeres"] = [c for c in secteur_info.get("concurrents", []) if c.lower() != domaine_site1]
+                st.session_state["concurrents_suggeres_pour"] = url1.strip().lower()
+
+        if (st.session_state.get("concurrents_suggeres_pour") == url1.strip().lower()
+                and st.session_state.get("concurrents_suggeres")):
+            st.caption("Quelques pistes pour votre secteur :")
+            cols_sugg = st.columns(len(st.session_state["concurrents_suggeres"]))
+            for i, concurrent in enumerate(st.session_state["concurrents_suggeres"]):
+                with cols_sugg[i]:
+                    st.button(concurrent, key=f"choix_concurrent_{i}", on_click=_choisir_concurrent_suggere, args=(concurrent,))
 else:
     url1 = st.text_input("Votre site :", placeholder="ex : monsite.fr ou https://monsite.fr", key="url1")
     url2 = ""
-
-col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-with col_btn2:
-    launch = st.button("Lancer l'analyse", use_container_width=True)
 
 # ── ANALYSE ───────────────────────────────────────────────────────────────────
 if launch:
