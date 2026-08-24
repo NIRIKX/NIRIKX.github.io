@@ -120,8 +120,11 @@
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
   .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.6s ease,transform 0.6s ease; }
   .reveal.visible { opacity:1; transform:translateY(0); }
-  .ni-letter { background:linear-gradient(160deg,#7c6af7 0%,#b570f5 45%,#f07cf7 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:inline-block; opacity:0; transform:translateY(14px); transition:opacity 0.45s ease, transform 0.45s cubic-bezier(0.22,1,0.36,1); }
-  .ni-letter.in { opacity:1; transform:translateY(0); }
+  .ni-wrap { position:relative; display:inline-block; }
+  .ni-outline { color:transparent; -webkit-text-stroke:1.5px #ffffff; opacity:0; transition:opacity 0.18s ease; }
+  .ni-fill { position:absolute; top:0; left:0; width:100%; background:linear-gradient(160deg,#7c6af7 0%,#b570f5 45%,#f07cf7 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; opacity:0; transition:opacity 0.3s ease; }
+  .ni-outline.show { opacity:1; }
+  .ni-fill.show { opacity:1; }
 
   @media(max-width:768px) {
     nav { padding:1rem 1.5rem; }
@@ -142,7 +145,7 @@
   <canvas id="particle-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;display:none"></canvas>
   <div id="sitra-wrap" style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:100%;">
     <div id="nirikx-title" style="display:flex;align-items:baseline;justify-content:center;font-family:'Arial Black',Impact,sans-serif;font-size:clamp(5rem,14vw,8.5rem);font-weight:900;line-height:1;letter-spacing:0.04em;filter:drop-shadow(0 0 28px rgba(124,106,247,0.8));">
-      <span id="nirik-letters" style="display:inline-flex;overflow:hidden;max-width:0;white-space:nowrap;transition:max-width 0.4s cubic-bezier(0.4,0,0.2,1);"><span class="ni-letter">N</span><span class="ni-letter">I</span><span class="ni-letter">R</span><span class="ni-letter">I</span><span class="ni-letter">K</span></span><span id="x-slot" style="position:relative;display:inline-block;"><svg id="x-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;transform:scale(3.4);transform-origin:50% 50%;"><path id="x1" pathLength="1" d="M25,22 L75,78" fill="none" stroke="#e7e2fb" stroke-width="9" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/><path id="x2" pathLength="1" d="M75,22 L25,78" fill="none" stroke="#e7e2fb" stroke-width="9" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg><span id="x-text" class="ni-letter">X</span></span>
+      <span id="nirik-letters" style="display:inline-flex;overflow:hidden;max-width:0;white-space:nowrap;transition:max-width 0.4s cubic-bezier(0.4,0,0.2,1);"><span class="ni-wrap"><span class="ni-outline">N</span><span class="ni-fill">N</span></span><span class="ni-wrap"><span class="ni-outline">I</span><span class="ni-fill">I</span></span><span class="ni-wrap"><span class="ni-outline">R</span><span class="ni-fill">R</span></span><span class="ni-wrap"><span class="ni-outline">I</span><span class="ni-fill">I</span></span><span class="ni-wrap"><span class="ni-outline">K</span><span class="ni-fill">K</span></span></span><span id="x-slot" style="position:relative;display:inline-block;"><svg id="x-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;transform:scale(3.4);transform-origin:50% 50%;"><path id="x1" pathLength="1" d="M25,22 L75,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/><path id="x2" pathLength="1" d="M75,22 L25,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg><span id="x-text" class="ni-fill">X</span></span>
     </div>
   </div>
 </div>
