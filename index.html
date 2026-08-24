@@ -139,7 +139,186 @@
 </head>
 <body>
 
-// Intro : le X se dessine en contour blanc, recule + se colore en même temps, puis N I R I K se dessinent et se remplissent, puis explosion de particules
+ <!-- INTRO — le X se dessine puis se remplit de violet, les autres lettres apparaissent, puis explosion de particules -->
+<div id="intro-screen">
+  <div class="intro-glow"></div>
+  <canvas id="particle-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;display:none"></canvas>
+  <div id="sitra-wrap" style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:100%;">
+    <div id="nirikx-title" style="display:flex;align-items:baseline;justify-content:center;font-family:'Arial Black',Impact,sans-serif;font-size:clamp(5rem,14vw,8.5rem);font-weight:900;line-height:1;letter-spacing:0.04em;filter:drop-shadow(0 0 28px rgba(124,106,247,0.8));">
+      <span id="nirik-letters" style="display:inline-flex;overflow:hidden;max-width:0;white-space:nowrap;transition:max-width 0.4s cubic-bezier(0.4,0,0.2,1);"><span class="ni-wrap"><span class="ni-outline">N</span><span class="ni-fill">N</span></span><span class="ni-wrap"><span class="ni-outline">I</span><span class="ni-fill">I</span></span><span class="ni-wrap"><span class="ni-outline">R</span><span class="ni-fill">R</span></span><span class="ni-wrap"><span class="ni-outline">I</span><span class="ni-fill">I</span></span><span class="ni-wrap"><span class="ni-outline">K</span><span class="ni-fill">K</span></span></span><span id="x-slot" style="position:relative;display:inline-block;"><svg id="x-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;transform:scale(3.4);transform-origin:50% 50%;"><path id="x1" pathLength="1" d="M25,22 L75,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/><path id="x2" pathLength="1" d="M75,22 L25,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg><span id="x-text" class="ni-fill">X</span></span>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-logo">NIRIKX</div>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#pricing">Forfaits</a>
+    <a href="#contact">Contact</a>
+    <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="nav-cta" target="_blank">Analyser mon site</a>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-badge">Analyse gratuite — Résultats en temps réel</div>
+  <h1 class="hero-title">Comment améliorer<br><span>votre site web ?</span></h1>
+  <p class="hero-sub">NIRIKX analyse votre site et vous dit exactement quoi améliorer pour attirer plus de clients — analyse, correction, visibilité, sécurité.</p>
+  <div class="hero-actions">
+    <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="btn-primary" target="_blank">Analyser mon site</a>
+    <a href="#pricing" class="btn-secondary">Voir les forfaits</a>
+  </div>
+  <div class="views-badge">👁️ <span id="view-count">...</span> personnes ont déjà utilisé NIRIKX</div>
+</section>
+
+<div class="separator-bar">
+  <div class="separator-inner">
+    <span class="separator-item"><span class="separator-dot"></span>Référencement Google</span>
+    <span class="separator-item"><span class="separator-dot"></span>Vitesse du site</span>
+    <span class="separator-item"><span class="separator-dot"></span>Analyse des images</span>
+    <span class="separator-item"><span class="separator-dot"></span>Corrections automatiques</span>
+    <span class="separator-item"><span class="separator-dot"></span>Rapport IA personnalisé</span>
+    <span class="separator-item"><span class="separator-dot"></span>Navigation intuitive</span>
+    <span class="separator-item"><span class="separator-dot"></span>Sécurité HTTPS</span>
+    <span class="separator-item"><span class="separator-dot"></span>Génération de contenu</span>
+    <span class="separator-item"><span class="separator-dot"></span>Référencement Google</span>
+    <span class="separator-item"><span class="separator-dot"></span>Vitesse du site</span>
+    <span class="separator-item"><span class="separator-dot"></span>Analyse des images</span>
+    <span class="separator-item"><span class="separator-dot"></span>Corrections automatiques</span>
+    <span class="separator-item"><span class="separator-dot"></span>Rapport IA personnalisé</span>
+    <span class="separator-item"><span class="separator-dot"></span>Navigation intuitive</span>
+    <span class="separator-item"><span class="separator-dot"></span>Sécurité HTTPS</span>
+    <span class="separator-item"><span class="separator-dot"></span>Génération de contenu</span>
+  </div>
+</div>
+
+<section class="section" id="features">
+  <div class="section-label">Ce que NIRIKX analyse</div>
+  <h2 class="section-title reveal">Tout ce qui compte pour votre site</h2>
+  <div class="features-grid">
+    <div class="feature-card reveal"><div class="feature-num">01</div><div class="feature-title">Boostez votre position sur Google</div><div class="feature-desc">NIRIKX vérifie tout ce que Google regarde pour vous classer et vous dit exactement quoi améliorer.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">02</div><div class="feature-title">Une expérience agréable pour vos visiteurs</div><div class="feature-desc">Menu, boutons, contact — votre site est-il facile à utiliser ? NIRIKX détecte ce qui bloque vos visiteurs.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">03</div><div class="feature-title">Un site rapide qui ne fait pas fuir</div><div class="feature-desc">53% des visiteurs partent si votre site met plus de 3 secondes à charger. NIRIKX mesure et corrige.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">04</div><div class="feature-title">Une belle première impression</div><div class="feature-desc">Polices, couleurs, aperçu sur les réseaux sociaux — votre site inspire-t-il confiance ?</div></div>
+    <div class="feature-card reveal"><div class="feature-num">05</div><div class="feature-title">Comparez aux références de votre secteur</div><div class="feature-desc">NIRIKX détecte votre secteur et compare votre site aux meilleurs acteurs de votre domaine.</div></div>
+    <div class="feature-card reveal"><div class="feature-num">06</div><div class="feature-title">Génération de contenu pour votre marque</div><div class="feature-desc">NIRIKX génère automatiquement des emails et contenus marketing adaptés à votre identité de marque, prêts à envoyer.</div></div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="how-inner">
+    <div class="section-label">Comment ça marche</div>
+    <h2 class="section-title reveal">Simple. Rapide. Efficace.</h2>
+    <div class="steps">
+      <div class="step reveal"><div class="step-number">01</div><div class="step-title">Entrez votre URL</div><div class="step-desc">Collez l'adresse de votre site et lancez l'analyse.</div></div>
+      <div class="step reveal"><div class="step-number">02</div><div class="step-title">Analyse en temps réel</div><div class="step-desc">NIRIKX visite votre site et vérifie tous les points essentiels en quelques secondes.</div></div>
+      <div class="step reveal"><div class="step-number">03</div><div class="step-title">Rapport clair</div><div class="step-desc">Score par catégorie et liste des problèmes expliqués simplement.</div></div>
+      <div class="step reveal"><div class="step-number">04</div><div class="step-title">Propositions de corrections</div><div class="step-desc">NIRIKX propose 2 versions de corrections adaptées à votre site.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="section-label">Forfaits</div>
+  <h2 class="section-title reveal">Choisissez votre forfait</h2>
+<div class="pricing-grid">
+    <div class="pricing-card reveal">
+      <div class="plan-name">Gratuit</div>
+      <div class="plan-price">0€ <span>/ toujours</span></div>
+      <div class="plan-desc">Pour découvrir l'état de votre site, aussi souvent que vous voulez</div>
+      <ul class="plan-features">
+        <li class="included">Analyses illimitées, sans limite de temps</li>
+        <li class="included">Score détaillé sur 5 critères (référencement, navigation, vitesse, apparence, contenu)</li>
+        <li class="included">Liste complète des problèmes détectés, expliqués simplement</li>
+        <li class="included">Suivi de vos objectifs à cocher</li>
+        <li class="included">Partage de vos résultats en un clic</li>
+        <li class="excluded">Recommandations personnalisées par l'IA</li>
+        <li class="excluded">Rapport PDF téléchargeable</li>
+        <li class="excluded">Optimiser mon site (corrections en avant/après)</li>
+        <li class="excluded">Génération de contenu</li>
+      </ul>
+      <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="plan-btn plan-btn-free" target="_blank">Commencer gratuitement</a>
+    </div>
+    <div class="pricing-card popular reveal">
+      <div class="popular-badge">Le plus populaire</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">39,99€ <span>/ 30 jours</span></div>
+      <div class="plan-desc">Pour corriger votre site vous-même</div>
+      <ul class="plan-features">
+        <li class="included">Tout ce qu'il y a dans Gratuit</li>
+        <li class="included">Recommandations personnalisées par l'IA, en langage simple</li>
+        <li class="included">Rapport PDF téléchargeable</li>
+        <li class="included">Optimiser mon site : les corrections à faire, en avant/après</li>
+        <li class="included">Textes corrigés prêts à copier-coller sur votre site</li>
+        <li class="excluded">Mode comparatif face à un concurrent</li>
+        <li class="excluded">Génération de contenu</li>
+        <li class="excluded">Potentiel de croissance</li>
+      </ul>
+      <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="plan-btn plan-btn-paid" target="_blank">Choisir Pro</a>
+    </div>
+    <div class="pricing-card reveal">
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">89,99€ <span>/ 30 jours</span></div>
+      <div class="plan-desc">Pour développer votre activité et votre communication</div>
+      <ul class="plan-features">
+        <li class="included">Tout ce qu'il y a dans Pro</li>
+        <li class="included">Mode comparatif face à un concurrent de votre choix</li>
+        <li class="included">Génération de contenu : posts Instagram, LinkedIn, Facebook, email, publicités Google Ads</li>
+        <li class="included">Potentiel de croissance : estimation chiffrée, plan d'action, évolution dans le temps</li>
+      </ul>
+      <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="plan-btn plan-btn-paid" target="_blank">Choisir Premium</a>
+    </div>
+  </div>
+
+<section class="cta-section">
+  <h2 class="cta-title reveal">Votre site est-il<br><span style="background:linear-gradient(135deg,#7c6af7,#f07cf7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">vraiment optimisé ?</span></h2>
+  <p class="cta-sub reveal">Découvrez-le en 30 secondes.</p>
+  <a href="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" class="btn-primary reveal" target="_blank">Analyser mon site</a>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="section-label">Contact</div>
+  <h2 class="section-title reveal" style="margin-bottom:0">Une question ?</h2>
+  <p style="color:var(--muted);margin-top:1rem;margin-bottom:0" class="reveal">Notre assistant IA répond instantanément. Vous recevrez aussi une confirmation par email.</p>
+  <div class="contact-form reveal">
+    <div><label>Votre nom</label><input type="text" id="c-nom" placeholder="Jean Dupont"></div>
+    <div><label>Votre email</label><input type="email" id="c-email" placeholder="jean@exemple.fr"></div>
+    <div><label>Votre message</label><textarea id="c-msg" placeholder="Décrivez votre question ou problème..."></textarea></div>
+    <button class="btn-primary" id="contact-btn" style="width:100%" onclick="sendContactAI()">Envoyer le message</button>
+    <div id="contact-error" style="display:none;color:#dc3545;font-size:0.9rem;margin-top:1rem;text-align:center">Merci de remplir tous les champs.</div>
+    <div id="contact-loading" style="display:none;text-align:center;margin-top:1rem;color:var(--muted)">
+      <span style="display:inline-block;width:16px;height:16px;border:2px solid #7c6af7;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px"></span>
+      L'assistant analyse votre message...
+    </div>
+    <div id="contact-ai-response" style="display:none;margin-top:1.5rem;background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.3);border-radius:12px;padding:1.2rem">
+      <div style="color:#a090f7;font-weight:600;font-size:0.85rem;margin-bottom:0.6rem">Réponse de l'assistant NIRIKX</div>
+      <div id="ai-response-text" style="color:#e8e8f0;font-size:0.9rem;line-height:1.6"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">NIRIKX</div>
+  <div class="footer-text">Analyseur intelligent de sites web — Données réelles, recommandations précises</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e,i) => { if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*80); });
+  }, {threshold:0.1});
+  reveals.forEach(el=>obs.observe(el));
+
+  // Vues
+  function updateViews() {
+    let v = parseInt(localStorage.getItem('sitra_views')||'0');
+    v++; localStorage.setItem('sitra_views',v);
+    document.getElementById('view-count').textContent = (v+142).toLocaleString('fr-FR');
+  }
+  updateViews();
+
+  // Intro : le X se dessine en contour blanc, recule + se colore en même temps, puis N I R I K se dessinent et se remplissent, puis explosion de particules
   document.body.style.overflow = 'hidden';
   const sWrap   = document.getElementById('sitra-wrap');
   const canvas  = document.getElementById('particle-canvas');
@@ -241,13 +420,13 @@
     sWrap.style.opacity='0';
     document.querySelector('.intro-glow').style.transition='opacity 0.5s ease';
     document.querySelector('.intro-glow').style.opacity='0';
-  },3650);
+  },3550);
   setTimeout(()=>{
     const intro=document.getElementById('intro-screen');
     intro.style.transition='opacity 0.6s ease';intro.style.opacity='0';
     document.body.style.overflow='';
     setTimeout(()=>intro.remove(),600);
-  },4350);
+  },4250);
 
   // Contact IA — réponse immédiate + email admin via Resend
   async function sendContactAI(){
