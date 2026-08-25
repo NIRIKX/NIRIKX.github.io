@@ -145,7 +145,7 @@
   <canvas id="particle-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;display:none"></canvas>
   <div id="sitra-wrap" style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:100%;">
     <div id="nirikx-title" style="display:flex;align-items:baseline;justify-content:center;font-family:'Arial Black',Impact,sans-serif;font-size:clamp(5rem,14vw,8.5rem);font-weight:900;line-height:1;letter-spacing:0.04em;filter:drop-shadow(0 0 28px rgba(124,106,247,0.8));">
-      <span id="nirik-letters" style="display:inline-flex;overflow:hidden;max-width:0;white-space:nowrap;transition:max-width 0.4s cubic-bezier(0.4,0,0.2,1);"><span class="ni-wrap"><span class="ni-outline">N</span><span class="ni-fill">N</span></span><span class="ni-wrap"><span class="ni-outline">I</span><span class="ni-fill">I</span></span><span class="ni-wrap"><span class="ni-outline">R</span><span class="ni-fill">R</span></span><span class="ni-wrap"><span class="ni-outline">I</span><span class="ni-fill">I</span></span><span class="ni-wrap"><span class="ni-outline">K</span><span class="ni-fill">K</span></span></span><span id="x-slot" style="position:relative;display:inline-block;"><svg id="x-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;transform:scale(3.4);transform-origin:50% 50%;"><path id="x1" pathLength="1" d="M25,22 L75,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/><path id="x2" pathLength="1" d="M75,22 L25,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg><span id="x-text" class="ni-fill">X</span></span>
+      <span id="nirik-letters" style="display:inline-flex;align-items:baseline;overflow:hidden;max-width:0;white-space:nowrap;transition:max-width 0.4s cubic-bezier(0.4,0,0.2,1);"><svg class="ni-glyph" viewBox="0 0 752 702" style="height:0.72em;width:auto;overflow:visible;"><g transform="scale(1,-1) translate(0,-702)"><path pathLength="1" d="M690 0H519L233 433V0H62V702H233L519 267V702H690Z" fill="url(#ni-grad)" fill-opacity="0" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1"/></g></svg><svg class="ni-glyph" viewBox="0 0 295 702" style="height:0.72em;width:auto;overflow:visible;"><g transform="scale(1,-1) translate(0,-702)"><path pathLength="1" d="M233 702V0H62V702Z" fill="url(#ni-grad)" fill-opacity="0" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1"/></g></svg><svg class="ni-glyph" viewBox="0 0 652 702" style="height:0.72em;width:auto;overflow:visible;"><g transform="scale(1,-1) translate(0,-702)"><path pathLength="1" d="M420 0 274 265H233V0H62V702H349Q432 702 490.5 673.0Q549 644 578.0 593.5Q607 543 607 481Q607 411 567.5 356.0Q528 301 451 278L613 0ZM233 386H339Q386 386 409.5 409.0Q433 432 433 474Q433 514 409.5 537.0Q386 560 339 560H233Z" fill="url(#ni-grad)" fill-opacity="0" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1"/></g></svg><svg class="ni-glyph" viewBox="0 0 295 702" style="height:0.72em;width:auto;overflow:visible;"><g transform="scale(1,-1) translate(0,-702)"><path pathLength="1" d="M233 702V0H62V702Z" fill="url(#ni-grad)" fill-opacity="0" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1"/></g></svg><svg class="ni-glyph" viewBox="0 0 697 702" style="height:0.72em;width:auto;overflow:visible;"><g transform="scale(1,-1) translate(0,-702)"><path pathLength="1" d="M469 0 233 310V0H62V702H233V394L467 702H668L396 358L678 0Z" fill="url(#ni-grad)" fill-opacity="0" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1"/></g></svg></span><span id="x-slot" style="position:relative;display:inline-block;"><svg id="x-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;transform:scale(3.4);transform-origin:50% 50%;"><defs><linearGradient id="ni-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c6af7"/><stop offset="45%" stop-color="#b570f5"/><stop offset="100%" stop-color="#f07cf7"/></linearGradient></defs><path id="x1" pathLength="1" d="M25,22 L75,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/><path id="x2" pathLength="1" d="M75,22 L25,78" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg><span id="x-text" class="ni-fill">X</span></span>
     </div>
   </div>
 </div>
@@ -318,7 +318,7 @@
   }
   updateViews();
 
-  // Intro : le X se dessine en contour blanc, recule + se colore en même temps, puis N I R I K se dessinent et se remplissent, puis explosion de particules
+  // Intro : le X se dessine en contour blanc, recule + se colore en même temps ; puis N I R I K se dessinent (vrai contour tracé) l'une après l'autre et se remplissent ensemble ; pause pour laisser voir le mot ; puis explosion de particules
   document.body.style.overflow = 'hidden';
   const sWrap   = document.getElementById('sitra-wrap');
   const canvas  = document.getElementById('particle-canvas');
@@ -331,13 +331,13 @@
   const x2 = document.getElementById('x2');
   const xText = document.getElementById('x-text');
   const nirikLetters = document.getElementById('nirik-letters');
-  const outlineEls = nirikLetters.querySelectorAll('.ni-outline');
-  const fillEls = nirikLetters.querySelectorAll('.ni-fill');
+  const glyphPaths = nirikLetters.querySelectorAll('.ni-glyph path');
 
   x1.style.transition = 'stroke-dashoffset 0.48s ease-in-out';
   x2.style.transition = 'stroke-dashoffset 0.48s ease-in-out';
+  glyphPaths.forEach(p => { p.style.transition = 'stroke-dashoffset 0.45s ease-in-out'; });
 
-  // ÉTAPE 1 — le X se dessine trait par trait, en contour blanc (pas encore coloré)
+  // ÉTAPE 1 — le X (en premier) se dessine trait par trait, en contour blanc (pas encore coloré)
   setTimeout(()=>{ x1.style.strokeDashoffset = '0'; }, 200);
   setTimeout(()=>{ x2.style.strokeDashoffset = '0'; }, 580);
 
@@ -358,22 +358,25 @@
     xText.classList.add('show');
   }, 1720);
 
-  // ÉTAPE 3 — les contours de N I R I K apparaissent l'un après l'autre
-  outlineEls.forEach((el, i) => {
-    setTimeout(()=>{ el.classList.add('show'); }, 1820 + i*130);
+  // ÉTAPE 3 — N I R I K se dessinent (vrai contour tracé) l'une après l'autre
+  glyphPaths.forEach((p, i) => {
+    setTimeout(()=>{ p.style.strokeDashoffset = '0'; }, 1820 + i*220);
   });
 
-  // ÉTAPE 4 — une fois tous les contours affichés, ils se remplissent tous ensemble
+  // ÉTAPE 4 — une fois toutes les lettres dessinées, elles se remplissent toutes ensemble
   setTimeout(()=>{
-    outlineEls.forEach(el => el.classList.remove('show'));
-    fillEls.forEach(el => el.classList.add('show'));
-  }, 2650);
+    glyphPaths.forEach(p => {
+      p.style.transition = 'fill-opacity 0.35s ease, stroke-opacity 0.35s ease';
+      p.style.fillOpacity = '1';
+      p.style.strokeOpacity = '0';
+    });
+  }, 3250);
 
-  // ÉTAPE 5 — léger souffle avant explosion
+  // ÉTAPE 5 — pause de quelques secondes pour laisser le temps de voir le mot NIRIKX formé, puis léger souffle avant explosion
   setTimeout(() => {
     sWrap.style.transition = 'transform 0.5s cubic-bezier(0.34,1.2,0.64,1)';
     sWrap.style.transform = 'scale(1.06)';
-  }, 3050);
+  }, 6100);
 
   class Particle {
     constructor(x,y){
@@ -420,13 +423,13 @@
     sWrap.style.opacity='0';
     document.querySelector('.intro-glow').style.transition='opacity 0.5s ease';
     document.querySelector('.intro-glow').style.opacity='0';
-  },3550);
+  },6600);
   setTimeout(()=>{
     const intro=document.getElementById('intro-screen');
     intro.style.transition='opacity 0.6s ease';intro.style.opacity='0';
     document.body.style.overflow='';
     setTimeout(()=>intro.remove(),600);
-  },4250);
+  },7300);
 
   // Contact IA — réponse immédiate + email admin via Resend
   async function sendContactAI(){
