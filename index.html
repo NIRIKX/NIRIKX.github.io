@@ -331,7 +331,7 @@
   const nirikLetters = document.getElementById('nirik-letters');
   const glyphPaths = nirikLetters.querySelectorAll('.ni-glyph path');
 
-  xPath.style.transition = 'stroke-dashoffset 0.6s ease-in-out';
+  xPath.style.transition = 'stroke-dashoffset 1.5s ease-in-out';
   glyphPaths.forEach(p => { p.style.transition = 'stroke-dashoffset 0.45s ease-in-out'; });
 
   // ÉTAPE 1 — le X (seul, en grand) se dessine en contour violet
@@ -345,11 +345,11 @@
     xPath.style.fillOpacity = '1';
     xPath.style.strokeOpacity = '0';
     nirikLetters.style.maxWidth = '9em';
-  }, 1100);
+  }, 2000);
 
   // ÉTAPE 3 — N I R I K se dessinent (même mécanisme que le X) l'une après l'autre
   glyphPaths.forEach((p, i) => {
-    setTimeout(()=>{ p.style.strokeDashoffset = '0'; }, 1760 + i*220);
+    setTimeout(()=>{ p.style.strokeDashoffset = '0'; }, 2660 + i*220);
   });
 
   // ÉTAPE 4 — une fois toutes les lettres dessinées, elles se remplissent toutes ensemble
@@ -359,13 +359,13 @@
       p.style.fillOpacity = '1';
       p.style.strokeOpacity = '0';
     });
-  }, 3190);
+  }, 4090);
 
   // ÉTAPE 5 — pause de quelques secondes pour laisser le temps de voir le mot NIRIKX formé, puis léger souffle avant explosion
   setTimeout(() => {
     sWrap.style.transition = 'transform 0.5s cubic-bezier(0.34,1.2,0.64,1)';
     sWrap.style.transform = 'scale(1.06)';
-  }, 6040);
+  }, 6940);
 
   class Particle {
     constructor(x,y){
@@ -412,13 +412,13 @@
     sWrap.style.opacity='0';
     document.querySelector('.intro-glow').style.transition='opacity 0.5s ease';
     document.querySelector('.intro-glow').style.opacity='0';
-  },6540);
+  },7440);
   setTimeout(()=>{
     const intro=document.getElementById('intro-screen');
     intro.style.transition='opacity 0.6s ease';intro.style.opacity='0';
     document.body.style.overflow='';
     setTimeout(()=>intro.remove(),600);
-  },7240);
+  },8140);
 
   // Contact IA — réponse immédiate + email admin via Resend
   async function sendContactAI(){
