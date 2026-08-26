@@ -1743,6 +1743,10 @@ if launch:
                     result = cached_full_analysis(url)
                 st.session_state[cache_key] = result
 
+            results_list.append(result)
+
+        st.session_state["results"] = results_list
+
 if "results" in st.session_state:
     results_list = st.session_state["results"]
     if mode_comparaison and len(results_list) == 2:
