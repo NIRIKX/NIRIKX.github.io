@@ -1474,16 +1474,20 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     if projection_min > 0 or projection_max > 0:
                         projection_min_fmt = f"{int(projection_min):,}".replace(",", " ")
                         projection_max_fmt = f"{int(projection_max):,}".replace(",", " ")
-                        st.markdown(f"""
-                        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
-                            <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Ce que vous pourriez atteindre d'ici 12 mois</div>
-                            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:0.8rem">
-                                <div style="font-size:28px;font-weight:700;color:#c0b8f0">{projection_min_fmt} € — {projection_max_fmt} €</div>
-                                <div style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px">sur 12 mois</div>
-                            </div>
-                            <div style="color:#e0e0e0;font-size:0.85rem;line-height:1.6">{projection_texte}</div>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        montant_html = f"""<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:0.8rem">
+                            <div style="font-size:28px;font-weight:700;color:#c0b8f0">{projection_min_fmt} € — {projection_max_fmt} €</div>
+                            <div style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px">sur 12 mois</div>
+                        </div>"""
+                    else:
+                        montant_html = ""
+
+                    st.markdown(f"""
+                    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px">
+                        <div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Ce que vous pourriez atteindre d'ici 12 mois</div>
+                        {montant_html}
+                        <div style="color:#e0e0e0;font-size:0.85rem;line-height:1.6">{projection_texte}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
                     with st.expander("Estimation de votre potentiel de revenus sur un an"):
                         st.caption("Optionnel — ces informations servent uniquement à ancrer l'estimation dans votre réalité, elles ne sont pas rendues publiques.")
