@@ -492,6 +492,10 @@ def render_result(result, idx=0):
         os.environ["MISTRAL_API_KEY"] = st.secrets["MISTRAL_API_KEY"]
     except Exception:
         pass
+    try:
+        os.environ["NEON_DATABASE_URL"] = st.secrets["NEON_DATABASE_URL"]
+    except Exception:
+        pass    
 
     tabs_list = [
         "Référencement Google",
