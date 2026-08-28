@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import os
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique
+    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_connexion_historique
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, generic_before_after, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
