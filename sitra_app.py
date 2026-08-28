@@ -1433,7 +1433,12 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                 cle_potentiel = f"potentiel_croissance_{result['final_url'].strip().lower()}"
 
                 if cle_potentiel not in st.session_state:
+                    connexion_test = get_connexion_historique()
+                    st.caption(f"🔧 Debug : connexion Neon = {'OK' if connexion_test else 'ÉCHEC'}")
+                    if connexion_test:
+                        connexion_test.close()
                     historique_precedent = lire_historique(result["final_url"], limite=1)
+                    st.caption(f"🔧 Debug : historique trouvé pour cette URL = {len(historique_precedent)} résultat(s)")
                     if historique_precedent:
                         st.session_state[cle_potentiel] = historique_precedent[0]
                     else:
@@ -1443,7 +1448,8 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             estimation = estimer_potentiel_croissance(result, secteur)
                         st.session_state[cle_potentiel] = estimation
                         if estimation.get("score") is not None:
-                            sauvegarder_historique(result["final_url"], estimation)
+                            succes_sauvegarde = sauvegarder_historique(result["final_url"], estimation)
+                            st.caption(f"🔧 Debug : sauvegarde en base = {'réussie' if succes_sauvegarde else 'ÉCHOUÉE'}")
 
                 estimation = st.session_state[cle_potentiel]
 
