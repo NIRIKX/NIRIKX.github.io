@@ -1520,9 +1520,13 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                                     anciennete_annees=anciennete_input or None,
                                     projet_pre_lancement=prelancement_input
                                 )
-                            st.session_state[cle_potentiel] = nouvelle_estimation
-                            if nouvelle_estimation.get("score") is not None:
-                                sauvegarder_historique(result["final_url"], nouvelle_estimation)
+                            estimation_fusionnee = dict(estimation)
+                            estimation_fusionnee["projection_min"] = nouvelle_estimation.get("projection_min")
+                            estimation_fusionnee["projection_max"] = nouvelle_estimation.get("projection_max")
+                            estimation_fusionnee["projection_texte"] = nouvelle_estimation.get("projection_texte") or nouvelle_estimation.get("projection")
+                            st.session_state[cle_potentiel] = estimation_fusionnee
+                            if estimation_fusionnee.get("score") is not None:
+                                sauvegarder_historique(result["final_url"], estimation_fusionnee)
                             st.rerun()
 
                     st.markdown("")
