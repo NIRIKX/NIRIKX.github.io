@@ -1432,7 +1432,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
             else:
                 cle_potentiel = f"potentiel_croissance_{result['final_url'].strip().lower()}"
 
-                    if cle_potentiel not in st.session_state:
+                if cle_potentiel not in st.session_state:
                     historique_precedent = lire_historique(result["final_url"], limite=1)
                     if historique_precedent:
                         st.session_state[cle_potentiel] = historique_precedent[0]
