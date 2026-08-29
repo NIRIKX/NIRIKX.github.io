@@ -1153,3 +1153,83 @@ def lire_historique(url: str, limite: int = 10) -> list:
         except Exception:
             pass
         return []
+
+# ── ACCÈS PRO / PREMIUM ──────────────────────────────────────────────────────
+EMAILS_FONDATEUR = ["yanisaidoune1@gmail.com"]  # <-- à remplacer par ta vraie adresse email
+
+
+def get_forfait_actif(email: str) -> str:
+    """Retourne 'premium', 'pro' ou 'gratuit' selon l'email fourni."""
+    if not email:
+        return "gratuit"
+    email = email.strip().lower()
+    if email in [e.strip().lower() for e in EMAILS_FONDATEUR]:
+        return "premium"
+
+    conn = get_connexion_historique()
+    if not conn:
+        return "gratuit"
+    try:
+        import datetime
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS acces_forfaits (
+                email TEXT PRIMARY KEY,
+                forfait TEXT NOT NULL,
+                date_expiration DATE NOT NULL,
+                date_creation TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        conn.commit()
+        cur.execute("SELECT forfait, date_expiration FROM acces_forfaits WHERE email = %s", (email,))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        if not row:
+            return "gratuit"
+        forfait, date_expiration = row
+        if date_expiration < datetime.date.today():
+            return "gratuit"
+        return forfait
+    except Exception:
+        try:
+            conn.close()
+        except Exception:
+            pass
+        return "gratuit"
+
+
+def activer_forfait(email: str, forfait: str, jours: int = 30) -> bool:
+    """Active ou prolonge un forfait Pro/Premium pour un email donné."""
+    if not email or forfait not in ("pro", "premium"):
+        return False
+    conn = get_connexion_historique()
+    if not conn:
+        return False
+    try:
+        import datetime
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS acces_forfaits (
+                email TEXT PRIMARY KEY,
+                forfait TEXT NOT NULL,
+                date_expiration DATE NOT NULL,
+                date_creation TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        date_expiration = datetime.date.today() + datetime.timedelta(days=jours)
+        cur.execute("""
+            INSERT INTO acces_forfaits (email, forfait, date_expiration)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (email) DO UPDATE SET forfait = EXCLUDED.forfait, date_expiration = EXCLUDED.date_expiration
+        """, (email.strip().lower(), forfait, date_expiration))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True
+    except Exception:
+        try:
+            conn.close()
+        except Exception:
+            pass
+        return False
