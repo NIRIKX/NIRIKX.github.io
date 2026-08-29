@@ -2,11 +2,13 @@ import streamlit as st
 import time
 import os
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_connexion_historique
+    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_connexion_historique, get_forfait_actif, activer_forfait
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, generic_before_after, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
     st.stop()
+
+VERROUILLAGE_ACTIF = False  # passe à True le jour où tu veux vraiment faire payer Pro/Premium
 
 # ── CACHE — réduit le temps de rechargement ───────────────────────────────────
 @st.cache_data(ttl=300, show_spinner=False)
@@ -337,6 +339,16 @@ st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="🅽
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
     st.markdown("### Menu")
+
+    if "email_utilisateur" not in st.session_state:
+        st.session_state["email_utilisateur"] = ""
+    email_utilisateur = st.text_input("Votre email (Pro/Premium) :", key="email_utilisateur", placeholder="vous@exemple.fr")
+
+    if VERROUILLAGE_ACTIF:
+        forfait_actif = get_forfait_actif(email_utilisateur)
+    else:
+        forfait_actif = "premium"
+
     st.divider()
 
     if "menu_choix" not in st.session_state:
@@ -358,6 +370,29 @@ with st.sidebar:
 
     st.divider()
     st.markdown('<div style="color:#666;font-size:0.75rem;text-align:center">NIRIKX Engine v1.0<br>Analyse en temps réel</div>', unsafe_allow_html=True)
+
+# ── ADMINISTRATION (accessible uniquement via ?admin=1 dans l'URL, protégée par mot de passe) ──
+if st.query_params.get("admin") == "1":
+    with st.sidebar:
+        st.divider()
+        with st.expander("🔐 Administration"):
+            mdp_saisi = st.text_input("Mot de passe admin", type="password", key="mdp_admin")
+            if mdp_saisi and mdp_saisi == st.secrets.get("ADMIN_PASSWORD", ""):
+                st.success("Accès admin confirmé")
+                email_a_activer = st.text_input("Email du client", key="admin_email")
+                forfait_choisi = st.selectbox("Forfait", ["pro", "premium"], key="admin_forfait")
+                jours_acces = st.number_input("Durée (jours)", value=30, min_value=1, key="admin_jours")
+                if st.button("Activer cet accès", key="admin_activer"):
+                    if email_a_activer and "@" in email_a_activer:
+                        succes = activer_forfait(email_a_activer, forfait_choisi, jours_acces)
+                        if succes:
+                            st.success(f"{email_a_activer} activé en {forfait_choisi} pour {jours_acces} jours.")
+                        else:
+                            st.error("Erreur : impossible de se connecter à la base de données.")
+                    else:
+                        st.warning("Entre un email valide.")
+            elif mdp_saisi:
+                st.error("Mot de passe incorrect.")
 
 mode_comparaison     = (st.session_state.get("menu_choix") == "Mode comparatif")
 show_corriger        = (st.session_state.get("menu_choix") == "Optimiser mon site")
