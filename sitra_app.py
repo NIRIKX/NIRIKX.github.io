@@ -394,6 +394,34 @@ if st.query_params.get("admin") == "1":
             elif mdp_saisi:
                 st.error("Mot de passe incorrect.")
 
+# ── ACTIVATION DEPUIS LE SITE VITRINE (arrivée via ?plan=pro ou ?plan=premium) ──
+def _confirmer_activation_plan(plan, email):
+    if email and "@" in email:
+        succes = activer_forfait(email, plan, jours=30)
+        if succes:
+            st.session_state["email_utilisateur"] = email
+        st.session_state["activation_plan_resultat"] = "ok" if succes else "erreur"
+    else:
+        st.session_state["activation_plan_resultat"] = "email_invalide"
+
+plan_demande = st.query_params.get("plan", "").lower()
+if plan_demande in ("pro", "premium"):
+    st.info(f"Tu as choisi le forfait **{plan_demande.capitalize()}**. Entre ton email pour l'activer.")
+    col_email, col_bouton = st.columns([3, 1])
+    with col_email:
+        email_activation = st.text_input("Ton email :", key="email_activation_plan", placeholder="vous@exemple.fr", label_visibility="collapsed")
+    with col_bouton:
+        st.button(f"Activer {plan_demande.capitalize()}", key="btn_activer_plan", on_click=_confirmer_activation_plan, args=(plan_demande, email_activation), use_container_width=True)
+
+    resultat = st.session_state.get("activation_plan_resultat")
+    if resultat == "ok":
+        st.success(f"{plan_demande.capitalize()} activé pour {st.session_state.get('email_utilisateur','')} ! Profite de toutes les fonctionnalités ci-dessous.")
+    elif resultat == "erreur":
+        st.error("Erreur technique, réessaie dans un instant.")
+    elif resultat == "email_invalide":
+        st.warning("Entre un email valide.")
+    st.divider()
+
 mode_comparaison     = (st.session_state.get("menu_choix") == "Mode comparatif")
 show_corriger        = (st.session_state.get("menu_choix") == "Optimiser mon site")
 show_textes          = (st.session_state.get("menu_choix") == "Textes corrigés prêts à copier")
