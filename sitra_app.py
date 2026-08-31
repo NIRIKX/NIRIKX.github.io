@@ -340,13 +340,13 @@ st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="🅽
 with st.sidebar:
     st.markdown("### Menu")
 
-    if "email_utilisateur" not in st.session_state:
-        st.session_state["email_utilisateur"] = ""
-    email_utilisateur = st.text_input("Votre email (Pro/Premium) :", key="email_utilisateur", placeholder="vous@exemple.fr")
-
     if VERROUILLAGE_ACTIF:
+        if "email_utilisateur" not in st.session_state:
+            st.session_state["email_utilisateur"] = ""
+        email_utilisateur = st.text_input("Votre email (Pro/Premium) :", key="email_utilisateur", placeholder="vous@exemple.fr")
         forfait_actif = get_forfait_actif(email_utilisateur)
     else:
+        email_utilisateur = st.session_state.get("email_utilisateur", "")
         forfait_actif = "premium"
 
     st.divider()
@@ -404,7 +404,7 @@ def _confirmer_activation_plan(plan, email):
     else:
         st.session_state["activation_plan_resultat"] = "email_invalide"
 
-plan_demande = st.query_params.get("plan", "").lower()
+plan_demande = st.query_params.get("plan", "").lower() if VERROUILLAGE_ACTIF else ""
 if plan_demande in ("pro", "premium"):
     st.info(f"Tu as choisi le forfait **{plan_demande.capitalize()}**. Entre ton email pour l'activer.")
     col_email, col_bouton = st.columns([3, 1])
