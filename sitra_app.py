@@ -396,7 +396,7 @@ st.markdown("""
 <meta property="og:title" content="NIRIKX — Analyseur Intelligent de Sites Web" />
 <meta property="og:description" content="Analysez votre site gratuitement en 30 secondes. SEO, UX, Performance, Design — 20 critères vérifiés avec des recommandations IA personnalisées." />
 <meta property="og:image" content="https://nirikx.github.io/favicon.svg" />
-<meta property="og:url" content="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" />
+<meta property="og:url" content="https://mon-audit-seo-fehcwhwv93dpppsti9f5gi.streamlit.app" />
 <meta property="og:type" content="website" />
 """, unsafe_allow_html=True)
 
@@ -744,10 +744,10 @@ def render_result(result, idx=0):
         st.markdown("### Partager mes résultats")
         score = result["global_score"]
         url_site = result["final_url"]
-        texte_partage = f"J'ai analysé {url_site} avec NIRIKX et obtenu un score de {score}/100 ! Analysez votre site sur https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app"
+        texte_partage = f"J'ai analysé {url_site} avec NIRIKX et obtenu un score de {score}/100 ! Analysez votre site sur https://mon-audit-seo-fehcwhwv93dpppsti9f5gi.streamlit.app"
         lien_twitter = f"https://twitter.com/intent/tweet?text={texte_partage}"
-        lien_linkedin = f"https://www.linkedin.com/sharing/share-offsite/?url=https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app"
-        lien_facebook = f"https://www.facebook.com/sharer/sharer.php?u=https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app&quote={texte_partage}"
+        lien_linkedin = f"https://www.linkedin.com/sharing/share-offsite/?url=https://mon-audit-seo-fehcwhwv93dpppsti9f5gi.streamlit.app"
+        lien_facebook = f"https://www.facebook.com/sharer/sharer.php?u=https://mon-audit-seo-fehcwhwv93dpppsti9f5gi.streamlit.app&quote={texte_partage}"
         lien_whatsapp = f"https://wa.me/?text={texte_partage}"
         st.markdown("")
         col_sh1, col_sh2, col_sh3, col_sh4 = st.columns(4)
