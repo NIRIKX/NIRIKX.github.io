@@ -1729,6 +1729,11 @@ if mode_comparaison:
                 from analyzer import fetch_site
                 import concurrent.futures
 
+                try:
+                    os.environ["MISTRAL_API_KEY"] = st.secrets["MISTRAL_API_KEY"]
+                except Exception:
+                    pass
+
                 site_info = fetch_site(normalize_url(url1))
                 secteur_info = detect_secteur_et_concurrents(url1, site_info.get("html") or "")
                 domaine_site1 = normalize_url(url1).replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0].lower()
