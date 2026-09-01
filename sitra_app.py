@@ -298,7 +298,7 @@ def generer_pdf(result):
     buffer.seek(0)
     return buffer.getvalue()
 
-st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="🅽", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favicon.png", layout="wide", initial_sidebar_state="expanded")
 
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
@@ -393,15 +393,6 @@ show_contenu_marque  = (st.session_state.get("menu_choix") == "Génération de c
 show_potentiel       = (st.session_state.get("menu_choix") == "Potentiel de croissance")
 
 st.markdown("""
-<script>
-(function() {
-  var link = document.querySelector("link[rel~='icon']");
-  if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
-  link.type = 'image/svg+xml';
-  link.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='gF1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%237c6af7' stop-opacity='0.35'/%3E%3C/linearGradient%3E%3ClinearGradient id='gF2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f07cf7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7' stop-opacity='0.9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M30 26 h30 a8 8 0 0 1 8 8 v34 z' fill='url(%23gF1)'/%3E%3Cpath d='M70 74 h-30 a8 8 0 0 1 -8 -8 v-34 z' fill='url(%23gF2)'/%3E%3C/svg%3E";
-})();
-</script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='gF1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%237c6af7' stop-opacity='0.35'/%3E%3C/linearGradient%3E%3ClinearGradient id='gF2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f07cf7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7' stop-opacity='0.9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M30 26 h30 a8 8 0 0 1 8 8 v34 z' fill='url(%23gF1)'/%3E%3Cpath d='M70 74 h-30 a8 8 0 0 1 -8 -8 v-34 z' fill='url(%23gF2)'/%3E%3C/svg%3E">
 <meta property="og:title" content="NIRIKX — Analyseur Intelligent de Sites Web" />
 <meta property="og:description" content="Analysez votre site gratuitement en 30 secondes. SEO, UX, Performance, Design — 20 critères vérifiés avec des recommandations IA personnalisées." />
 <meta property="og:image" content="https://nirikx.github.io/favicon.svg" />
