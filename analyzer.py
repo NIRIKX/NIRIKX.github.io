@@ -108,49 +108,6 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
         return {"secteur": "Autre", "concurrents": []}
 
 
-    """Détecte automatiquement les pages principales du site en lisant la navigation"""
-    url = normalize_url(url)
-    pages = []
-    try:
-        parsed = urlparse(url)
-        base_url = f"{parsed.scheme}://{parsed.netloc}"
-
-        session = requests.Session()
-        session.headers.update(HEADERS)
-        r = session.get(url, timeout=TIMEOUT, allow_redirects=True)
-        if r.status_code != 200:
-            return []
-
-        soup = BeautifulSoup(r.text, "lxml")
-
-        # Cherche les liens dans la navigation
-        nav_links = []
-        for nav in soup.find_all(["nav", "header"]):
-            for a in nav.find_all("a", href=True):
-                href = a.get("href", "").strip()
-                if not href or href == "/" or href.startswith("#") or href.startswith("javascript"):
-                    continue
-                # Construit l'URL complète
-                if href.startswith("http"):
-                    full_url = href
-                elif href.startswith("/"):
-                    full_url = base_url + href
-                else:
-                    full_url = base_url + "/" + href
-
-                # Garde seulement les pages du même domaine
-                if parsed.netloc in full_url and full_url != url and full_url not in nav_links:
-                    # Filtre les URLs de ressources
-                    if not any(ext in full_url.lower() for ext in [".css", ".js", ".png", ".jpg", ".pdf", ".ico"]):
-                        nav_links.append(full_url)
-
-        # Garde max 4 pages
-        return nav_links[:4]
-
-    except Exception:
-        return []
-
-
 def normalize_url(url: str) -> str:
     url = url.strip()
     if not url:
@@ -616,79 +573,6 @@ def get_score_label(score: int) -> tuple:
         return "Critique", "rouge", "#dc3545"
 
 
-def detect_pages(url: str) -> list:
-    """Détecte automatiquement les pages principales du site"""
-    url = normalize_url(url)
-    pages = []
-    try:
-        parsed = urlparse(url)
-        base_url = f"{parsed.scheme}://{parsed.netloc}"
-        session = requests.Session()
-        session.headers.update(HEADERS)
-        r = session.get(url, timeout=TIMEOUT, allow_redirects=True)
-        if r.status_code != 200:
-            return []
-        soup = BeautifulSoup(r.text, "lxml")
-        nav_links = []
-        for nav in soup.find_all(["nav", "header"]):
-            for a in nav.find_all("a", href=True):
-                href = a.get("href", "").strip()
-                if not href or href == "/" or href.startswith("#") or href.startswith("javascript"):
-                    continue
-                if href.startswith("http"):
-                    full_url = href
-                elif href.startswith("/"):
-                    full_url = base_url + href
-                else:
-                    full_url = base_url + "/" + href
-                if parsed.netloc in full_url and full_url != url and full_url not in nav_links:
-                    if not any(ext in full_url.lower() for ext in [".css", ".js", ".png", ".jpg", ".pdf", ".ico"]):
-                        nav_links.append(full_url)
-        return nav_links[:4]
-    except Exception:
-        return []
-
-
-def get_pagespeed(url: str) -> dict:
-    """Recupere les vraies metriques Google PageSpeed sans cle API"""
-    result = {
-        "performance": None,
-        "accessibility": None,
-        "seo": None,
-        "best_practices": None,
-        "fcp": None,
-        "lcp": None,
-        "cls": None,
-        "error": None,
-    }
-    try:
-        api_url = f"https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={url}&strategy=mobile"
-        r = requests.get(api_url, timeout=30)
-        if r.status_code != 200:
-            result["error"] = f"PageSpeed indisponible (code {r.status_code})"
-            return result
-        data = r.json()
-        cats = data.get("lighthouseResult", {}).get("categories", {})
-        audits = data.get("lighthouseResult", {}).get("audits", {})
-
-        result["performance"] = round((cats.get("performance", {}).get("score", 0) or 0) * 100)
-        result["accessibility"] = round((cats.get("accessibility", {}).get("score", 0) or 0) * 100)
-        result["seo"] = round((cats.get("seo", {}).get("score", 0) or 0) * 100)
-        result["best_practices"] = round((cats.get("best-practices", {}).get("score", 0) or 0) * 100)
-
-        fcp = audits.get("first-contentful-paint", {}).get("displayValue", "")
-        lcp = audits.get("largest-contentful-paint", {}).get("displayValue", "")
-        cls = audits.get("cumulative-layout-shift", {}).get("displayValue", "")
-
-        result["fcp"] = fcp
-        result["lcp"] = lcp
-        result["cls"] = cls
-
-    except Exception as e:
-        result["error"] = str(e)
-
-    return result
-
 def is_produit_web(result: dict) -> bool:
     """
     Devine si le site analyse est un produit web (SaaS, appli, outil en ligne)
@@ -763,29 +647,6 @@ def extraire_signaux_concrets(html: str) -> list:
         if s and s not in signaux_uniques:
             signaux_uniques.append(s)
     return signaux_uniques[:10]
-
-def extraire_montant(texte: str) -> int:
-    """
-    Extrait un montant en euros depuis un texte libre genere par l'IA.
-    Retourne 0 si aucun chiffre n'est trouve.
-    """
-    if not texte:
-        return 0
-    nettoye = texte.replace("€", "").replace(" ", "").replace("\u00a0", "")
-    match = re.search(r'\d+', nettoye)
-    return int(match.group()) if match else 0
-
-def extraire_montant(texte: str) -> float:
-    """
-    Extrait un nombre (entier ou decimal) depuis un texte libre genere
-    par l'IA. Retourne 0 si aucun chiffre n'est trouve.
-    """
-    if not texte:
-        return 0
-    nettoye = texte.replace("€", "").replace(" ", "").replace("\u00a0", "").replace(",", ".")
-    match = re.search(r'\d+\.?\d*', nettoye)
-    return float(match.group()) if match else 0
-
 
 def extraire_montant(texte: str) -> float:
     """

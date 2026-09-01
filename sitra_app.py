@@ -2,8 +2,8 @@ import streamlit as st
 import time
 import os
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, get_pagespeed, detect_pages, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_connexion_historique, get_forfait_actif, activer_forfait
-    from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, generic_before_after, get_selector_for_issue, get_issue_texts
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait
+    from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
     st.stop()
@@ -42,42 +42,6 @@ Pas de termes techniques — utilise des mots du quotidien."""
 def generer_recommandations_ia(result):
     issues_str = ', '.join([i['message'] for i in result['all_issues'][:6]])
     return generer_recommandations_ia_inner(result['final_url'], result['global_score'], issues_str)
-
-def generer_deux_corrections(plateforme, result):
-    try:
-        import requests as req
-        headers_m = {"Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}", "Content-Type": "application/json"}
-
-        problemes = ', '.join([i['message'] for i in result['all_issues'][:6]])
-
-        prompt = f"""Tu es un expert en optimisation de sites web. Pour ce site {result['final_url']} sur {plateforme}, propose EXACTEMENT 2 versions de corrections différentes.
-
-Problèmes détectés : {problemes}
-
-VERSION 1 : Approche minimaliste (corrections essentielles seulement, rapide à faire)
-VERSION 2 : Approche complète (toutes les corrections, plus de travail mais meilleur résultat)
-
-Pour chaque version, liste en 4-5 points simples ce qui sera corrigé, expliqué en langage simple (pas de jargon technique).
-
-Format exact :
-VERSION 1 - Corrections essentielles
-- [point 1]
-- [point 2]
-- [point 3]
-- [point 4]
-
-VERSION 2 - Corrections complètes
-- [point 1]
-- [point 2]
-- [point 3]
-- [point 4]
-- [point 5]"""
-
-        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400}
-        r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers_m, json=data, timeout=30)
-        return r.json()["choices"][0]["message"]["content"]
-    except Exception:
-        return None
 
 # ── CONTENU DE MARQUE IA (inspiré Pomelli) ───────────────────────────────────
 import re
