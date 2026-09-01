@@ -656,7 +656,19 @@ def render_result(result, idx=0):
                 render_issues(perf["issues"])
 
     with tabs[3]:
-        st.markdown(f"### Score global : **{result['global_score']}/100** — {label_txt}")
+                st.markdown(f"### Score global : **{result['global_score']}/100** — {label_txt}")
+
+        score_g = result['global_score']
+        perte_estimee = max(0, min(65, round((100 - score_g) * 0.65)))
+        if perte_estimee >= 30:
+            couleur_perte, fond_perte, titre_perte = "#c62828", "#fff3f3", "⚠️ Clients potentiellement perdus"
+        elif perte_estimee >= 12:
+            couleur_perte, fond_perte, titre_perte = "#e65100", "#fff8e1", "⚠️ Une partie de vos visiteurs repart sans agir"
+        else:
+            couleur_perte, fond_perte, titre_perte = "#16a34a", "#f0fdf4", "✅ Peu de visiteurs perdus"
+
+        st.markdown(f"""<div style="background:{fond_perte};border:1px solid {couleur_perte}55;border-radius:12px;padding:1rem 1.3rem;margin:0.8rem 0 1.2rem"><div style="font-weight:700;color:{couleur_perte};margin-bottom:0.4rem">{titre_perte}</div><div style="color:#5a5a5a;font-size:0.9rem;line-height:1.5">En combinant tous les problèmes détectés sur votre site (référencement, navigation, contenu, apparence, vitesse), on estime qu'environ <b>{perte_estimee}% de vos visiteurs</b> repartent sans devenir clients à cause de ces obstacles cumulés. C'est un ordre de grandeur basé sur la qualité globale de votre site, pas une mesure exacte de votre trafic réel — mais plus votre score progresse, plus ce chiffre baisse.</div></div>""", unsafe_allow_html=True)
+
         render_score_bar("Référencement Google", result["seo"]["score"], "Comment Google voit votre site")
         render_score_bar("Navigation", result["ux"]["score"], "Les visiteurs trouvent-ils facilement ce qu'ils cherchent ?")
         render_score_bar("Qualité du texte", result["content"]["score"], "Votre contenu est-il clair et suffisant ?")
