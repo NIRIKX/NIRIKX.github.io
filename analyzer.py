@@ -66,7 +66,7 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
         if not secteur_detecte:
             text_lower = text.lower()
             secteurs = {
-                "Restaurant / Food": ["restaurant", "menu", "plat", "cuisine", "food", "pizza", "burger", "reservation"],
+                "Restaurant / Food": ["restaurant", "plat", "cuisine", "food", "pizza", "burger", "reservation"],
                 "E-commerce": ["acheter", "panier", "boutique", "shop", "produit", "livraison", "commander"],
                 "Artisan / Services": ["artisan", "devis", "chantier", "renovation", "plombier", "electricien"],
                 "Santé / Médical": ["médecin", "docteur", "consultation", "santé", "cabinet", "clinique"],
@@ -80,9 +80,16 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
                 "Autre": []
             }
             scores = {s: sum(1 for m in mots if m in text_lower) for s, mots in secteurs.items()}
-            secteur_detecte = max(scores, key=scores.get)
-            if scores[secteur_detecte] == 0:
+            meilleur_score = max(scores.values())
+            secteurs_ex_aequo = [s for s, sc in scores.items() if sc == meilleur_score]
+            # En cas d'egalite entre plusieurs secteurs (mots trop generiques
+            # trouves des deux cotes), le signal n'est pas assez fiable pour
+            # trancher — mieux vaut "Autre" qu'un secteur choisi au hasard
+            # par l'ordre du dictionnaire.
+            if meilleur_score == 0 or len(secteurs_ex_aequo) > 1:
                 secteur_detecte = "Autre"
+            else:
+                secteur_detecte = secteurs_ex_aequo[0]
 
         concurrents_types = {
             "Restaurant / Food": ["tripadvisor.fr", "lafourchette.com", "deliveroo.fr", "ubereats.com", "yelp.fr"],
