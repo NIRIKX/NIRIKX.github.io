@@ -280,7 +280,7 @@
 <section class="contact-section" id="contact">
   <div class="section-label">Contact</div>
   <h2 class="section-title reveal" style="margin-bottom:0">Une question ?</h2>
-  <p style="color:var(--muted);margin-top:1rem;margin-bottom:0" class="reveal">Notre assistant IA répond instantanément. Vous recevrez aussi une confirmation par email.</p>
+  <p style="color:var(--muted);margin-top:1rem;margin-bottom:0" class="reveal">Décrivez votre question ou votre problème, on vous répond par email sous peu.</p>
   <div class="contact-form reveal">
     <div><label>Votre nom</label><input type="text" id="c-nom" placeholder="Jean Dupont"></div>
     <div><label>Votre email</label><input type="email" id="c-email" placeholder="jean@exemple.fr"></div>
@@ -289,10 +289,9 @@
     <div id="contact-error" style="display:none;color:#dc3545;font-size:0.9rem;margin-top:1rem;text-align:center">Merci de remplir tous les champs.</div>
     <div id="contact-loading" style="display:none;text-align:center;margin-top:1rem;color:var(--muted)">
       <span style="display:inline-block;width:16px;height:16px;border:2px solid #7c6af7;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px"></span>
-      L'assistant analyse votre message...
+      Envoi en cours...
     </div>
     <div id="contact-ai-response" style="display:none;margin-top:1.5rem;background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.3);border-radius:12px;padding:1.2rem">
-      <div style="color:#a090f7;font-weight:600;font-size:0.85rem;margin-bottom:0.6rem">Réponse de l'assistant NIRIKX</div>
       <div id="ai-response-text" style="color:#e8e8f0;font-size:0.9rem;line-height:1.6"></div>
     </div>
   </div>
@@ -421,7 +420,9 @@
     setTimeout(()=>intro.remove(),600);
   },7140);
 
-  // Contact IA — réponse immédiate + email admin via Resend
+  // Contact — envoi du message via le relais securise (Cloudflare Worker)
+  const CONTACT_WORKER_URL = 'https://nirikx-contact.solitaire-eau-6fd0.workers.dev';
+
   async function sendContactAI(){
     const nom=document.getElementById('c-nom').value.trim();
     const email=document.getElementById('c-email').value.trim();
@@ -436,38 +437,21 @@
     err.style.display='none'; resp.style.display='none';
     loading.style.display='block'; btn.disabled=true; btn.style.opacity='0.6';
 
-    let aiReply="Merci pour votre message ! Notre équipe NIRIKX vous répondra dans les plus brefs délais.";
     try{
-      const r=await fetch('https://api.anthropic.com/v1/messages',{
+      const r=await fetch(CONTACT_WORKER_URL,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514', max_tokens:300,
-          messages:[{role:'user',content:`Tu es l'assistant de NIRIKX, un outil d'analyse et d'optimisation de sites web. Réponds à ce message client en français, de façon professionnelle et utile. Maximum 3 phrases.\n\nNom: ${nom}\nMessage: ${msg}`}]
-        })
+        body:JSON.stringify({nom, email, msg})
       });
-      const d=await r.json();
-      if(d.content?.[0]?.text) aiReply=d.content[0].text;
-    }catch(e){}
+      if(!r.ok) throw new Error('echec envoi');
+      respText.textContent="Merci pour votre message ! On vous répond par email sous 24h.";
+    }catch(e){
+      respText.textContent="Une erreur est survenue lors de l'envoi. Réessayez, ou écrivez-nous directement par email.";
+    }
 
     loading.style.display='none';
-    respText.textContent=aiReply;
     resp.style.display='block';
     btn.disabled=false; btn.style.opacity='1';
-
-    // Email admin — remplacez YOUR_RESEND_KEY par votre clé Resend
-    try{
-      await fetch('https://api.resend.com/emails',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer YOUR_RESEND_KEY'},
-        body:JSON.stringify({
-          from:'NIRIKX Contact <onboarding@resend.dev>',
-          to:['yanisaidoune1@gmail.com'],
-          subject:`[NIRIKX Contact] ${nom} — ${email}`,
-          html:`<h2>Nouveau message NIRIKX</h2><p><b>Nom :</b> ${nom}</p><p><b>Email :</b> ${email}</p><p><b>Message :</b><br>${msg.replace(/\n/g,'<br>')}</p><hr><p><b>Réponse IA envoyée :</b><br>${aiReply}</p>`
-        })
-      });
-    }catch(e){}
   }
 </script>
 </body>
