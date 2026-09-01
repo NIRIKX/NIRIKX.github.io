@@ -103,7 +103,11 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
             "Tech / Digital": ["malt.fr", "upwork.com", "clutch.co", "codeur.com", "fiverr.com"],
             "Sport / Mode": ["zalando.fr", "vinted.fr", "asos.com", "spartoo.com"],
             "Tourisme / Voyage": ["booking.com", "tripadvisor.fr", "airbnb.fr", "abritel.fr"],
-            "Autre": ["google.fr", "wikipedia.org", "yelp.fr"],
+            # "Autre" = secteur non determine avec confiance : pas de vrais
+            # concurrents a proposer, mieux vaut ne rien suggerer que des
+            # sites generiques (Google, Wikipedia...) qui ne sont concurrents
+            # de personne.
+            "Autre": [],
         }
 
         concurrents = concurrents_types.get(secteur_detecte, [])
