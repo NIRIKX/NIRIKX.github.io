@@ -404,7 +404,7 @@ st.markdown("""
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23000000'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c6af7'/%3E%3Cstop offset='100%25' stop-color='%23f07cf7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50' y='76' font-family='Arial Black%2C sans-serif' font-size='78' font-weight='900' fill='url(%23g)' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
 <meta property="og:title" content="NIRIKX — Analyseur Intelligent de Sites Web" />
 <meta property="og:description" content="Analysez votre site gratuitement en 30 secondes. SEO, UX, Performance, Design — 20 critères vérifiés avec des recommandations IA personnalisées." />
-<meta property="og:image" content="https://yanisaidoune1-sudo.github.io/mon-audit-seo/favicon.svg" />
+<meta property="og:image" content="https://nirikx.github.io/favicon.svg" />
 <meta property="og:url" content="https://mon-audit-seo-ivaf8necmnfhqpmnyf2unx.streamlit.app" />
 <meta property="og:type" content="website" />
 """, unsafe_allow_html=True)
