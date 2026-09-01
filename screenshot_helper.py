@@ -280,11 +280,6 @@ def get_issue_texts(message: str):
     return badge_color, before_text, after_text, conseil
 
 
-def generic_before_after(message: str):
-    """Rétrocompatibilité — utilise maintenant get_issue_texts."""
-    return get_issue_texts(message)
-
-
 # ── RÉCUPÉRATION DE LA CAPTURE (PLEINE PAGE) ─────────────────────────────────
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_screenshot(url: str):
