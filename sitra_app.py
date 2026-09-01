@@ -656,7 +656,7 @@ def render_result(result, idx=0):
                 render_issues(perf["issues"])
 
     with tabs[3]:
-                st.markdown(f"### Score global : **{result['global_score']}/100** — {label_txt}")
+        st.markdown(f"### Score global : **{result['global_score']}/100** — {label_txt}")
 
         score_g = result['global_score']
         perte_estimee = max(0, min(65, round((100 - score_g) * 0.65)))
