@@ -473,7 +473,9 @@ def render_issues(issues):
 # ── RENDER RESULT ─────────────────────────────────────────────────────────────
 def render_result(result, idx=0):
     if result.get("error"):
-        st.warning("Impossible d'analyser ce site. Certains grands sites bloquent volontairement les outils d'analyse automatiques. NIRIKX est conçu pour les sites de PME, artisans, restaurants et portfolios.")
+        st.warning("Impossible d'analyser ce site pour le moment. Certaines protections automatiques anti-robots bloquent parfois les outils d'analyse, même sur de petits sites — ce n'est pas forcément un choix du propriétaire du site. Réessayez dans quelques instants.")
+        with st.expander("Détail technique"):
+            st.caption(result.get("error") or "Erreur inconnue")
         return
 
     label_txt, _, label_color = get_score_label(result["global_score"])
