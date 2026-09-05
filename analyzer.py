@@ -23,6 +23,27 @@ HEADERS = {
 
 TIMEOUT = 15
 
+MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions"
+
+
+def appeler_mistral(headers, data, timeout=30, max_tentatives=3):
+    """
+    Envoie une requete a l'API Mistral, avec des nouvelles tentatives
+    automatiques (delai croissant) en cas de limite de debit (429).
+    Le forfait gratuit de Mistral a une limite basse, facilement
+    atteinte quand plusieurs appels partent coup sur coup - plutot que
+    d'echouer immediatement, on patiente et on reessaie.
+    """
+    delai = 3
+    reponse = requests.post(MISTRAL_URL, headers=headers, json=data, timeout=timeout)
+    for _ in range(max_tentatives - 1):
+        if reponse.status_code != 429:
+            break
+        time.sleep(delai)
+        delai *= 2
+        reponse = requests.post(MISTRAL_URL, headers=headers, json=data, timeout=timeout)
+    return reponse
+
 
 def detect_secteur_et_concurrents(url: str, html: str) -> dict:
     """Détecte le secteur du site avec l'IA et trouve des concurrents à comparer"""
@@ -57,7 +78,7 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 20
                 }
-                r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=15)
+                r = appeler_mistral(headers, data, timeout=15)
                 secteur_ia = r.json()["choices"][0]["message"]["content"].strip()
                 secteurs_valides = ["Restaurant / Food", "E-commerce", "Artisan / Services", "Santé / Médical",
                                    "Immobilier", "Éducation / Formation", "Beauté / Bien-être", "Juridique / Finance",
@@ -820,7 +841,7 @@ PROJECTION_TEXTE: [explication en 2-3 phrases, ou le message non disponible]
 ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 750}
-        r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
+        r = appeler_mistral(headers, data, timeout=30)
         contenu = r.json()["choices"][0]["message"]["content"]
         contenu = contenu.replace("**", "").replace("*", "")
 
