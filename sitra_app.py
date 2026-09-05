@@ -1734,6 +1734,11 @@ if mode_comparaison:
                 secteur_info = detect_secteur_et_concurrents(url1, site_info.get("html") or "")
                 domaine_site1 = normalize_url(url1).replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0].lower()
                 candidats = [c for c in secteur_info.get("concurrents", []) if c.lower() != domaine_site1]
+                st.session_state["concurrents_suggeres_diag"] = {
+                    "fetch_error": site_info.get("error"),
+                    "taille_html": len(site_info.get("html") or ""),
+                    "secteur": secteur_info.get("secteur"),
+                }
 
                 def teste_domaine(domaine):
                     try:
@@ -1762,6 +1767,12 @@ if mode_comparaison:
 
             if not st.session_state["concurrents_suggeres"]:
                 st.info("Aucune piste n'a pu être trouvée automatiquement pour ce secteur — essayez un concurrent que vous connaissez.")
+                diag = st.session_state.get("concurrents_suggeres_diag") or {}
+                with st.expander("Détail technique"):
+                    if diag.get("fetch_error"):
+                        st.caption(f"Votre site n'a pas pu être chargé pour deviner son secteur : {diag['fetch_error']}")
+                    else:
+                        st.caption(f"Secteur détecté : {diag.get('secteur') or 'inconnu'} · contenu récupéré : {diag.get('taille_html', 0)} caractères")
 
         if (st.session_state.get("concurrents_suggeres_pour") == url1.strip().lower()
                 and st.session_state.get("concurrents_suggeres")):
