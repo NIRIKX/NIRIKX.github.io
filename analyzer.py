@@ -49,9 +49,23 @@ def detect_secteur_et_concurrents(url: str, html: str) -> dict:
     """Détecte le secteur du site avec l'IA et trouve des concurrents à comparer"""
     try:
         soup = BeautifulSoup(html, "lxml")
-        text = soup.get_text(" ", strip=True)[:3000]
         title = soup.find("title")
         title_text = title.get_text(strip=True) if title else ""
+        meta_desc = soup.find("meta", attrs={"name": "description"})
+        meta_desc_text = (meta_desc.get("content") or "").strip() if meta_desc else ""
+        h1_text = " ".join(h.get_text(" ", strip=True) for h in soup.find_all("h1")[:3])
+
+        # Sur beaucoup de sites (surtout les boutiques en ligne), le debut
+        # du texte de la page est noye par le menu, le bandeau de cookies
+        # ou le pied de page plutot que par le vrai contenu - on les retire
+        # pour que les 3000 premiers caracteres gardes soient utiles.
+        for tag in soup(["script", "style", "nav", "footer", "header"]):
+            tag.decompose()
+        corps_text = soup.get_text(" ", strip=True)[:3000]
+
+        # Le titre, la description et les H1 sont un signal plus dense et
+        # plus fiable que le texte brut de la page pour deviner le secteur.
+        text = f"{title_text}. {meta_desc_text}. {h1_text}. {corps_text}"
 
         # Détection du secteur via Mistral
         secteur_detecte = None
@@ -70,7 +84,8 @@ def detect_secteur_et_concurrents(url: str, html: str) -> dict:
 Restaurant / Food, E-commerce, Artisan / Services, Santé / Médical, Immobilier, Éducation / Formation, Beauté / Bien-être, Juridique / Finance, Tech / Digital, Sport / Mode, Tourisme / Voyage, Autre
 
 Titre du site : {title_text}
-Contenu : {text[:1000]}
+Description : {meta_desc_text}
+Contenu : {corps_text[:1000]}
 
 Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
 
@@ -94,7 +109,7 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
             text_lower = text.lower()
             secteurs = {
                 "Restaurant / Food": ["restaurant", "plat", "cuisine", "food", "pizza", "burger", "reservation"],
-                "E-commerce": ["acheter", "panier", "boutique", "shop", "produit", "livraison", "commander"],
+                "E-commerce": ["acheter", "panier", "boutique", "shop", "produit", "livraison", "commander", "soldes", "nouveautés"],
                 "Artisan / Services": ["artisan", "devis", "chantier", "renovation", "plombier", "electricien"],
                 "Santé / Médical": ["médecin", "docteur", "consultation", "santé", "cabinet", "clinique"],
                 "Immobilier": ["immobilier", "appartement", "maison", "louer", "vente", "agence"],
@@ -102,7 +117,7 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
                 "Beauté / Bien-être": ["coiffeur", "salon", "beauté", "spa", "massage", "soin"],
                 "Juridique / Finance": ["avocat", "comptable", "juridique", "finance", "conseil"],
                 "Tech / Digital": ["développement", "web", "application", "digital", "software"],
-                "Sport / Mode": ["sport", "mode", "vêtement", "chaussure", "fitness", "nike", "adidas"],
+                "Sport / Mode": ["sport", "mode", "vêtement", "chaussure", "fitness", "nike", "adidas", "collection", "prêt-à-porter", "robe", "jean"],
                 "Tourisme / Voyage": ["voyage", "hotel", "réservation", "tourisme", "destination"],
                 "Autre": []
             }
