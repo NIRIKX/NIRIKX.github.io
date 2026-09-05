@@ -35,6 +35,11 @@ Pas de termes techniques — utilise des mots du quotidien."""
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 600}
         r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
+        if r.status_code == 429:
+            # Trop de demandes envoyées d'un coup - on retente une fois
+            # apres une courte pause plutot que d'echouer immediatement.
+            time.sleep(3)
+            r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
         if r.status_code != 200:
             return None, f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"
         return r.json()["choices"][0]["message"]["content"], None
