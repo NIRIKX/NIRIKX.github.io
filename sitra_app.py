@@ -151,10 +151,12 @@ BOUTON :
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt_final}], "max_tokens": 1200}
         r = appeler_mistral(headers, data, timeout=30)
+        if r.status_code != 200:
+            return None, f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"
         contenu = r.json()["choices"][0]["message"]["content"]
-        return enlever_emojis(contenu)
-    except Exception:
-        return None
+        return enlever_emojis(contenu), None
+    except Exception as e:
+        return None, str(e)
 
 def generer_pdf(result):
     from reportlab.lib.pagesizes import A4
@@ -1248,8 +1250,9 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         st.session_state[f"images_urls_{idx}"] = images_urls
                         st.rerun()
 
-                    except Exception:
+                    except Exception as e:
                         st.error("Erreur lors de la génération. Réessayez dans quelques secondes.")
+                        st.caption(f"Détail technique : {e}")
 
             if f"textes_corriges_{idx}" in st.session_state:
                 textes = st.session_state[f"textes_corriges_{idx}"]
@@ -1398,13 +1401,14 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     st.warning("Merci de préciser un objectif pour la campagne.")
                 else:
                     with st.spinner("L'IA génère votre contenu..."):
-                        contenu_genere = generer_contenu_marque(result, type_contenu_choisi, objectif_choisi)
+                        contenu_genere, erreur_contenu = generer_contenu_marque(result, type_contenu_choisi, objectif_choisi)
                     if contenu_genere:
                         st.session_state[f"contenu_marque_{idx}"] = contenu_genere
                         st.session_state[f"contenu_marque_type_{idx}"] = type_contenu_choisi
                         st.rerun()
                     else:
                         st.error("Impossible de générer le contenu pour le moment. Réessayez dans quelques secondes.")
+                        st.caption(f"Détail technique : {erreur_contenu or 'erreur inconnue'}")
 
             if f"contenu_marque_{idx}" in st.session_state:
                 type_affiche = st.session_state.get(f"contenu_marque_type_{idx}", "")
@@ -1484,6 +1488,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 
                 if estimation.get("error") or estimation.get("score") is None:
                     st.warning("Impossible de générer l'estimation pour le moment.")
+                    st.caption(f"Détail technique : {estimation.get('error') or 'erreur inconnue'}")
                     if st.button("Réessayer", key=f"retry_potentiel_{idx}"):
                         del st.session_state[cle_potentiel]
                         st.rerun()
