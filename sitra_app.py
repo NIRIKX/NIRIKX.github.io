@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import os
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_mistral
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
@@ -34,12 +34,7 @@ Chaque conseil doit être sur une nouvelle ligne, expliquer le problème simplem
 Pas de termes techniques — utilise des mots du quotidien."""
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 600}
-        r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
-        if r.status_code == 429:
-            # Trop de demandes envoyées d'un coup - on retente une fois
-            # apres une courte pause plutot que d'echouer immediatement.
-            time.sleep(3)
-            r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
+        r = appeler_mistral(headers, data, timeout=30)
         if r.status_code != 200:
             return None, f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"
         return r.json()["choices"][0]["message"]["content"], None
@@ -155,7 +150,7 @@ BOUTON :
         prompt_final += "\n\nRappel impératif, quel que soit le format demandé ci-dessus : ta réponse doit impérativement se terminer par une section intitulée \"Pourquoi ça marche ?\" contenant 3 à 4 puces courtes qui expliquent tes choix de ton et d'angle. N'arrête pas ta réponse avant d'avoir écrit cette section, sans emoji."
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt_final}], "max_tokens": 1200}
-        r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
+        r = appeler_mistral(headers, data, timeout=30)
         contenu = r.json()["choices"][0]["message"]["content"]
         return enlever_emojis(contenu)
     except Exception:
@@ -1206,7 +1201,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                                     ]}],
                                     "max_tokens": 60
                                 }
-                                r_v = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers_m, json=vision_data, timeout=20)
+                                r_v = appeler_mistral(headers_m, vision_data, timeout=20)
                                 d = r_v.json()["choices"][0]["message"]["content"].strip()
                                 descriptions_images.append("" if "SKIP" in d.upper() or len(d) < 10 else d)
                             except Exception:
@@ -1242,7 +1237,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                             "max_tokens": 1200,
                             "temperature": 0.7
                         }
-                        r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers_m, json=data, timeout=45)
+                        r = appeler_mistral(headers_m, data, timeout=45)
                         textes_generes = r.json()["choices"][0]["message"]["content"]
                         textes_generes = re.sub(r'#{1,6}\s*', '', textes_generes)
                         textes_generes = re.sub(r'\*{1,2}', '', textes_generes)
@@ -1846,7 +1841,7 @@ Rédige un texte court (5-6 phrases maximum) qui :
 Sois direct, concret, sans jargon technique."""
 
                     data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400}
-                    r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
+                    r = appeler_mistral(headers, data, timeout=30)
                     analyse = r.json()["choices"][0]["message"]["content"]
 
                     st.markdown(f"""
@@ -1942,7 +1937,7 @@ IMPORTANT : Tu dois TOUJOURS terminer tes réponses complètement. Ne coupe jama
                     "messages": messages,
                     "max_tokens": 1500
                 }
-                r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
+                r = appeler_mistral(headers, data, timeout=30)
                 reponse = r.json()["choices"][0]["message"]["content"]
                 st.session_state["chat_messages"].append({"role": "assistant", "content": reponse})
                 st.session_state["chat_input_key"] += 1
