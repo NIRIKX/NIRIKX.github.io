@@ -886,6 +886,8 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 750}
         r = appeler_mistral(headers, data, timeout=30)
+        if r.status_code != 200:
+            return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection_min": None, "projection_max": None, "projection_texte": None, "analyse": None, "signaux_concrets": [], "error": f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"}
         contenu = r.json()["choices"][0]["message"]["content"]
         contenu = contenu.replace("**", "").replace("*", "")
 
