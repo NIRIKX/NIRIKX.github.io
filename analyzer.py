@@ -5,6 +5,7 @@ Remplace tous les random() par de vraies vérifications
 
 import requests
 import time
+import threading
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 import re
@@ -25,15 +26,29 @@ TIMEOUT = 15
 
 MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions"
 
+# Le forfait gratuit de Mistral limite le nombre de requetes par seconde
+# pour tout le compte (pas par visiteur) - une seule analyse peut a elle
+# seule declencher plusieurs appels IA presque en meme temps (secteur,
+# recommandations, potentiel...), et plusieurs visiteurs partagent la
+# meme limite. Plutot que d'attendre l'erreur 429 pour reagir, on espace
+# nous-memes les appels d'au moins INTERVALLE_MIN_MISTRAL secondes.
+INTERVALLE_MIN_MISTRAL = 2.0
+_dernier_appel_mistral = {"t": 0.0}
+_verrou_mistral = threading.Lock()
+
 
 def appeler_mistral(headers, data, timeout=30, max_tentatives=3):
     """
-    Envoie une requete a l'API Mistral, avec des nouvelles tentatives
-    automatiques (delai croissant) en cas de limite de debit (429).
-    Le forfait gratuit de Mistral a une limite basse, facilement
-    atteinte quand plusieurs appels partent coup sur coup - plutot que
-    d'echouer immediatement, on patiente et on reessaie.
+    Envoie une requete a l'API Mistral, en espacant les appels pour
+    eviter la limite de debit, puis en reessayant avec un delai croissant
+    si un 429 survient quand meme.
     """
+    with _verrou_mistral:
+        attente = INTERVALLE_MIN_MISTRAL - (time.time() - _dernier_appel_mistral["t"])
+        if attente > 0:
+            time.sleep(attente)
+        _dernier_appel_mistral["t"] = time.time()
+
     delai = 3
     reponse = requests.post(MISTRAL_URL, headers=headers, json=data, timeout=timeout)
     for _ in range(max_tentatives - 1):
