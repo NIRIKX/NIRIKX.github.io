@@ -35,9 +35,11 @@ Pas de termes techniques — utilise des mots du quotidien."""
 
         data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 600}
         r = req.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=data, timeout=30)
-        return r.json()["choices"][0]["message"]["content"]
-    except Exception:
-        return None
+        if r.status_code != 200:
+            return None, f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"
+        return r.json()["choices"][0]["message"]["content"], None
+    except Exception as e:
+        return None, str(e)
 
 def generer_recommandations_ia(result):
     issues_str = ', '.join([i['message'] for i in result['all_issues'][:6]])
@@ -501,11 +503,12 @@ def render_result(result, idx=0):
     st.markdown("")
     with st.expander("Analyse IA — Recommandations personnalisées"):
         with st.spinner("L'IA analyse votre site..."):
-            recommandations = generer_recommandations_ia(result)
+            recommandations, erreur_ia = generer_recommandations_ia(result)
         if recommandations:
             st.markdown(recommandations)
         else:
             st.warning("Impossible de générer les recommandations IA pour le moment.")
+            st.caption(f"Détail technique : {erreur_ia or 'erreur inconnue'}")
 
     import os
     try:
