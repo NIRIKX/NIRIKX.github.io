@@ -15,6 +15,18 @@ VERROUILLAGE_ACTIF = False  # passe à True le jour où tu veux vraiment faire p
 def cached_full_analysis(url):
     return full_analysis(url)
 
+def get_secteur_info(url, html=""):
+    """
+    Comme le secteur d'un site ne change pas d'un clic à l'autre, on évite
+    de rappeler l'IA à chaque bouton (potentiel de croissance, régénérer,
+    calculer avec mes données...) pour la même analyse — ça économise des
+    appels Mistral inutiles sur un forfait gratuit déjà limité.
+    """
+    cle = f"secteur_info_{normalize_url(url).strip().lower()}"
+    if cle not in st.session_state:
+        st.session_state[cle] = detect_secteur_et_concurrents(url, html)
+    return st.session_state[cle]
+
 # ── IA ────────────────────────────────────────────────────────────────────────
 def generer_recommandations_ia_inner(final_url, global_score, issues_str):
     try:
@@ -1476,7 +1488,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                     if historique_precedent:
                         st.session_state[cle_potentiel] = historique_precedent[0]
                     else:
-                        secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
+                        secteur_info = get_secteur_info(result["final_url"])
                         secteur = secteur_info.get("secteur", "Autre")
                         with st.spinner("L'IA évalue le potentiel de votre entreprise..."):
                             estimation = estimer_potentiel_croissance(result, secteur)
@@ -1534,7 +1546,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         with col_form3:
                             anciennete_input = st.number_input("Ancienneté (années)", min_value=0, value=0, step=1, key=f"anciennete_{idx}")
                         if st.button("Calculer avec mes données", key=f"btn_calc_donnees_{idx}"):
-                            secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
+                            secteur_info = get_secteur_info(result["final_url"])
                             secteur = secteur_info.get("secteur", "Autre")
                             with st.spinner("L'IA recalcule avec vos données..."):
                                 nouvelle_estimation = estimer_potentiel_croissance(
@@ -1683,7 +1695,7 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
                         st.caption("⚠️ Cette estimation, y compris la projection financière, se base sur le contenu visible du site et des repères de marché généraux — elle ne constitue pas une garantie de résultat et ne prend pas en compte des facteurs déterminants comme le financement, l'équipe, la concurrence réelle ou le timing du marché.")
 
                     if st.button("Régénérer l'estimation", key=f"btn_regen_potentiel_{idx}"):
-                        secteur_info = detect_secteur_et_concurrents(result["final_url"], "")
+                        secteur_info = get_secteur_info(result["final_url"])
                         secteur = secteur_info.get("secteur", "Autre")
                         nb_clients_prec = st.session_state.get(f"nb_clients_{idx}", 0)
                         ca_actuel_prec = st.session_state.get(f"ca_actuel_{idx}", 0)
@@ -1736,7 +1748,7 @@ if mode_comparaison:
                     pass
 
                 site_info = fetch_site(normalize_url(url1))
-                secteur_info = detect_secteur_et_concurrents(url1, site_info.get("html") or "")
+                secteur_info = get_secteur_info(url1, site_info.get("html") or "")
                 domaine_site1 = normalize_url(url1).replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0].lower()
                 candidats = [c for c in secteur_info.get("concurrents", []) if c.lower() != domaine_site1]
 
