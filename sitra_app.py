@@ -1747,15 +1747,28 @@ if mode_comparaison:
                     with concurrent.futures.ThreadPoolExecutor(max_workers=len(candidats)) as executor:
                         resultats = list(executor.map(teste_domaine, candidats))
 
-                st.session_state["concurrents_suggeres"] = [d for d in resultats if d][:3]
+                verifies = [d for d in resultats if d][:3]
+                if verifies:
+                    st.session_state["concurrents_suggeres"] = verifies
+                    st.session_state["concurrents_suggeres_verifies"] = True
+                else:
+                    # Les grandes plateformes (Amazon, Zalando...) bloquent
+                    # parfois notre vérification automatique alors qu'elles
+                    # restent de bonnes pistes — mieux vaut les proposer sans
+                    # garantie que de ne rien proposer du tout.
+                    st.session_state["concurrents_suggeres"] = candidats[:3]
+                    st.session_state["concurrents_suggeres_verifies"] = False
                 st.session_state["concurrents_suggeres_pour"] = url1.strip().lower()
 
             if not st.session_state["concurrents_suggeres"]:
-                st.info("Aucune piste n'a pu être analysée automatiquement pour ce secteur — essayez un concurrent que vous connaissez.")
+                st.info("Aucune piste n'a pu être trouvée automatiquement pour ce secteur — essayez un concurrent que vous connaissez.")
 
         if (st.session_state.get("concurrents_suggeres_pour") == url1.strip().lower()
                 and st.session_state.get("concurrents_suggeres")):
-            st.caption("Quelques pistes pour votre secteur (déjà vérifiées, analysables) :")
+            if st.session_state.get("concurrents_suggeres_verifies"):
+                st.caption("Quelques pistes pour votre secteur (déjà vérifiées, analysables) :")
+            else:
+                st.caption("Quelques pistes pour votre secteur (à essayer, non vérifiées) :")
             cols_sugg = st.columns(len(st.session_state["concurrents_suggeres"]))
             for i, concurrent in enumerate(st.session_state["concurrents_suggeres"]):
                 with cols_sugg[i]:

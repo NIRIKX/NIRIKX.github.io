@@ -55,6 +55,7 @@ def detect_secteur_et_concurrents(url: str, html: str) -> dict:
 
         # Détection du secteur via Mistral
         secteur_detecte = None
+        secteurs_ex_aequo_signal = None
         try:
             import requests as req
             # On récupère la clé depuis les variables d'environnement
@@ -108,14 +109,20 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
             scores = {s: sum(1 for m in mots if m in text_lower) for s, mots in secteurs.items()}
             meilleur_score = max(scores.values())
             secteurs_ex_aequo = [s for s, sc in scores.items() if sc == meilleur_score]
-            # En cas d'egalite entre plusieurs secteurs (mots trop generiques
-            # trouves des deux cotes), le signal n'est pas assez fiable pour
-            # trancher — mieux vaut "Autre" qu'un secteur choisi au hasard
-            # par l'ordre du dictionnaire.
-            if meilleur_score == 0 or len(secteurs_ex_aequo) > 1:
+            if meilleur_score == 0:
+                # Aucun mot-cle trouve, dans aucun secteur : signal nul,
+                # mieux vaut "Autre" qu'un secteur choisi au hasard.
                 secteur_detecte = "Autre"
             else:
                 secteur_detecte = secteurs_ex_aequo[0]
+                if len(secteurs_ex_aequo) > 1:
+                    # Plusieurs secteurs a egalite mais avec un vrai signal
+                    # (ex : un site de vetements en ligne matche a la fois
+                    # "E-commerce" et "Sport / Mode") : on garde ce secteur
+                    # comme reference, mais on regroupe plus bas les
+                    # concurrents de tous les secteurs a egalite plutot que
+                    # de tout jeter dans "Autre".
+                    secteurs_ex_aequo_signal = secteurs_ex_aequo
 
         concurrents_types = {
             "Restaurant / Food": ["tripadvisor.fr", "lafourchette.com", "deliveroo.fr", "ubereats.com", "yelp.fr"],
@@ -136,7 +143,14 @@ Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
             "Autre": [],
         }
 
-        concurrents = concurrents_types.get(secteur_detecte, [])
+        if secteurs_ex_aequo_signal:
+            concurrents = []
+            for s in secteurs_ex_aequo_signal:
+                for c in concurrents_types.get(s, []):
+                    if c not in concurrents:
+                        concurrents.append(c)
+        else:
+            concurrents = concurrents_types.get(secteur_detecte, [])
         return {
             "secteur": secteur_detecte,
             "concurrents": concurrents,
