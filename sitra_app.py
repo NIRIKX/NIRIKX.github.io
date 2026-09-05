@@ -516,13 +516,19 @@ def render_result(result, idx=0):
 
     st.markdown("")
     with st.expander("Analyse IA — Recommandations personnalisées"):
-        with st.spinner("L'IA analyse votre site..."):
-            recommandations, erreur_ia = generer_recommandations_ia(result)
+        cle_reco = f"recommandations_ia_{idx}_{result['final_url'].strip().lower()}"
+        if cle_reco not in st.session_state:
+            with st.spinner("L'IA analyse votre site..."):
+                st.session_state[cle_reco] = generer_recommandations_ia(result)
+        recommandations, erreur_ia = st.session_state[cle_reco]
         if recommandations:
             st.markdown(recommandations)
         else:
             st.warning("Impossible de générer les recommandations IA pour le moment.")
             st.caption(f"Détail technique : {erreur_ia or 'erreur inconnue'}")
+            if st.button("Réessayer", key=f"retry_reco_{idx}"):
+                del st.session_state[cle_reco]
+                st.rerun()
 
     import os
     try:
@@ -1848,11 +1854,13 @@ if "results" in st.session_state:
             </div>
             """, unsafe_allow_html=True)
 
-            with st.spinner("NIRIKX analyse l'écart et prépare vos recommandations..."):
-                try:
-                    import requests as req
-                    headers = {"Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}", "Content-Type": "application/json"}
-                    prompt = f"""Tu es un expert web qui analyse l'écart entre deux sites. Explique simplement, comme à un entrepreneur non-technicien.
+            cle_ecart = f"analyse_ecart_{r1['final_url'].strip().lower()}_{r2['final_url'].strip().lower()}"
+            if cle_ecart not in st.session_state:
+                with st.spinner("NIRIKX analyse l'écart et prépare vos recommandations..."):
+                    try:
+                        import requests as req
+                        headers = {"Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}", "Content-Type": "application/json"}
+                        prompt = f"""Tu es un expert web qui analyse l'écart entre deux sites. Explique simplement, comme à un entrepreneur non-technicien.
 
 Site du client : {r1['final_url']}
 Score : {r1['global_score']}/100
@@ -1870,30 +1878,37 @@ Rédige un texte court (5-6 phrases maximum) qui :
 
 Sois direct, concret, sans jargon technique."""
 
-                    data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400}
-                    r = appeler_mistral(headers, data, timeout=30)
-                    analyse = r.json()["choices"][0]["message"]["content"]
+                        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400}
+                        r = appeler_mistral(headers, data, timeout=30)
+                        if r.status_code != 200:
+                            raise Exception(f"Mistral a répondu avec le code {r.status_code}")
+                        analyse = r.json()["choices"][0]["message"]["content"]
+                        st.session_state[cle_ecart] = analyse
+                    except Exception:
+                        st.session_state[cle_ecart] = None
 
-                    st.markdown(f"""
-                    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(102,126,234,0.4);border-radius:16px;padding:1.8rem 2rem;margin-top:1rem">
-                        <div style="font-size:1.2rem;font-weight:700;color:#a090f7;margin-bottom:1rem">📊 Analyse de l'écart — {site1} vs {site2}</div>
-                        <div style="color:#e8e8f0;font-size:0.95rem;line-height:1.8">{analyse.replace(chr(10), '<br>').replace('**','').replace('*','')}</div>
+            analyse = st.session_state[cle_ecart]
+            if analyse:
+                st.markdown(f"""
+                <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(102,126,234,0.4);border-radius:16px;padding:1.8rem 2rem;margin-top:1rem">
+                    <div style="font-size:1.2rem;font-weight:700;color:#a090f7;margin-bottom:1rem">📊 Analyse de l'écart — {site1} vs {site2}</div>
+                    <div style="color:#e8e8f0;font-size:0.95rem;line-height:1.8">{analyse.replace(chr(10), '<br>').replace('**','').replace('*','')}</div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(102,126,234,0.4);border-radius:16px;padding:1.8rem 2rem;margin-top:1rem">
+                    <div style="font-size:1.2rem;font-weight:700;color:#a090f7;margin-bottom:1rem">📊 Analyse de l'écart</div>
+                    <div style="color:#e8e8f0;font-size:0.95rem;line-height:1.8">
+                        <b>{site2}</b> a <b>{ecart} points d'avance</b> sur votre site.<br><br>
+                        Les domaines à améliorer en priorité :<br>
+                        {'• Référencement Google : +' + str(r2["seo"]["score"] - r1["seo"]["score"]) + ' points à rattraper<br>' if r2["seo"]["score"] > r1["seo"]["score"] else ''}
+                        {'• Vitesse du site : +' + str(r2["performance"]["score"] - r1["performance"]["score"]) + ' points à rattraper<br>' if r2["performance"]["score"] > r1["performance"]["score"] else ''}
+                        {'• Navigation : +' + str(r2["ux"]["score"] - r1["ux"]["score"]) + ' points à rattraper<br>' if r2["ux"]["score"] > r1["ux"]["score"] else ''}
+                        {'• Apparence : +' + str(r2["design"]["score"] - r1["design"]["score"]) + ' points à rattraper<br>' if r2["design"]["score"] > r1["design"]["score"] else ''}
                     </div>
-                    """, unsafe_allow_html=True)
-                except Exception:
-                    st.markdown(f"""
-                    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(102,126,234,0.4);border-radius:16px;padding:1.8rem 2rem;margin-top:1rem">
-                        <div style="font-size:1.2rem;font-weight:700;color:#a090f7;margin-bottom:1rem">📊 Analyse de l'écart</div>
-                        <div style="color:#e8e8f0;font-size:0.95rem;line-height:1.8">
-                            <b>{site2}</b> a <b>{ecart} points d'avance</b> sur votre site.<br><br>
-                            Les domaines à améliorer en priorité :<br>
-                            {'• Référencement Google : +' + str(r2["seo"]["score"] - r1["seo"]["score"]) + ' points à rattraper<br>' if r2["seo"]["score"] > r1["seo"]["score"] else ''}
-                            {'• Vitesse du site : +' + str(r2["performance"]["score"] - r1["performance"]["score"]) + ' points à rattraper<br>' if r2["performance"]["score"] > r1["performance"]["score"] else ''}
-                            {'• Navigation : +' + str(r2["ux"]["score"] - r1["ux"]["score"]) + ' points à rattraper<br>' if r2["ux"]["score"] > r1["ux"]["score"] else ''}
-                            {'• Apparence : +' + str(r2["design"]["score"] - r1["design"]["score"]) + ' points à rattraper<br>' if r2["design"]["score"] > r1["design"]["score"] else ''}
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                </div>
+                """, unsafe_allow_html=True)
 
         elif ecart < 0:
             st.markdown(f"""
