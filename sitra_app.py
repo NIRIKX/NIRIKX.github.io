@@ -31,7 +31,7 @@ def get_secteur_info(url, html=""):
 def generer_recommandations_ia_inner(final_url, global_score, issues_str):
     try:
         api_key = st.secrets['GEMINI_API_KEY']
-        prompt = f"""Tu es un conseiller web qui aide des petits entrepreneurs à améliorer leur site. Explique les problèmes simplement, comme si tu parlais à quelqu'un qui ne connaît rien à l'informatique.
+        prompt = f"""Tu es un conseiller web professionnel qui aide des petits entrepreneurs à améliorer leur site. Explique les problèmes simplement, comme si tu parlais à quelqu'un qui ne connaît rien à l'informatique.
 
 Site : {final_url}
 Score global : {global_score}/100
@@ -39,7 +39,8 @@ Problèmes détectés : {issues_str}
 
 Écris exactement 5 conseils numérotés (1. 2. 3. 4. 5.).
 Chaque conseil doit être sur une nouvelle ligne, expliquer le problème simplement et dire quoi faire.
-Pas de termes techniques — utilise des mots du quotidien."""
+Pas de termes techniques — utilise des mots du quotidien.
+Ton direct et professionnel, phrases courtes et concrètes. N'utilise AUCUNE métaphore, comparaison ou image (pas de "c'est comme...", pas d'objets du quotidien pour illustrer) — explique le problème et la solution directement, sans détour."""
 
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 600})
