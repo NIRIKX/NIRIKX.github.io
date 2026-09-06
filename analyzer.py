@@ -24,7 +24,7 @@ HEADERS = {
 
 TIMEOUT = 15
 
-GEMINI_MODEL = "gemini-2.5-flash-lite"
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
 # Le forfait gratuit de Gemini limite le nombre de requetes par minute
