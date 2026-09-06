@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import os
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_mistral
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, texte_gemini
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
@@ -20,7 +20,7 @@ def get_secteur_info(url, html=""):
     Comme le secteur d'un site ne change pas d'un clic à l'autre, on évite
     de rappeler l'IA à chaque bouton (potentiel de croissance, régénérer,
     calculer avec mes données...) pour la même analyse — ça économise des
-    appels Mistral inutiles sur un forfait gratuit déjà limité.
+    appels IA inutiles sur un forfait gratuit déjà limité.
     """
     cle = f"secteur_info_{normalize_url(url).strip().lower()}"
     if cle not in st.session_state:
@@ -30,11 +30,7 @@ def get_secteur_info(url, html=""):
 # ── IA ────────────────────────────────────────────────────────────────────────
 def generer_recommandations_ia_inner(final_url, global_score, issues_str):
     try:
-        import requests as req
-        headers = {
-            "Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}",
-            "Content-Type": "application/json"
-        }
+        api_key = st.secrets['GEMINI_API_KEY']
         prompt = f"""Tu es un conseiller web qui aide des petits entrepreneurs à améliorer leur site. Explique les problèmes simplement, comme si tu parlais à quelqu'un qui ne connaît rien à l'informatique.
 
 Site : {final_url}
@@ -45,11 +41,9 @@ Problèmes détectés : {issues_str}
 Chaque conseil doit être sur une nouvelle ligne, expliquer le problème simplement et dire quoi faire.
 Pas de termes techniques — utilise des mots du quotidien."""
 
-        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 600}
-        r = appeler_mistral(headers, data, timeout=30)
-        if r.status_code != 200:
-            return None, f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"
-        return r.json()["choices"][0]["message"]["content"], None
+        contents = [{"role": "user", "parts": [{"text": prompt}]}]
+        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 600})
+        return texte_gemini(r), None
     except Exception as e:
         return None, str(e)
 
@@ -93,11 +87,7 @@ def enlever_emojis(texte):
 def generer_contenu_marque(result, type_contenu, objectif):
     """Génère du contenu marketing on-brand basé sur l'analyse du site"""
     try:
-        import requests as req
-        headers = {
-            "Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}",
-            "Content-Type": "application/json"
-        }
+        api_key = st.secrets['GEMINI_API_KEY']
 
         prompt = f"""Tu es un copywriter senior spécialisé en réseaux sociaux pour petites entreprises, reconnu pour des textes qui ne ressemblent jamais à du contenu générique produit par une IA.
 
@@ -161,11 +151,9 @@ BOUTON :
         prompt_final = types_prompts.get(type_contenu, prompt)
         prompt_final += "\n\nRappel impératif, quel que soit le format demandé ci-dessus : ta réponse doit impérativement se terminer par une section intitulée \"Pourquoi ça marche ?\" contenant 3 à 4 puces courtes qui expliquent tes choix de ton et d'angle. N'arrête pas ta réponse avant d'avoir écrit cette section, sans emoji."
 
-        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt_final}], "max_tokens": 1200}
-        r = appeler_mistral(headers, data, timeout=30)
-        if r.status_code != 200:
-            return None, f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"
-        contenu = r.json()["choices"][0]["message"]["content"]
+        contents = [{"role": "user", "parts": [{"text": prompt_final}]}]
+        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 1200})
+        contenu = texte_gemini(r)
         return enlever_emojis(contenu), None
     except Exception as e:
         return None, str(e)
@@ -532,7 +520,7 @@ def render_result(result, idx=0):
 
     import os
     try:
-        os.environ["MISTRAL_API_KEY"] = st.secrets["MISTRAL_API_KEY"]
+        os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
     except Exception:
         pass
     try:
@@ -1204,25 +1192,27 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                         except Exception:
                             contenu_site = ""
 
-                        headers_m = {
-                            "Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}",
-                            "Content-Type": "application/json"
-                        }
+                        import base64
+                        gemini_key = st.secrets['GEMINI_API_KEY']
 
-                        # Vision pour les photos
+                        # Vision pour les photos — Gemini ne va pas chercher
+                        # les images lui-meme (contrairement a l'ancienne API),
+                        # on telecharge et on encode l'image nous-memes.
                         descriptions_images = []
                         for img_url in images_urls:
                             try:
-                                vision_data = {
-                                    "model": "pixtral-12b-2409",
-                                    "messages": [{"role": "user", "content": [
-                                        {"type": "image_url", "image_url": {"url": img_url}},
-                                        {"type": "text", "text": "Tu es un expert SEO. Analyse cette image. Si c'est un LOGO, icone, badge, watermark, bouton, fond decoratif ou element graphique → reponds uniquement SKIP. Si c'est une VRAIE PHOTO de contenu (interieur, personnes, produits, lieu, ambiance) → ecris en 10-15 mots une description alt SEO en francais, factuelle, sans commencer par Une image de."}
-                                    ]}],
-                                    "max_tokens": 60
-                                }
-                                r_v = appeler_mistral(headers_m, vision_data, timeout=20)
-                                d = r_v.json()["choices"][0]["message"]["content"].strip()
+                                img_resp = req.get(img_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+                                img_resp.raise_for_status()
+                                mime = img_resp.headers.get("Content-Type", "image/jpeg").split(";")[0].strip()
+                                if not mime.startswith("image/"):
+                                    mime = "image/jpeg"
+                                image_b64 = base64.b64encode(img_resp.content).decode("utf-8")
+                                vision_contents = [{"role": "user", "parts": [
+                                    {"inlineData": {"mimeType": mime, "data": image_b64}},
+                                    {"text": "Tu es un expert SEO. Analyse cette image. Si c'est un LOGO, icone, badge, watermark, bouton, fond decoratif ou element graphique → reponds uniquement SKIP. Si c'est une VRAIE PHOTO de contenu (interieur, personnes, produits, lieu, ambiance) → ecris en 10-15 mots une description alt SEO en francais, factuelle, sans commencer par Une image de."}
+                                ]}]
+                                r_v = appeler_gemini(gemini_key, vision_contents, timeout=20, generation_config={"maxOutputTokens": 60})
+                                d = texte_gemini(r_v).strip()
                                 descriptions_images.append("" if "SKIP" in d.upper() or len(d) < 10 else d)
                             except Exception:
                                 descriptions_images.append("")
@@ -1251,14 +1241,9 @@ Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni
 
 {chr(10).join(sections_prompt)}"""
 
-                        data = {
-                            "model": "mistral-small-latest",
-                            "messages": [{"role": "user", "content": prompt}],
-                            "max_tokens": 1200,
-                            "temperature": 0.7
-                        }
-                        r = appeler_mistral(headers_m, data, timeout=45)
-                        textes_generes = r.json()["choices"][0]["message"]["content"]
+                        contents = [{"role": "user", "parts": [{"text": prompt}]}]
+                        r = appeler_gemini(gemini_key, contents, timeout=45, generation_config={"maxOutputTokens": 1200, "temperature": 0.7})
+                        textes_generes = texte_gemini(r)
                         textes_generes = re.sub(r'#{1,6}\s*', '', textes_generes)
                         textes_generes = re.sub(r'\*{1,2}', '', textes_generes)
                         textes_generes = re.sub(r'^---+$', '', textes_generes, flags=re.MULTILINE)
@@ -1749,7 +1734,7 @@ if mode_comparaison:
                 import concurrent.futures
 
                 try:
-                    os.environ["MISTRAL_API_KEY"] = st.secrets["MISTRAL_API_KEY"]
+                    os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
                 except Exception:
                     pass
 
@@ -1858,8 +1843,7 @@ if "results" in st.session_state:
             if cle_ecart not in st.session_state:
                 with st.spinner("NIRIKX analyse l'écart et prépare vos recommandations..."):
                     try:
-                        import requests as req
-                        headers = {"Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}", "Content-Type": "application/json"}
+                        api_key = st.secrets['GEMINI_API_KEY']
                         prompt = f"""Tu es un expert web qui analyse l'écart entre deux sites. Explique simplement, comme à un entrepreneur non-technicien.
 
 Site du client : {r1['final_url']}
@@ -1878,11 +1862,9 @@ Rédige un texte court (5-6 phrases maximum) qui :
 
 Sois direct, concret, sans jargon technique."""
 
-                        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 400}
-                        r = appeler_mistral(headers, data, timeout=30)
-                        if r.status_code != 200:
-                            raise Exception(f"Mistral a répondu avec le code {r.status_code}")
-                        analyse = r.json()["choices"][0]["message"]["content"]
+                        contents = [{"role": "user", "parts": [{"text": prompt}]}]
+                        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 400})
+                        analyse = texte_gemini(r)
                         st.session_state[cle_ecart] = analyse
                     except Exception:
                         st.session_state[cle_ecart] = None
@@ -1958,32 +1940,24 @@ with st.expander("Vous avez une question ? Posez-la à l'assistant NIRIKX"):
             st.session_state["chat_messages"].append({"role": "user", "content": question})
 
             try:
-                import requests as req
-                headers = {
-                    "Authorization": f"Bearer {st.secrets['MISTRAL_API_KEY']}",
-                    "Content-Type": "application/json"
-                }
+                api_key = st.secrets['GEMINI_API_KEY']
 
                 contexte = ""
                 if "results" in st.session_state:
                     r = st.session_state["results"][0]
                     contexte = f"Le site analysé est {r['final_url']} avec un score de {r['global_score']}/100. SEO: {r['seo']['score']}/100, UX: {r['ux']['score']}/100, Performance: {r['performance']['score']}/100."
 
-                messages = [
-                    {"role": "system", "content": f"""Tu es l'assistant de NIRIKX, un outil d'analyse de sites web. Tu réponds aux questions en langage simple et accessible, sans jargon technique. Tu expliques les termes avec des exemples concrets du quotidien. Tu gardes le contexte de la conversation.
+                system_instruction = f"""Tu es l'assistant de NIRIKX, un outil d'analyse de sites web. Tu réponds aux questions en langage simple et accessible, sans jargon technique. Tu expliques les termes avec des exemples concrets du quotidien. Tu gardes le contexte de la conversation.
 IMPORTANT : Tu dois TOUJOURS terminer tes réponses complètement. Ne coupe jamais une phrase en plein milieu. Si tu donnes une liste, termine-la entièrement.
-{f'Contexte du site analysé : {contexte}' if contexte else ''}"""}
-                ]
-                for msg in st.session_state["chat_messages"]:
-                    messages.append({"role": msg["role"], "content": msg["content"]})
+{f'Contexte du site analysé : {contexte}' if contexte else ''}"""
 
-                data = {
-                    "model": "mistral-small-latest",
-                    "messages": messages,
-                    "max_tokens": 1500
-                }
-                r = appeler_mistral(headers, data, timeout=30)
-                reponse = r.json()["choices"][0]["message"]["content"]
+                contents = []
+                for msg in st.session_state["chat_messages"]:
+                    role = "user" if msg["role"] == "user" else "model"
+                    contents.append({"role": role, "parts": [{"text": msg["content"]}]})
+
+                r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 1500}, system_instruction=system_instruction)
+                reponse = texte_gemini(r)
                 st.session_state["chat_messages"].append({"role": "assistant", "content": reponse})
                 st.session_state["chat_input_key"] += 1
                 st.rerun()

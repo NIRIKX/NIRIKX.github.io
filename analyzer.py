@@ -24,40 +24,66 @@ HEADERS = {
 
 TIMEOUT = 15
 
-MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions"
+GEMINI_MODEL = "gemini-2.5-flash-lite"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
-# Le forfait gratuit de Mistral limite le nombre de requetes par seconde
+# Le forfait gratuit de Gemini limite le nombre de requetes par minute
 # pour tout le compte (pas par visiteur) - une seule analyse peut a elle
 # seule declencher plusieurs appels IA presque en meme temps (secteur,
 # recommandations, potentiel...), et plusieurs visiteurs partagent la
 # meme limite. Plutot que d'attendre l'erreur 429 pour reagir, on espace
-# nous-memes les appels d'au moins INTERVALLE_MIN_MISTRAL secondes.
-INTERVALLE_MIN_MISTRAL = 2.0
-_dernier_appel_mistral = {"t": 0.0}
-_verrou_mistral = threading.Lock()
+# nous-memes les appels d'au moins INTERVALLE_MIN_GEMINI secondes.
+INTERVALLE_MIN_GEMINI = 2.0
+_dernier_appel_gemini = {"t": 0.0}
+_verrou_gemini = threading.Lock()
 
 
-def appeler_mistral(headers, data, timeout=30, max_tentatives=3):
+def appeler_gemini(api_key, contents, timeout=30, max_tentatives=3, generation_config=None, system_instruction=None):
     """
-    Envoie une requete a l'API Mistral, en espacant les appels pour
-    eviter la limite de debit, puis en reessayant avec un delai croissant
-    si un 429 survient quand meme.
+    Envoie une requete a l'API Gemini (Google), en espacant les appels
+    pour eviter la limite de debit, puis en reessayant avec un delai
+    croissant si un 429 survient quand meme.
+    `contents` suit le format Gemini : une liste de tours
+    [{"role": "user"|"model", "parts": [{"text": ...}, ...]}].
+    `system_instruction`, si fourni, est une simple chaine de consignes
+    generales (equivalent du role "system" des autres API).
     """
-    with _verrou_mistral:
-        attente = INTERVALLE_MIN_MISTRAL - (time.time() - _dernier_appel_mistral["t"])
+    with _verrou_gemini:
+        attente = INTERVALLE_MIN_GEMINI - (time.time() - _dernier_appel_gemini["t"])
         if attente > 0:
             time.sleep(attente)
-        _dernier_appel_mistral["t"] = time.time()
+        _dernier_appel_gemini["t"] = time.time()
+
+    payload = {"contents": contents}
+    if generation_config:
+        payload["generationConfig"] = generation_config
+    if system_instruction:
+        payload["systemInstruction"] = {"parts": [{"text": system_instruction}]}
+    url = f"{GEMINI_URL}?key={api_key}"
 
     delai = 3
-    reponse = requests.post(MISTRAL_URL, headers=headers, json=data, timeout=timeout)
+    reponse = requests.post(url, json=payload, timeout=timeout)
     for _ in range(max_tentatives - 1):
         if reponse.status_code != 429:
             break
         time.sleep(delai)
         delai *= 2
-        reponse = requests.post(MISTRAL_URL, headers=headers, json=data, timeout=timeout)
+        reponse = requests.post(url, json=payload, timeout=timeout)
     return reponse
+
+
+def texte_gemini(reponse):
+    """
+    Extrait le texte de la reponse Gemini. Leve une exception avec le
+    vrai message d'erreur si Gemini n'a pas renvoye de texte exploitable
+    (limite atteinte, contenu bloque par les filtres de securite, etc.)
+    """
+    d = reponse.json()
+    if not d.get("candidates"):
+        motif = d.get("promptFeedback", {}).get("blockReason") or d.get("error", {}).get("message")
+        raise Exception(motif or f"Reponse Gemini inattendue (code {reponse.status_code}) : {reponse.text[:300]}")
+    parts = d["candidates"][0].get("content", {}).get("parts", [])
+    return "".join(p.get("text", "") for p in parts)
 
 
 def detect_secteur_et_concurrents(url: str, html: str) -> dict:
@@ -82,19 +108,13 @@ def detect_secteur_et_concurrents(url: str, html: str) -> dict:
         # plus fiable que le texte brut de la page pour deviner le secteur.
         text = f"{title_text}. {meta_desc_text}. {h1_text}. {corps_text}"
 
-        # Détection du secteur via Mistral
+        # Détection du secteur via Gemini
         secteur_detecte = None
         secteurs_ex_aequo_signal = None
         try:
-            import requests as req
-            # On récupère la clé depuis les variables d'environnement
             import os
-            api_key = os.environ.get("MISTRAL_API_KEY", "")
+            api_key = os.environ.get("GEMINI_API_KEY", "")
             if api_key:
-                headers = {
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json"
-                }
                 prompt = f"""Analyse ce contenu de site web et réponds UNIQUEMENT avec le secteur parmi cette liste exacte :
 Restaurant / Food, E-commerce, Artisan / Services, Santé / Médical, Immobilier, Éducation / Formation, Beauté / Bien-être, Juridique / Finance, Tech / Digital, Sport / Mode, Tourisme / Voyage, Autre
 
@@ -104,13 +124,9 @@ Contenu : {corps_text[:1000]}
 
 Réponds avec UNIQUEMENT le nom du secteur, rien d'autre."""
 
-                data = {
-                    "model": "mistral-large-latest",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 20
-                }
-                r = appeler_mistral(headers, data, timeout=15)
-                secteur_ia = r.json()["choices"][0]["message"]["content"].strip()
+                contents = [{"role": "user", "parts": [{"text": prompt}]}]
+                r = appeler_gemini(api_key, contents, timeout=15, generation_config={"maxOutputTokens": 20})
+                secteur_ia = texte_gemini(r).strip()
                 secteurs_valides = ["Restaurant / Food", "E-commerce", "Artisan / Services", "Santé / Médical",
                                    "Immobilier", "Éducation / Formation", "Beauté / Bien-être", "Juridique / Finance",
                                    "Tech / Digital", "Sport / Mode", "Tourisme / Voyage", "Autre"]
@@ -753,7 +769,7 @@ def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_client
     try:
         import requests as req
         import os
-        api_key = os.environ.get("MISTRAL_API_KEY", "")
+        api_key = os.environ.get("GEMINI_API_KEY", "")
         if not api_key:
             return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection_min": None, "projection_max": None, "projection_texte": None, "analyse": None, "signaux_concrets": [], "error": "Cle API manquante"}
 
@@ -843,7 +859,6 @@ dans PROJECTION_TEXTE ecris exactement : "Non disponible — renseignez votre ch
 d'affaires actuel ou cochez la case projet en developpement pour obtenir une
 projection chiffree." """
 
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         prompt = f"""Tu es un investisseur experimente qui evalue rapidement des entreprises a partir de leur site web.
 
 Site : {url}
@@ -884,11 +899,12 @@ CLIENTS_MAX: [nombre, ou 0]
 PROJECTION_TEXTE: [explication en 2-3 phrases, ou le message non disponible]
 ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
 
-        data = {"model": "mistral-small-latest", "messages": [{"role": "user", "content": prompt}], "max_tokens": 750}
-        r = appeler_mistral(headers, data, timeout=30)
-        if r.status_code != 200:
-            return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection_min": None, "projection_max": None, "projection_texte": None, "analyse": None, "signaux_concrets": [], "error": f"Mistral a répondu avec le code {r.status_code} : {r.text[:300]}"}
-        contenu = r.json()["choices"][0]["message"]["content"]
+        contents = [{"role": "user", "parts": [{"text": prompt}]}]
+        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 750})
+        try:
+            contenu = texte_gemini(r)
+        except Exception as e:
+            return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection_min": None, "projection_max": None, "projection_texte": None, "analyse": None, "signaux_concrets": [], "error": str(e)}
         contenu = contenu.replace("**", "").replace("*", "")
 
         score = 50
