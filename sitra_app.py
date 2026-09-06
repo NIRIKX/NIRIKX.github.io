@@ -39,14 +39,17 @@ Problèmes détectés : {issues_str}
 
 Écris exactement 5 conseils numérotés (1. 2. 3. 4. 5.).
 
-FORMAT OBLIGATOIRE pour chaque conseil, sur une seule ligne :
-Explication du problème : Solution concrète à appliquer.
+FORMAT OBLIGATOIRE pour chaque conseil, sur une seule ligne, en deux parties séparées par ":" :
+[Constat factuel du problème, une phrase] : [Action concrète à faire, une phrase]
 
-Le caractère ":" doit apparaître littéralement une fois dans chaque conseil, entre l'explication et la solution. Exemple exact à suivre :
+Aucune des deux parties ne doit être un titre accrocheur ou une formule de style — ce sont deux phrases neutres et factuelles. Exemple exact à suivre :
 3. Votre titre de page ne dit pas ce que vous vendez : ajoutez le nom de votre activité et votre ville dans le titre.
 
-Pas de termes techniques — utilise des mots du quotidien.
-Ton direct et professionnel, phrases courtes et concrètes. N'utilise AUCUNE métaphore, comparaison ou image (interdiction absolue de comparer à un objet : pas de placard, tiroir, carton, armoire ou autre) — nomme le problème et la solution directement, sans détour."""
+Règles strictes :
+- Vouvoiement uniquement ("vous"), jamais de tutoiement ("tu").
+- Pas de termes techniques — utilise des mots du quotidien.
+- Aucune métaphore, comparaison, image ou jeu de mots, ni dans le constat ni dans l'action ni dans un titre (interdits : objets pour illustrer, expressions imagées type "cache tes...", "arrête de...", verbes détournés de leur sens propre).
+- Français correct et sans faute, relis-toi avant de répondre."""
 
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 600})
