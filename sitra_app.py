@@ -1247,8 +1247,14 @@ DESCRIPTION ACTUELLE : {desc or "(aucune)"}
 CONTENU : {contenu_site if contenu_site else "(déduis depuis l'URL)"}
 
 REGLE : Chaque section a un TON DIFFERENT. Ne repete jamais les memes mots entre sections.
-Reponds UNIQUEMENT avec les sections demandees, sans introduction ni markdown ni ---.
 
+FORMAT OBLIGATOIRE : reponds UNIQUEMENT avec les sections demandees ci-dessous, chacune commencant EXACTEMENT par son titre en majuscules suivi de ":", seul sur sa ligne, puis le texte sur la ou les lignes suivantes. N'omets JAMAIS un titre de section, meme court. Pas d'introduction, pas de markdown, pas de "---".
+
+Exemple de format exact a respecter pour une section :
+INTRODUCTION:
+Voici le texte de l'introduction ici, sur une ou plusieurs lignes.
+
+Sections a generer, dans cet ordre :
 {chr(10).join(sections_prompt)}"""
 
                         contents = [{"role": "user", "parts": [{"text": prompt}]}]
