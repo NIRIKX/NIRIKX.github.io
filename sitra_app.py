@@ -38,7 +38,8 @@ Score global : {global_score}/100
 Problèmes détectés : {issues_str}
 
 Écris exactement 5 conseils numérotés (1. 2. 3. 4. 5.).
-Chaque conseil doit être sur une nouvelle ligne, expliquer le problème simplement et dire quoi faire.
+Chaque conseil doit être sur une nouvelle ligne, au format suivant, avec ces deux parties séparées par un signe deux-points " : " :
+[Explication simple du problème] : [Solution concrète à appliquer]
 Pas de termes techniques — utilise des mots du quotidien.
 Ton direct et professionnel, phrases courtes et concrètes. N'utilise AUCUNE métaphore, comparaison ou image (pas de "c'est comme...", pas d'objets du quotidien pour illustrer) — explique le problème et la solution directement, sans détour."""
 
