@@ -38,10 +38,15 @@ Score global : {global_score}/100
 Problèmes détectés : {issues_str}
 
 Écris exactement 5 conseils numérotés (1. 2. 3. 4. 5.).
-Chaque conseil doit être sur une nouvelle ligne, au format suivant, avec ces deux parties séparées par un signe deux-points " : " :
-[Explication simple du problème] : [Solution concrète à appliquer]
+
+FORMAT OBLIGATOIRE pour chaque conseil, sur une seule ligne :
+Explication du problème : Solution concrète à appliquer.
+
+Le caractère ":" doit apparaître littéralement une fois dans chaque conseil, entre l'explication et la solution. Exemple exact à suivre :
+3. Votre titre de page ne dit pas ce que vous vendez : ajoutez le nom de votre activité et votre ville dans le titre.
+
 Pas de termes techniques — utilise des mots du quotidien.
-Ton direct et professionnel, phrases courtes et concrètes. N'utilise AUCUNE métaphore, comparaison ou image (pas de "c'est comme...", pas d'objets du quotidien pour illustrer) — explique le problème et la solution directement, sans détour."""
+Ton direct et professionnel, phrases courtes et concrètes. N'utilise AUCUNE métaphore, comparaison ou image (interdiction absolue de comparer à un objet : pas de placard, tiroir, carton, armoire ou autre) — nomme le problème et la solution directement, sans détour."""
 
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 600})
