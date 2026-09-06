@@ -37,7 +37,7 @@ Site : {final_url}
 Score global : {global_score}/100
 Problèmes détectés : {issues_str}
 
-Écris exactement 5 conseils numérotés (1. 2. 3. 4. 5.).
+Écris un conseil numéroté pour CHAQUE problème listé ci-dessus, dans le même ordre, sans en sauter aucun — même s'il y en a beaucoup.
 
 FORMAT OBLIGATOIRE pour chaque conseil, sur une seule ligne, en deux parties séparées par ":" :
 **[Nom court du problème, 2 à 4 mots, en gras avec **double astérisque**]** : [Solution complète en une phrase]
@@ -52,13 +52,13 @@ Règles strictes :
 - Français correct et sans faute, relis-toi avant de répondre."""
 
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
-        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 600})
+        r = appeler_gemini(api_key, contents, timeout=45, generation_config={"maxOutputTokens": 4000})
         return texte_gemini(r), None
     except Exception as e:
         return None, str(e)
 
 def generer_recommandations_ia(result):
-    issues_str = ', '.join([i['message'] for i in result['all_issues'][:6]])
+    issues_str = '\n'.join(f"- {i['message']}" for i in result['all_issues'])
     return generer_recommandations_ia_inner(result['final_url'], result['global_score'], issues_str)
 
 # ── CONTENU DE MARQUE IA (inspiré Pomelli) ───────────────────────────────────
