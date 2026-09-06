@@ -40,15 +40,15 @@ Problèmes détectés : {issues_str}
 Écris exactement 5 conseils numérotés (1. 2. 3. 4. 5.).
 
 FORMAT OBLIGATOIRE pour chaque conseil, sur une seule ligne, en deux parties séparées par ":" :
-[Constat factuel du problème, une phrase] : [Action concrète à faire, une phrase]
+**[Nom court du problème, 2 à 4 mots, en gras avec **double astérisque**]** : [Solution complète en une phrase]
 
-Aucune des deux parties ne doit être un titre accrocheur ou une formule de style — ce sont deux phrases neutres et factuelles. Exemple exact à suivre :
-3. Votre titre de page ne dit pas ce que vous vendez : ajoutez le nom de votre activité et votre ville dans le titre.
+Le nom court est un groupe de mots simple qui désigne le problème (pas une phrase complète, pas de verbe conjugué), par exemple "Menu principal surchargé" ou "Titre de page peu clair". La solution après les deux-points est une vraie phrase qui explique quoi faire. Exemple exact à suivre :
+3. **Titre de page peu clair** : ajoutez le nom de votre activité et votre ville dans le titre.
 
 Règles strictes :
 - Vouvoiement uniquement ("vous"), jamais de tutoiement ("tu").
 - Pas de termes techniques — utilise des mots du quotidien.
-- Aucune métaphore, comparaison, image ou jeu de mots, ni dans le constat ni dans l'action ni dans un titre (interdits : objets pour illustrer, expressions imagées type "cache tes...", "arrête de...", verbes détournés de leur sens propre).
+- Aucune métaphore, comparaison, image ou jeu de mots, ni dans le nom du problème ni dans la solution (interdits : objets pour illustrer, expressions imagées type "cache tes...", "arrête de...", verbes détournés de leur sens propre).
 - Français correct et sans faute, relis-toi avant de répondre."""
 
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
