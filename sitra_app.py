@@ -94,6 +94,43 @@ def enlever_emojis(texte):
     texte = re.sub(r"\n +", "\n", texte)
     return texte.strip()
 
+def assurer_appel_action(texte, domaine):
+    """
+    Filet de sécurité : l'IA ne termine pas toujours chaque post par une
+    action concrète malgré la consigne (observé en pratique, pas fiable
+    à 100%). On vérifie chaque post et on ajoute une phrase de secours
+    mentionnant le site si aucune action/destination n'est détectée.
+    """
+    mots_cta = ["boutique", "lien en bio", "swipe up", "commandez", "réservez", "reservez", domaine.lower()]
+    lignes = texte.split("\n")
+    blocs = []
+    bloc_courant = None
+    for ligne in lignes:
+        if re.match(r'^(POST|ANNONCE)\s+\d+', ligne.strip(), re.IGNORECASE):
+            if bloc_courant is not None:
+                blocs.append(bloc_courant)
+            bloc_courant = [ligne]
+        elif bloc_courant is not None:
+            bloc_courant.append(ligne)
+    if bloc_courant is not None:
+        blocs.append(bloc_courant)
+    if not blocs:
+        return texte
+
+    resultat = []
+    for bloc in blocs:
+        bloc_texte = "\n".join(bloc).lower()
+        if not any(m in bloc_texte for m in mots_cta):
+            idx_dernier = None
+            for i in range(len(bloc) - 1, -1, -1):
+                if bloc[i].strip() and not bloc[i].strip().startswith("#"):
+                    idx_dernier = i
+                    break
+            if idx_dernier is not None:
+                bloc[idx_dernier] = bloc[idx_dernier].rstrip() + f" Découvrez-en plus sur {domaine}."
+        resultat.extend(bloc)
+    return "\n".join(resultat)
+
 def generer_contenu_marque(result, type_contenu, objectif):
     """Génère du contenu marketing on-brand basé sur l'analyse du site"""
     try:
@@ -203,6 +240,9 @@ Titre 1 : ...""",
         contents = [{"role": "user", "parts": [{"text": prompt_final}]}]
         r = appeler_gemini(api_key, contents, timeout=60, generation_config={"maxOutputTokens": 1200})
         contenu = texte_gemini(r)
+        if type_contenu in ("Post Instagram", "Post LinkedIn", "Post Facebook"):
+            domaine = result['final_url'].replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0]
+            contenu = assurer_appel_action(contenu, domaine)
         return enlever_emojis(contenu), None
     except Exception as e:
         return None, str(e)
