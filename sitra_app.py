@@ -2129,3 +2129,14 @@ IMPORTANT : Tu dois TOUJOURS terminer tes réponses complètement. Ne coupe jama
                 st.rerun()
             except Exception:
                 st.error("Impossible de contacter l'assistant pour le moment.")
+
+# ── PIED DE PAGE ────────────────────────────────────────────────────────────
+st.divider()
+st.markdown("""
+<div style="text-align:center;color:#888;font-size:0.8rem;padding:1rem 0 2rem;line-height:1.8">
+    <div style="font-weight:700;color:#a090f7;font-size:0.95rem;margin-bottom:0.3rem">NIRIKX</div>
+    <div>Outil indépendant d'analyse de sites web, combinant vérifications automatisées et intelligence artificielle (Google Gemini).</div>
+    <div>Contact : <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a></div>
+    <div style="margin-top:0.4rem">NIRIKX n'est affilié à aucun des sites qu'il analyse.</div>
+</div>
+""", unsafe_allow_html=True)
