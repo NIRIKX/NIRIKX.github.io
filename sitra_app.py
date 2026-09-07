@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import os
 import html
+import hmac
 try:
     from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, texte_gemini, url_est_sure
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
@@ -464,7 +465,7 @@ if st.query_params.get("admin") == "1":
         st.divider()
         with st.expander("🔐 Administration"):
             mdp_saisi = st.text_input("Mot de passe admin", type="password", key="mdp_admin")
-            if mdp_saisi and mdp_saisi == st.secrets.get("ADMIN_PASSWORD", ""):
+            if mdp_saisi and hmac.compare_digest(mdp_saisi, st.secrets.get("ADMIN_PASSWORD", "")):
                 st.success("Accès admin confirmé")
                 email_a_activer = st.text_input("Email du client", key="admin_email")
                 forfait_choisi = st.selectbox("Forfait", ["pro", "premium"], key="admin_forfait")
