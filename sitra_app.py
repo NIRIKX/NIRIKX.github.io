@@ -105,13 +105,26 @@ def assurer_appel_action(texte, domaine):
     lignes = texte.split("\n")
     blocs = []
     bloc_courant = None
+    footer = []
     for ligne in lignes:
         if re.match(r'^(POST|ANNONCE)\s+\d+', ligne.strip(), re.IGNORECASE):
             if bloc_courant is not None:
                 blocs.append(bloc_courant)
             bloc_courant = [ligne]
+        elif re.match(r'^pourquoi\s+(ça|ca)\s+marche', ligne.strip(), re.IGNORECASE):
+            # La consigne "Pourquoi ça marche ?" clôt toujours la réponse : on
+            # arrête d'y voir du contenu de post pour ne pas fausser la
+            # détection de CTA (une puce d'explication qui cite le site ne
+            # doit pas compter comme un appel à l'action du post lui-même,
+            # et le filet de secours ne doit pas s'accrocher à cette section).
+            if bloc_courant is not None:
+                blocs.append(bloc_courant)
+                bloc_courant = None
+            footer.append(ligne)
         elif bloc_courant is not None:
             bloc_courant.append(ligne)
+        elif footer:
+            footer.append(ligne)
     if bloc_courant is not None:
         blocs.append(bloc_courant)
     if not blocs:
@@ -129,6 +142,7 @@ def assurer_appel_action(texte, domaine):
             if idx_dernier is not None:
                 bloc[idx_dernier] = bloc[idx_dernier].rstrip() + f" Découvrez-en plus sur {domaine}."
         resultat.extend(bloc)
+    resultat.extend(footer)
     return "\n".join(resultat)
 
 def generer_contenu_marque(result, type_contenu, objectif):
