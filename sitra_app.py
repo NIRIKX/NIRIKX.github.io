@@ -1267,7 +1267,6 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                     try:
                         import requests as req
                         from bs4 import BeautifulSoup
-                        import re
 
                         contenu_site = ""
                         images_urls = []
