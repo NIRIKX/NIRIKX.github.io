@@ -1234,7 +1234,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                         if not h1_ok: sections_prompt.append("TITRE H1:\n(1 phrase courte, max 10 mots)")
                         sections_prompt.extend([
                             "INTRODUCTION:\n(2-3 phrases enthousiaste, parle au visiteur)",
-                            "A PROPOS:\n(3-4 phrases personnelles, comme si le gerant parlait)",
+                            "A PROPOS:\n(3-4 phrases chaleureuses, UN SEUL point de vue cohérent du début à la fin - soit tout au \"nous\" de l'entreprise, soit tout au \"je\" du gérant, jamais les deux mélangés dans le même texte)",
                             "SERVICES:\n(3-4 phrases concretes avec services specifiques du site)",
                             "CONTACT:\n(2 phrases simples et directes)",
                             "MOTS CLES:\n(10 mots-cles specifiques separes par virgules)"
@@ -1247,6 +1247,7 @@ DESCRIPTION ACTUELLE : {desc or "(aucune)"}
 CONTENU : {contenu_site if contenu_site else "(déduis depuis l'URL)"}
 
 REGLE : Chaque section a un TON DIFFERENT. Ne repete jamais les memes mots entre sections.
+REGLE : A l'interieur de CHAQUE section, garde un seul et meme point de vue du debut a la fin (ne melange jamais "nous" et "je" dans le meme texte).
 
 FORMAT OBLIGATOIRE : reponds UNIQUEMENT avec les sections demandees ci-dessous, chacune commencant EXACTEMENT par son titre en majuscules suivi de ":", seul sur sa ligne, puis le texte sur la ou les lignes suivantes. N'omets JAMAIS un titre de section, meme court. Pas d'introduction, pas de markdown, pas de "---".
 
