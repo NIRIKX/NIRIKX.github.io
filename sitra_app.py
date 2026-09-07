@@ -3,7 +3,7 @@ import time
 import os
 import html
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, texte_gemini
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, texte_gemini, url_est_sure
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
@@ -1289,8 +1289,8 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                         contenu_site = ""
                         images_urls = []
                         try:
-                            r_site = req.get(url_site, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-                            if r_site.status_code == 200:
+                            r_site = req.get(url_site, timeout=10, headers={"User-Agent": "Mozilla/5.0"}, allow_redirects=False) if url_est_sure(url_site) else None
+                            if r_site is not None and r_site.status_code == 200:
                                 soup = BeautifulSoup(r_site.text, "lxml")
                                 for tag in soup(["script", "style", "nav", "footer", "head"]):
                                     tag.decompose()
@@ -1321,7 +1321,12 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
                         descriptions_images = []
                         for img_url in images_urls:
                             try:
-                                img_resp = req.get(img_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+                                # img_url vient du HTML du site analyse (balises <img>) :
+                                # on verifie qu'elle ne pointe pas vers une adresse
+                                # interne avant de la telecharger depuis notre serveur.
+                                if not url_est_sure(img_url):
+                                    continue
+                                img_resp = req.get(img_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"}, allow_redirects=False)
                                 img_resp.raise_for_status()
                                 mime = img_resp.headers.get("Content-Type", "image/jpeg").split(";")[0].strip()
                                 if not mime.startswith("image/"):

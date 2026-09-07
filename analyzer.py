@@ -6,11 +6,12 @@ Remplace tous les random() par de vraies vérifications
 import requests
 import time
 import threading
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 import re
 import ssl
 import socket
+import ipaddress
 
 
 HEADERS = {
@@ -65,21 +66,29 @@ def appeler_gemini(api_key, contents, timeout=30, max_tentatives=3, generation_c
         payload["systemInstruction"] = {"parts": [{"text": system_instruction}]}
     url = f"{GEMINI_URL}?key={api_key}"
 
-    codes_a_reessayer = (429, 503)
-    delai = 3
-    for tentative in range(max_tentatives):
-        try:
-            reponse = requests.post(url, json=payload, timeout=timeout)
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            if tentative == max_tentatives - 1:
-                raise
+    try:
+        codes_a_reessayer = (429, 503)
+        delai = 3
+        for tentative in range(max_tentatives):
+            try:
+                reponse = requests.post(url, json=payload, timeout=timeout)
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                if tentative == max_tentatives - 1:
+                    raise
+                time.sleep(delai)
+                delai *= 2
+                continue
+            if reponse.status_code not in codes_a_reessayer or tentative == max_tentatives - 1:
+                return reponse
             time.sleep(delai)
             delai *= 2
-            continue
-        if reponse.status_code not in codes_a_reessayer or tentative == max_tentatives - 1:
-            return reponse
-        time.sleep(delai)
-        delai *= 2
+    except Exception as e:
+        # Certaines exceptions reseau (timeout, erreur de connexion...)
+        # incluent l'URL complete de la requete dans leur message, cle API
+        # comprise - et ce message technique est parfois affiche tel quel
+        # a l'utilisateur en cas d'echec. On la masque avant qu'elle puisse
+        # fuiter dans l'interface.
+        raise Exception(str(e).replace(api_key, "[CLE_API_MASQUEE]")) from None
 
 
 def texte_gemini(reponse):
@@ -224,6 +233,36 @@ def normalize_url(url: str) -> str:
     return url
 
 
+def _ip_est_interne(ip_str: str) -> bool:
+    try:
+        ip = ipaddress.ip_address(ip_str)
+    except ValueError:
+        return True
+    return (
+        ip.is_private or ip.is_loopback or ip.is_link_local
+        or ip.is_reserved or ip.is_multicast or ip.is_unspecified
+    )
+
+
+def url_est_sure(url: str) -> bool:
+    """
+    Verifie qu'une URL pointe vers un hote public sur le web plutot que
+    vers une adresse interne (localhost, reseau prive, metadonnees cloud
+    type 169.254.169.254...). NIRIKX va chercher n'importe quelle URL
+    fournie par un visiteur (et des images trouvees dans le HTML d'un
+    site analyse) : sans ce garde-fou, l'outil pourrait etre detourne
+    pour sonder un reseau interne depuis notre serveur (SSRF).
+    """
+    try:
+        p = urlparse(url)
+        if p.scheme not in ("http", "https") or not p.hostname:
+            return False
+        infos = socket.getaddrinfo(p.hostname, None)
+        return all(not _ip_est_interne(info[4][0]) for info in infos)
+    except Exception:
+        return False
+
+
 def fetch_site(url: str) -> dict:
     """
     Récupère le contenu d'un site et mesure le temps de réponse.
@@ -238,9 +277,28 @@ def fetch_site(url: str) -> dict:
         "is_https": url.startswith("https://"),
     }
 
+    if not url_est_sure(url):
+        result["error"] = "URL non autorisée (adresse invalide ou interne)"
+        return result
+
     try:
         start = time.time()
-        r = requests.get(url, headers=HEADERS, timeout=TIMEOUT, allow_redirects=True)
+        # On suit les redirections nous-memes (au lieu de allow_redirects=True)
+        # pour verifier chaque etape : un site pourrait sinon rediriger vers
+        # une adresse interne apres avoir passe le controle initial.
+        r = requests.get(url, headers=HEADERS, timeout=TIMEOUT, allow_redirects=False)
+        redirections = 0
+        while r.is_redirect and redirections < 5:
+            suivante = r.headers.get("Location")
+            if not suivante:
+                break
+            suivante = urljoin(r.url, suivante)
+            if not url_est_sure(suivante):
+                result["error"] = "URL non autorisée (redirection vers une adresse interne)"
+                return result
+            r = requests.get(suivante, headers=HEADERS, timeout=TIMEOUT, allow_redirects=False)
+            redirections += 1
+
         result["response_time"] = round(time.time() - start, 2)
         result["status_code"] = r.status_code
         result["final_url"] = r.url
@@ -789,9 +847,10 @@ def estimer_potentiel_croissance(result: dict, secteur: str = "Autre", nb_client
 
         signaux_concrets = []
         try:
-            r_site = req.get(url, timeout=TIMEOUT, headers=HEADERS)
-            if r_site.status_code == 200:
-                signaux_concrets = extraire_signaux_concrets(r_site.text)
+            if url_est_sure(url):
+                r_site = req.get(url, timeout=TIMEOUT, headers=HEADERS, allow_redirects=False)
+                if r_site.status_code == 200:
+                    signaux_concrets = extraire_signaux_concrets(r_site.text)
         except Exception:
             pass
         signaux_str = ", ".join(signaux_concrets) if signaux_concrets else "aucun chiffre concret trouve sur le site"
