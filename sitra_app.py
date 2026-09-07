@@ -626,16 +626,24 @@ def render_result(result, idx=0):
 
     st.markdown("")
     with st.expander("Analyse IA — Recommandations personnalisées"):
+        # Génération a la demande : un st.expander ferme execute quand meme
+        # tout son contenu a chaque rendu (Streamlit ne "saute" pas les
+        # containers replies), donc generer l'appel IA ici sans bouton
+        # bloquait l'affichage de TOUTE la page a chaque analyse, meme
+        # quand personne ne regarde cette section.
         cle_reco = f"recommandations_ia_{idx}_{result['final_url'].strip().lower()}"
         if cle_reco not in st.session_state:
-            with st.spinner("L'IA analyse votre site..."):
-                st.session_state[cle_reco] = generer_recommandations_ia(result)
-        recommandations, erreur_ia = st.session_state[cle_reco]
-        if recommandations:
-            st.markdown(recommandations)
+            if st.button("Générer les recommandations IA", key=f"btn_gen_reco_{idx}"):
+                with st.spinner("L'IA analyse votre site..."):
+                    st.session_state[cle_reco] = generer_recommandations_ia(result)
+                st.rerun()
         else:
-            st.warning("Impossible de générer les recommandations IA pour le moment.")
-            st.caption(f"Détail technique : {erreur_ia or 'erreur inconnue'}")
+            recommandations, erreur_ia = st.session_state[cle_reco]
+            if recommandations:
+                st.markdown(recommandations)
+            else:
+                st.warning("Impossible de générer les recommandations IA pour le moment.")
+                st.caption(f"Détail technique : {erreur_ia or 'erreur inconnue'}")
             if st.button("Réessayer", key=f"retry_reco_{idx}"):
                 del st.session_state[cle_reco]
                 st.rerun()
