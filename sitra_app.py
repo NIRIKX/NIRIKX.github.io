@@ -104,7 +104,6 @@ def generer_contenu_marque(result, type_contenu, objectif):
 Site analysé : {result['final_url']}
 Titre du site : {result['seo']['title'] or 'Non défini'}
 Description actuelle : {result['seo']['meta_description'] or 'Non définie'}
-Nombre de mots sur le site : {result['content']['word_count']}
 
 Type de contenu à générer : {type_contenu}
 Objectif de la campagne : {objectif}
@@ -115,6 +114,7 @@ Consignes de style, à respecter strictement :
 - Si plusieurs posts sont demandés, donne à chacun un angle vraiment différent (une anecdote concrète, une question qui pique la curiosité, un fait ou un détail précis, un conseil pratique...). N'utilise pas la même structure "problème → solution → appel à l'action" pour chacun.
 - Phrases courtes, directes, spécifiques. Zéro superlatif creux.
 - Sois concret, percutant et prêt à publier directement.
+- Ce texte s'adresse au public, pas à un rapport d'analyse : ne cite jamais de statistique technique ou de donnée d'audit (nombre de mots, score, pourcentage...), même si tu la connais par ailleurs.
 IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
