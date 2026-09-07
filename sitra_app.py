@@ -118,9 +118,36 @@ Consignes de style, à respecter strictement :
 IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
-            "Post Instagram": f"{prompt}\n\nRédige 3 posts Instagram différents (150-200 caractères chacun + 5 hashtags pertinents). Format : POST 1 / POST 2 / POST 3",
-            "Post LinkedIn": f"{prompt}\n\nRédige 2 posts LinkedIn professionnels (200-300 mots chacun). Format : POST 1 / POST 2",
-            "Post Facebook": f"{prompt}\n\nRédige 3 posts Facebook engageants (100-150 mots chacun). Format : POST 1 / POST 2 / POST 3",
+            "Post Instagram": f"""{prompt}
+
+Rédige 3 posts Instagram différents (150-200 caractères chacun + 5 hashtags pertinents).
+
+FORMAT OBLIGATOIRE : le numéro du post seul sur sa ligne, puis le texte du post sur la ou les lignes suivantes, une ligne vide avant le post suivant. Exemple exact à suivre :
+POST 1
+Texte du premier post ici, avec ses hashtags à la fin. #Exemple #Hashtag
+
+POST 2
+Texte du deuxième post ici.""",
+            "Post LinkedIn": f"""{prompt}
+
+Rédige 2 posts LinkedIn professionnels (200-300 mots chacun).
+
+FORMAT OBLIGATOIRE : le numéro du post seul sur sa ligne, puis le texte du post sur la ou les lignes suivantes, une ligne vide avant le post suivant. Exemple exact à suivre :
+POST 1
+Texte du premier post ici.
+
+POST 2
+Texte du deuxième post ici.""",
+            "Post Facebook": f"""{prompt}
+
+Rédige 3 posts Facebook engageants (100-150 mots chacun).
+
+FORMAT OBLIGATOIRE : le numéro du post seul sur sa ligne, puis le texte du post sur la ou les lignes suivantes, une ligne vide avant le post suivant. Exemple exact à suivre :
+POST 1
+Texte du premier post ici.
+
+POST 2
+Texte du deuxième post ici.""",
             "Email marketing": f"""{prompt}
 
 Tu es un expert en copywriting émotionnel. Rédige un email marketing qui donne vraiment envie, qui touche les émotions du lecteur et le pousse à agir. L'objectif est : {objectif}
@@ -155,7 +182,18 @@ Bonjour [Prénom],
 
 BOUTON :
 [texte court et motivant, ex : Je veux ça / Je passe à l'action / Je découvre maintenant]""",
-            "Texte publicitaire Google Ads": f"{prompt}\n\nRédige 3 annonces Google Ads complètes avec : Titre 1 (max 30 car.) / Titre 2 (max 30 car.) / Description (max 90 car.). Format : ANNONCE 1 / ANNONCE 2 / ANNONCE 3",
+            "Texte publicitaire Google Ads": f"""{prompt}
+
+Rédige 3 annonces Google Ads complètes.
+
+FORMAT OBLIGATOIRE : le numéro de l'annonce seul sur sa ligne, puis Titre 1, Titre 2 et Description chacun sur leur propre ligne, une ligne vide avant l'annonce suivante. Exemple exact à suivre :
+ANNONCE 1
+Titre 1 : (max 30 caractères)
+Titre 2 : (max 30 caractères)
+Description : (max 90 caractères)
+
+ANNONCE 2
+Titre 1 : ...""",
         }
 
         prompt_final = types_prompts.get(type_contenu, prompt)
