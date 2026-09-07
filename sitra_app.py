@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 import os
+import html
 try:
     from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, texte_gemini
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
@@ -49,7 +50,7 @@ Règles strictes :
 - Vouvoiement uniquement ("vous"), jamais de tutoiement ("tu").
 - Pas de termes techniques — utilise des mots du quotidien.
 - Aucune métaphore, comparaison, image ou jeu de mots, ni dans le nom du problème ni dans la solution (interdits : objets pour illustrer, expressions imagées type "cache tes...", "arrête de...", verbes détournés de leur sens propre).
-- Français correct et sans faute, relis-toi avant de répondre."""
+- Français correct et sans faute : écris TOUS les accents (é, è, à, ç, ê, î, ô, û...) sur chaque mot qui en a besoin, n'invente jamais de mot qui n'existe pas en français, et relis-toi avant de répondre."""
 
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         r = appeler_gemini(api_key, contents, timeout=45, generation_config={"maxOutputTokens": 4000})
@@ -140,7 +141,17 @@ def assurer_appel_action(texte, domaine):
                     idx_dernier = i
                     break
             if idx_dernier is not None:
-                bloc[idx_dernier] = bloc[idx_dernier].rstrip() + f" Découvrez-en plus sur {domaine}."
+                ligne_cible = bloc[idx_dernier].rstrip()
+                # Si la ligne se termine par des hashtags collés au texte
+                # ("...aujourd'hui. #Sport #Nike"), on insere la phrase de
+                # secours avant eux plutot qu'apres, pour rester lisible.
+                match_hashtags = re.search(r'(\s*(?:#\S+\s*)+)$', ligne_cible)
+                if match_hashtags and match_hashtags.start() > 0:
+                    avant = ligne_cible[:match_hashtags.start()].rstrip()
+                    hashtags = match_hashtags.group(1).strip()
+                    bloc[idx_dernier] = f"{avant} Découvrez-en plus sur {domaine}. {hashtags}"
+                else:
+                    bloc[idx_dernier] = ligne_cible + f" Découvrez-en plus sur {domaine}."
         resultat.extend(bloc)
     resultat.extend(footer)
     return "\n".join(resultat)
@@ -166,7 +177,8 @@ Consignes de style, à respecter strictement :
 - Phrases courtes, directes, spécifiques. Zéro superlatif creux.
 - Sois concret, percutant et prêt à publier directement.
 - Ce texte s'adresse au public, pas à un rapport d'analyse : ne cite jamais de statistique technique ou de donnée d'audit (nombre de mots, score, pourcentage...), même si tu la connais par ailleurs.
-- OBJECTIF COMMERCIAL : ce contenu doit vendre, pas juste raconter une belle histoire de marque. CHAQUE post, SANS EXCEPTION, doit se terminer par une phrase d'action concrète (pas une punchline de marque, pas un slogan seul) qui dit au lecteur où aller ou quoi faire : nom du site, "en boutique", "lien en bio", "swipe up", etc. Cette regle s'applique meme si l'objectif fourni ({objectif}) est vague ou general - dans ce cas, termine quand meme par une invitation concrete a visiter le site ou la boutique, jamais par une phrase uniquement inspirationnelle. Mauvais exemple (a ne jamais faire) : "Nike est la pour le reste." Bon exemple : "Nike est la pour le reste. Direction Nike.com."
+- OBJECTIF COMMERCIAL : ce contenu doit vendre, pas juste raconter une belle histoire de marque. CHAQUE post, SANS EXCEPTION, doit se terminer par une phrase d'action concrète (pas une punchline de marque, pas un slogan seul) qui dit au lecteur où aller ou quoi faire : nom du site, "en boutique", "lien en bio", "swipe up", etc. Cette règle s'applique même si l'objectif fourni ({objectif}) est vague ou général — dans ce cas, termine quand même par une invitation concrète à visiter le site ou la boutique, jamais par une phrase uniquement inspirationnelle. Mauvais exemple (à ne jamais faire) : "Nike est là pour le reste." Bon exemple : "Nike est là pour le reste. Direction Nike.com."
+- RÈGLE ORTHOGRAPHE : écris un français impeccable, avec TOUS les accents (é, è, à, ç, ê, î, ô, û...) sur chaque mot qui en a besoin. N'invente jamais de mot qui n'existe pas en français. Relis chaque phrase avant de l'écrire pour vérifier l'orthographe et les accents.
 IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
@@ -575,7 +587,9 @@ def render_issues(issues):
             # Nettoie les tirets et symboles techniques
             msg = issue.replace("[X]", "").replace("[!]", "").replace(" — ", " : ").strip()
             css_class = "issue-critical" if issue.startswith("[X]") or "pas de" in issue.lower() else "issue-warning"
-            st.markdown(f'<div class="issue-item {css_class}">{msg}</div>', unsafe_allow_html=True)
+            # Certains messages citent des mots extraits tels quels du site
+            # analysé (mots repetes, fautes...) : on echappe par securite.
+            st.markdown(f'<div class="issue-item {css_class}">{html.escape(msg)}</div>', unsafe_allow_html=True)
 
 # ── RENDER RESULT ─────────────────────────────────────────────────────────────
 def render_result(result, idx=0):
@@ -1434,21 +1448,24 @@ Sections a generer, dans cet ordre :
                     if not apres_val or "[" in apres_val:
                         continue
                     nb_affiche += 1
+                    # avant_val vient du site analyse (titre/description bruts) : on
+                    # echappe pour eviter qu'un site avec du HTML dans son titre ne
+                    # casse l'affichage ou n'injecte du contenu dans l'apercu.
                     blocs_html += f"""
 <div style="margin-bottom:20px">
-  <div style="font-size:11px;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">{nb_affiche}. {label}</div>
+  <div style="font-size:11px;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">{nb_affiche}. {html.escape(label)}</div>
   <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start">
     <div>
       <div style="font-size:10px;color:#dc2626;font-weight:700;margin-bottom:6px;text-transform:uppercase">Avant — Texte actuel</div>
-      <div style="background:#fff5f5;border:2px solid #fca5a5;border-radius:10px;padding:14px;font-size:13px;color:#374151;line-height:1.6;min-height:60px">{avant_val}</div>
+      <div style="background:#fff5f5;border:2px solid #fca5a5;border-radius:10px;padding:14px;font-size:13px;color:#374151;line-height:1.6;min-height:60px">{html.escape(avant_val)}</div>
     </div>
     <div style="display:flex;align-items:center;font-size:24px;color:#7c6af7;padding:0 4px;align-self:center">&#8594;</div>
     <div>
       <div style="font-size:10px;color:#16a34a;font-weight:700;margin-bottom:6px;text-transform:uppercase">Apres — A copier-coller</div>
-      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px;font-size:13px;color:#374151;line-height:1.6;min-height:60px;font-family:monospace">{apres_val}</div>
+      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px;font-size:13px;color:#374151;line-height:1.6;min-height:60px;font-family:monospace">{html.escape(apres_val)}</div>
     </div>
   </div>
-  <div style="margin-top:8px;background:rgba(124,106,247,0.1);border-left:3px solid #7c6af7;padding:7px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#5b21b6">{conseil}</div>
+  <div style="margin-top:8px;background:rgba(124,106,247,0.1);border-left:3px solid #7c6af7;padding:7px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#5b21b6">{html.escape(conseil)}</div>
 </div>"""
 
                 # Photos utiles uniquement
@@ -1467,7 +1484,7 @@ Sections a generer, dans cet ordre :
     <div style="display:flex;align-items:center;font-size:24px;color:#7c6af7;padding:0 4px;align-self:center">&#8594;</div>
     <div>
       <div style="font-size:10px;color:#16a34a;font-weight:700;margin-bottom:6px;text-transform:uppercase">Apres — A copier-coller</div>
-      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px;font-size:13px;color:#374151;line-height:1.6;min-height:60px;font-family:monospace">{desc_img}</div>
+      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:14px;font-size:13px;color:#374151;line-height:1.6;min-height:60px;font-family:monospace">{html.escape(desc_img)}</div>
     </div>
   </div>
   <div style="margin-top:8px;background:rgba(124,106,247,0.1);border-left:3px solid #7c6af7;padding:7px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#5b21b6">Ajoutez ce texte dans le champ Texte alternatif de cette image dans votre CMS.</div>
@@ -1654,7 +1671,7 @@ Sections a generer, dans cet ordre :
                         projection_max_fmt = f"{int(projection_max):,}".replace(",", " ")
                         montant_html = f'<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:0.8rem"><div style="font-size:28px;font-weight:700;color:#c0b8f0">{projection_min_fmt} € — {projection_max_fmt} €</div><div style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px">sur 12 mois</div></div>'
 
-                    st.markdown(f'<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px"><div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Ce que vous pourriez atteindre d\'ici 12 mois</div>{montant_html}<div style="color:#e0e0e0;font-size:0.85rem;line-height:1.6">{projection_texte}</div></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2a2a4e;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px"><div style="font-size:0.95rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Ce que vous pourriez atteindre d\'ici 12 mois</div>{montant_html}<div style="color:#e0e0e0;font-size:0.85rem;line-height:1.6">{html.escape(projection_texte)}</div></div>', unsafe_allow_html=True)
 
                     with st.expander("Estimation de votre potentiel de revenus sur un an"):
                         st.caption("Optionnel — ces informations servent uniquement à ancrer l'estimation dans votre réalité, elles ne sont pas rendues publiques.")
@@ -1775,7 +1792,7 @@ Sections a generer, dans cet ordre :
 
                     concurrents_cibles = estimation.get("concurrents_cibles") or []
                     if concurrents_cibles:
-                        chips = "".join([f'<span style="display:inline-block;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.4);color:#5b21b6;padding:4px 12px;border-radius:20px;font-size:0.85rem;margin:2px 4px 2px 0">{c}</span>' for c in concurrents_cibles])
+                        chips = "".join([f'<span style="display:inline-block;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.4);color:#5b21b6;padding:4px 12px;border-radius:20px;font-size:0.85rem;margin:2px 4px 2px 0">{html.escape(c)}</span>' for c in concurrents_cibles])
                         st.markdown(f"""
                         <div style="margin-bottom:16px">
                             <div style="font-size:0.95rem;font-weight:700;color:#1a1a2e;margin-bottom:0.5rem">🎯 Concurrents à dépasser (ambitieux mais imaginable)</div>
@@ -1787,16 +1804,16 @@ Sections a generer, dans cet ordre :
                     with col_f1:
                         st.markdown('<div style="font-size:0.9rem;font-weight:700;color:#28a745;margin-bottom:0.5rem">✅ Points forts</div>', unsafe_allow_html=True)
                         for pf in (estimation.get("points_forts") or []):
-                            st.markdown(f'<div class="issue-item issue-ok">{pf}</div>', unsafe_allow_html=True)
+                            st.markdown(f'<div class="issue-item issue-ok">{html.escape(pf)}</div>', unsafe_allow_html=True)
                     with col_f2:
                         st.markdown('<div style="font-size:0.9rem;font-weight:700;color:#d97706;margin-bottom:0.5rem">⚠️ Points faibles</div>', unsafe_allow_html=True)
                         for pfa in (estimation.get("points_faibles") or []):
-                            st.markdown(f'<div class="issue-item issue-warning">{pfa}</div>', unsafe_allow_html=True)
+                            st.markdown(f'<div class="issue-item issue-warning">{html.escape(pfa)}</div>', unsafe_allow_html=True)
 
                     st.markdown("")
                     st.markdown(f"""
                     <div style="background:rgba(124,106,247,0.08);border-left:3px solid #7c6af7;padding:1rem 1.2rem;border-radius:0 8px 8px 0;margin:1rem 0;color:#1a1a2e;font-size:0.9rem;line-height:1.6">
-                        {estimation["analyse"]}
+                        {html.escape(estimation["analyse"])}
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -1808,7 +1825,7 @@ Sections a generer, dans cet ordre :
                             plan_html += f"""
                             <div style="display:flex;gap:0.8rem;align-items:flex-start;background:#1a1a2e;border:1px solid #2a2a4e;border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.5rem">
                                 <div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700">{i+1}</div>
-                                <div style="color:#e0e0e0;font-size:0.88rem;line-height:1.5;padding-top:2px">{action}</div>
+                                <div style="color:#e0e0e0;font-size:0.88rem;line-height:1.5;padding-top:2px">{html.escape(action)}</div>
                             </div>
                             """
                         st.markdown(plan_html, unsafe_allow_html=True)
@@ -2004,7 +2021,7 @@ Sois direct, concret, sans jargon technique."""
                 st.markdown(f"""
                 <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(102,126,234,0.4);border-radius:16px;padding:1.8rem 2rem;margin-top:1rem">
                     <div style="font-size:1.2rem;font-weight:700;color:#a090f7;margin-bottom:1rem">📊 Analyse de l'écart — {site1} vs {site2}</div>
-                    <div style="color:#e8e8f0;font-size:0.95rem;line-height:1.8">{analyse.replace(chr(10), '<br>').replace('**','').replace('*','')}</div>
+                    <div style="color:#e8e8f0;font-size:0.95rem;line-height:1.8">{html.escape(analyse.replace('**','').replace('*','')).replace(chr(10), '<br>')}</div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -2058,10 +2075,11 @@ with st.expander("Vous avez une question ? Posez-la à l'assistant NIRIKX"):
         st.session_state["chat_input_key"] = 0
 
     for msg in st.session_state["chat_messages"]:
+        contenu_affiche = html.escape(msg['content']).replace(chr(10), "<br>")
         if msg["role"] == "user":
-            st.markdown(f"""<div style="background:#1a1a2e;border:1px solid #2a2a4e;border-radius:10px;padding:0.8rem 1rem;margin:0.5rem 0;text-align:right;color:#e0e0e0">{msg['content']}</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div style="background:#1a1a2e;border:1px solid #2a2a4e;border-radius:10px;padding:0.8rem 1rem;margin:0.5rem 0;text-align:right;color:#e0e0e0">{contenu_affiche}</div>""", unsafe_allow_html=True)
         else:
-            st.markdown(f"""<div style="background:#1a1a2e;border:1px solid #667eea;border-radius:10px;padding:0.8rem 1rem;margin:0.5rem 0;color:#ffffff;font-weight:500">{msg['content']}</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div style="background:#1a1a2e;border:1px solid #667eea;border-radius:10px;padding:0.8rem 1rem;margin:0.5rem 0;color:#ffffff;font-weight:500">{contenu_affiche}</div>""", unsafe_allow_html=True)
 
     question = st.text_input("Votre question :", placeholder="Ex: C'est quoi une balise H1 ? Pourquoi mon score SEO est bas ?", key=f"chat_input_{st.session_state['chat_input_key']}")
 
