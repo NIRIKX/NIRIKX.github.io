@@ -115,6 +115,7 @@ Consignes de style, à respecter strictement :
 - Phrases courtes, directes, spécifiques. Zéro superlatif creux.
 - Sois concret, percutant et prêt à publier directement.
 - Ce texte s'adresse au public, pas à un rapport d'analyse : ne cite jamais de statistique technique ou de donnée d'audit (nombre de mots, score, pourcentage...), même si tu la connais par ailleurs.
+- OBJECTIF COMMERCIAL : ce contenu doit vendre, pas juste raconter une belle histoire de marque. Chaque post doit se terminer par une action précise et concrète que le lecteur peut faire tout de suite pour avancer vers l'objectif ({objectif}) - jamais une invitation vague ("venez découvrir", "retrouvez la gamme"). Nomme ce que le lecteur doit faire, voir ou obtenir. Eviter le survendu ne veut pas dire eviter de vendre : reste concret et honnete, mais assume de pousser a l'action.
 IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
