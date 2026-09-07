@@ -1258,7 +1258,7 @@ Sections a generer, dans cet ordre :
 {chr(10).join(sections_prompt)}"""
 
                         contents = [{"role": "user", "parts": [{"text": prompt}]}]
-                        r = appeler_gemini(gemini_key, contents, timeout=45, generation_config={"maxOutputTokens": 1200, "temperature": 0.7})
+                        r = appeler_gemini(gemini_key, contents, timeout=60, generation_config={"maxOutputTokens": 1200, "temperature": 0.7})
                         textes_generes = texte_gemini(r)
                         textes_generes = re.sub(r'#{1,6}\s*', '', textes_generes)
                         textes_generes = re.sub(r'\*{1,2}', '', textes_generes)
