@@ -162,7 +162,7 @@ BOUTON :
         prompt_final += "\n\nRappel impératif, quel que soit le format demandé ci-dessus : ta réponse doit impérativement se terminer par une section intitulée \"Pourquoi ça marche ?\" contenant 3 à 4 puces courtes qui expliquent tes choix de ton et d'angle. N'arrête pas ta réponse avant d'avoir écrit cette section, sans emoji."
 
         contents = [{"role": "user", "parts": [{"text": prompt_final}]}]
-        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 1200})
+        r = appeler_gemini(api_key, contents, timeout=60, generation_config={"maxOutputTokens": 1200})
         contenu = texte_gemini(r)
         return enlever_emojis(contenu), None
     except Exception as e:
@@ -1881,7 +1881,7 @@ Rédige un texte court (5-6 phrases maximum) qui :
 Sois direct, concret, sans jargon technique."""
 
                         contents = [{"role": "user", "parts": [{"text": prompt}]}]
-                        r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 400})
+                        r = appeler_gemini(api_key, contents, timeout=45, generation_config={"maxOutputTokens": 400})
                         analyse = texte_gemini(r)
                         st.session_state[cle_ecart] = analyse
                     except Exception:
@@ -1974,7 +1974,7 @@ IMPORTANT : Tu dois TOUJOURS terminer tes réponses complètement. Ne coupe jama
                     role = "user" if msg["role"] == "user" else "model"
                     contents.append({"role": role, "parts": [{"text": msg["content"]}]})
 
-                r = appeler_gemini(api_key, contents, timeout=30, generation_config={"maxOutputTokens": 1500}, system_instruction=system_instruction)
+                r = appeler_gemini(api_key, contents, timeout=45, generation_config={"maxOutputTokens": 1500}, system_instruction=system_instruction)
                 reponse = texte_gemini(r)
                 st.session_state["chat_messages"].append({"role": "assistant", "content": reponse})
                 st.session_state["chat_input_key"] += 1
