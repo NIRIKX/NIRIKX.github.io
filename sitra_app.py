@@ -115,7 +115,7 @@ Consignes de style, à respecter strictement :
 - Phrases courtes, directes, spécifiques. Zéro superlatif creux.
 - Sois concret, percutant et prêt à publier directement.
 - Ce texte s'adresse au public, pas à un rapport d'analyse : ne cite jamais de statistique technique ou de donnée d'audit (nombre de mots, score, pourcentage...), même si tu la connais par ailleurs.
-- OBJECTIF COMMERCIAL : ce contenu doit vendre, pas juste raconter une belle histoire de marque. Chaque post doit se terminer par une action précise et concrète que le lecteur peut faire tout de suite pour avancer vers l'objectif ({objectif}) - jamais une invitation vague ("venez découvrir", "retrouvez la gamme"). Nomme ce que le lecteur doit faire, voir ou obtenir. Eviter le survendu ne veut pas dire eviter de vendre : reste concret et honnete, mais assume de pousser a l'action.
+- OBJECTIF COMMERCIAL : ce contenu doit vendre, pas juste raconter une belle histoire de marque. CHAQUE post, SANS EXCEPTION, doit se terminer par une phrase d'action concrète (pas une punchline de marque, pas un slogan seul) qui dit au lecteur où aller ou quoi faire : nom du site, "en boutique", "lien en bio", "swipe up", etc. Cette regle s'applique meme si l'objectif fourni ({objectif}) est vague ou general - dans ce cas, termine quand meme par une invitation concrete a visiter le site ou la boutique, jamais par une phrase uniquement inspirationnelle. Mauvais exemple (a ne jamais faire) : "Nike est la pour le reste." Bon exemple : "Nike est la pour le reste. Direction Nike.com."
 IMPORTANT : n'utilise strictement aucun emoji ni pictogramme, nulle part dans ta réponse. Uniquement du texte."""
 
         types_prompts = {
