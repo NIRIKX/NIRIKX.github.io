@@ -198,6 +198,8 @@ Texte du deuxième post ici.""",
 
 Rédige 2 posts LinkedIn professionnels (200-300 mots chacun).
 
+ADAPTATION AU FORMAT LINKEDIN (important, différent d'Instagram/Facebook) : le public LinkedIn est professionnel, pas un public de consommation directe — un post qui pousse aussi frontalement à l'achat qu'une pub grand public y sonne faux et spammy. Garde le ton confiant et assertif de la consigne ci-dessus, mais adapte le FOND : privilégie un angle crédibilité de marque, expertise, savoir-faire, innovation ou vision d'entreprise plutôt qu'un discours de vente directe. Termine quand même par une invitation concrète à visiter le site (règle du CTA ci-dessus), mais formulée dans un registre professionnel ("découvrez la démarche sur Nike.com") plutôt que comme une injonction d'achat immédiat ("Achetez maintenant sur Nike.com"). Pas de hashtags nombreux façon Instagram.
+
 FORMAT OBLIGATOIRE : le numéro du post seul sur sa ligne, puis le texte du post sur la ou les lignes suivantes, une ligne vide avant le post suivant. Exemple exact à suivre :
 POST 1
 Texte du premier post ici.
