@@ -1489,6 +1489,18 @@ Sections a generer, dans cet ordre :
 
                         est_separateur = len(ligne.strip()) >= 3 and set(ligne.strip()) == {"-"}
                         est_puce = ligne.strip().startswith("- ") or ligne.strip().startswith("• ")
+                        # Une ligne seule comme "POST 1" ou "ANNONCE 2" : en Markdown,
+                        # un simple retour à la ligne fusionne avec le texte suivant dans
+                        # le meme paragraphe. On la met en gras et on force une vraie
+                        # coupure de paragraphe avant et apres pour qu'elle se detache.
+                        est_label_numero = bool(re.match(r'^(POST|ANNONCE)\s+\d+\s*:?$', ligne.strip(), re.IGNORECASE))
+                        if est_label_numero:
+                            if lignes_propres and lignes_propres[-1].strip() != "":
+                                lignes_propres.append("")
+                            lignes_propres.append(f"**{ligne.strip().rstrip(':')}**")
+                            lignes_propres.append("")
+                            dans_une_liste = False
+                            continue
 
                         if est_separateur:
                             if lignes_propres and lignes_propres[-1].strip() != "":
