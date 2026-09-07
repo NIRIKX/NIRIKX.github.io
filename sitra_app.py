@@ -1494,12 +1494,20 @@ Sections a generer, dans cet ordre :
                         # un simple retour à la ligne fusionne avec le texte suivant dans
                         # le meme paragraphe. On la met en gras et on force une vraie
                         # coupure de paragraphe avant et apres pour qu'elle se detache.
-                        est_label_numero = bool(re.match(r'^(POST|ANNONCE)\s+\d+\s*:?$', ligne.strip(), re.IGNORECASE))
-                        if est_label_numero:
+                        # Gemini ne met pas toujours "POST 1" seul sur sa ligne -
+                        # parfois le texte suit directement ("POST 1 Il pleut...").
+                        # On detecte le debut de ligne dans les deux cas et on
+                        # sépare nous-memes le label du texte qui suit.
+                        match_label_numero = re.match(r'^(POST|ANNONCE)\s+\d+\s*:?\s*(.*)$', ligne.strip(), re.IGNORECASE)
+                        if match_label_numero:
                             if lignes_propres and lignes_propres[-1].strip() != "":
                                 lignes_propres.append("")
-                            lignes_propres.append(f"**{ligne.strip().rstrip(':')}**")
+                            label = ligne.strip()[:len(ligne.strip()) - len(match_label_numero.group(2))].strip().rstrip(':')
+                            lignes_propres.append(f"**{label}**")
                             lignes_propres.append("")
+                            reste = match_label_numero.group(2).strip()
+                            if reste:
+                                lignes_propres.append(reste)
                             dans_une_liste = False
                             continue
 
