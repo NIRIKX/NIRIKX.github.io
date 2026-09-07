@@ -1248,6 +1248,7 @@ CONTENU : {contenu_site if contenu_site else "(déduis depuis l'URL)"}
 
 REGLE : Chaque section a un TON DIFFERENT. Ne repete jamais les memes mots entre sections.
 REGLE : A l'interieur de CHAQUE section, garde un seul et meme point de vue du debut a la fin (ne melange jamais "nous" et "je" dans le meme texte).
+REGLE ORTHOGRAPHE : ecris un francais impeccable, avec TOUS les accents (é, è, à, ç, ê, î, ô, û...) sur chaque mot qui en a besoin. N'invente jamais de mot qui n'existe pas en francais. Relis chaque phrase avant de l'ecrire pour verifier l'orthographe et les accents.
 
 FORMAT OBLIGATOIRE : reponds UNIQUEMENT avec les sections demandees ci-dessous, chacune commencant EXACTEMENT par son titre en majuscules suivi de ":", seul sur sa ligne, puis le texte sur la ou les lignes suivantes. N'omets JAMAIS un titre de section, meme court. Pas d'introduction, pas de markdown, pas de "---".
 
