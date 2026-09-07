@@ -42,8 +42,11 @@ def appeler_gemini(api_key, contents, timeout=30, max_tentatives=3, generation_c
     """
     Envoie une requete a l'API Gemini (Google), en espacant les appels
     pour eviter la limite de debit, puis en reessayant avec un delai
-    croissant en cas de limite de debit (429) ou de surcharge temporaire
-    du modele cote Google (503).
+    croissant en cas de limite de debit (429), de surcharge temporaire
+    du modele cote Google (503), ou si Google met trop de temps a
+    repondre (timeout reseau) - une reponse plus longue a generer
+    (beaucoup de sections demandees) peut depasser le delai une fois
+    sans que ce soit un vrai probleme.
     `contents` suit le format Gemini : une liste de tours
     [{"role": "user"|"model", "parts": [{"text": ...}, ...]}].
     `system_instruction`, si fourni, est une simple chaine de consignes
@@ -64,14 +67,19 @@ def appeler_gemini(api_key, contents, timeout=30, max_tentatives=3, generation_c
 
     codes_a_reessayer = (429, 503)
     delai = 3
-    reponse = requests.post(url, json=payload, timeout=timeout)
-    for _ in range(max_tentatives - 1):
-        if reponse.status_code not in codes_a_reessayer:
-            break
+    for tentative in range(max_tentatives):
+        try:
+            reponse = requests.post(url, json=payload, timeout=timeout)
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            if tentative == max_tentatives - 1:
+                raise
+            time.sleep(delai)
+            delai *= 2
+            continue
+        if reponse.status_code not in codes_a_reessayer or tentative == max_tentatives - 1:
+            return reponse
         time.sleep(delai)
         delai *= 2
-        reponse = requests.post(url, json=payload, timeout=timeout)
-    return reponse
 
 
 def texte_gemini(reponse):
