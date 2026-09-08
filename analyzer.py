@@ -6,6 +6,7 @@ Remplace tous les random() par de vraies vérifications
 import requests
 import time
 import threading
+import json
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 import re
@@ -103,6 +104,60 @@ def texte_gemini(reponse):
         raise Exception(motif or f"Reponse Gemini inattendue (code {reponse.status_code}) : {reponse.text[:300]}")
     parts = d["candidates"][0].get("content", {}).get("parts", [])
     return "".join(p.get("text", "") for p in parts)
+
+
+def appeler_gemini_stream(api_key, contents, timeout=45, generation_config=None, system_instruction=None):
+    """
+    Comme appeler_gemini, mais renvoie le texte au fur et a mesure qu'il
+    est genere (generateur) plutot que d'attendre la reponse complete.
+    Une reponse longue (beaucoup de texte a produire, ex: un conseil par
+    probleme detecte quand il y en a beaucoup) peut prendre plusieurs
+    dizaines de secondes a generer en entier - le streaming permet
+    d'afficher le texte progressivement au lieu de faire attendre
+    l'utilisateur devant un simple indicateur de chargement.
+    Ne fait pas de nouvelle tentative automatique en cas d'echec (une
+    reponse partiellement recue ne peut pas etre "reessayee" proprement) :
+    a l'appelant de decider s'il relance un appel complet.
+    """
+    with _verrou_gemini:
+        attente = INTERVALLE_MIN_GEMINI - (time.time() - _dernier_appel_gemini["t"])
+        if attente > 0:
+            time.sleep(attente)
+        _dernier_appel_gemini["t"] = time.time()
+
+    payload = {"contents": contents}
+    if generation_config:
+        payload["generationConfig"] = generation_config
+    if system_instruction:
+        payload["systemInstruction"] = {"parts": [{"text": system_instruction}]}
+    url = f"{GEMINI_URL.replace(':generateContent', ':streamGenerateContent')}?alt=sse&key={api_key}"
+
+    try:
+        with requests.post(url, json=payload, timeout=timeout, stream=True) as reponse:
+            if reponse.status_code != 200:
+                raise Exception(texte_gemini(reponse))
+            for ligne in reponse.iter_lines(decode_unicode=True):
+                if not ligne or not ligne.startswith("data: "):
+                    continue
+                morceau = ligne[len("data: "):].strip()
+                if not morceau or morceau == "[DONE]":
+                    continue
+                try:
+                    d = json.loads(morceau)
+                except ValueError:
+                    continue
+                candidats = d.get("candidates") or []
+                if not candidats:
+                    motif = d.get("promptFeedback", {}).get("blockReason")
+                    if motif:
+                        raise Exception(motif)
+                    continue
+                for p in candidats[0].get("content", {}).get("parts", []):
+                    texte = p.get("text", "")
+                    if texte:
+                        yield texte
+    except Exception as e:
+        raise Exception(str(e).replace(api_key, "[CLE_API_MASQUEE]")) from None
 
 
 def detect_secteur_et_concurrents(url: str, html: str) -> dict:
