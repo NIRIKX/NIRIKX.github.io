@@ -5,7 +5,6 @@ import html
 import hmac
 try:
     from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, appeler_gemini_stream, texte_gemini, url_est_sure
-    from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
     st.stop()
@@ -995,7 +994,7 @@ def render_result(result, idx=0):
 
             if seo["h1_count"] != 1:
                 if seo["h1_count"] == 0:
-                    t_avant = "Pas de titre principal sur la page"
+                    t_avant = "Pas de titre H1 sur la page"
                     t_apres = "Le texte principal balisé comme titre H1"
                 else:
                     t_avant = str(seo["h1_count"]) + " titres H1 en doublon sur la page"
@@ -1007,14 +1006,14 @@ def render_result(result, idx=0):
                     "avant_icone": "ti-heading-off",
                     "avant_label": t_avant,
                     "avant_couleur": "warning",
-                    "avant_texte": "Le grand texte visible sur votre page n'est pas reconnu comme titre par Google — il faut le baliser correctement dans le code.",
+                    "avant_texte": "Le titre H1 (le grand texte principal de votre page) n'est pas reconnu comme tel par Google — il faut le baliser correctement dans le code.",
                     "apres_icone": "ti-heading",
                     "apres_label": t_apres,
                     "apres_couleur": "success",
-                    "apres_texte": "Google sait exactement de quoi parle " + nom_site + " et associe les bons mots-cles a votre page.",
+                    "apres_texte": "Le titre H1 est correctement balisé : Google sait exactement de quoi parle " + nom_site + " et associe les bons mots-cles a votre page.",
                     "conseil": "Le titre H1 dit a Google de quoi parle votre page. Sans lui, Google ne sait pas quel mot-cle associer a " + nom_site + ".",
                     "selector": "h1:first-of-type",
-                    "use_icon": False
+                    "use_icon": True
                 })
 
             if not seo["meta_description"]:
@@ -1122,57 +1121,22 @@ def render_result(result, idx=0):
                 av_c = e["avant_couleur"]
                 ap_c = e["apres_couleur"]
 
-                # Contenu avant/apres
-                if e["use_icon"]:
-                    avant_content = f"""
+                # Contenu avant/apres (icones uniquement, plus de capture d'ecran :
+                # trop peu fiable selon les sites, et le rendu ne convainquait pas)
+                avant_content = f"""
 <div style="background:var(--color-background-{av_c});border-radius:var(--border-radius-md);height:90px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--color-border-{av_c});margin-bottom:8px">
   <div style="text-align:center">
     <i class="ti {e['avant_icone']}" style="font-size:26px;color:var(--color-text-{av_c})" aria-hidden="true"></i>
     <p style="font-size:11px;color:var(--color-text-{av_c});margin:4px 0 0;padding:0 8px">{e['avant_label']}</p>
   </div>
 </div>"""
-                    apres_content = f"""
+                apres_content = f"""
 <div style="background:var(--color-background-{ap_c});border-radius:var(--border-radius-md);height:90px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--color-border-{ap_c});margin-bottom:8px">
   <div style="text-align:center">
     <i class="ti {e['apres_icone']}" style="font-size:26px;color:var(--color-text-{ap_c})" aria-hidden="true"></i>
     <p style="font-size:11px;color:var(--color-text-{ap_c});margin:4px 0 0;padding:0 8px">{e['apres_label']}</p>
   </div>
 </div>"""
-                else:
-                    # Vraie capture Playwright ou Microlink
-                    img_data = None
-                    was_targeted = False
-                    try:
-                        from playwright_capture import get_screenshot_with_highlight
-                        img_data, was_targeted = get_screenshot_with_highlight(url_site, e["selector"])
-                    except Exception:
-                        pass
-                    if not img_data:
-                        try:
-                            img_data, was_targeted = get_screenshot_zone(url_site, e["selector"])
-                        except Exception:
-                            pass
-                    if img_data:
-                        label_capture = "Erreur ici" if was_targeted else "Aperçu du site"
-                        modal_id = f"modal_zoom_{n}"
-                        avant_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{av_c});margin-bottom:8px;height:90px;position:relative;cursor:zoom-in" onclick="document.getElementById('{modal_id}').style.display='flex'">
-<img src="{img_data}" style="width:100%;height:90px;object-fit:cover;object-position:top"/>
-<div style="position:absolute;top:6px;left:6px;background:var(--color-background-{av_c});color:var(--color-text-{av_c});font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-{av_c})">{label_capture}</div>
-<div style="position:absolute;bottom:4px;right:6px;background:rgba(0,0,0,0.6);color:white;font-size:9px;padding:2px 6px;border-radius:8px">Zoomer</div>
-</div>
-<div id="{modal_id}" onclick="this.style.display='none'" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);cursor:zoom-out;align-items:center;justify-content:center;padding:20px">
-<img src="{img_data}" style="max-width:95%;max-height:95%;border:3px solid var(--color-border-{av_c});border-radius:8px"/>
-</div>'''
-                        apres_content = f'''<div style="border-radius:var(--border-radius-md);overflow:hidden;border:2px solid var(--color-border-{ap_c});margin-bottom:8px;height:90px;position:relative">
-<img src="{img_data}" style="width:100%;height:90px;object-fit:cover;object-position:top;filter:brightness(0.45) saturate(0.3)"/>
-<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(0,0,0,0.15)">
-<i class="ti ti-circle-check" style="font-size:28px;color:var(--color-text-{ap_c})"></i>
-<p style="font-size:11px;font-weight:600;color:var(--color-text-{ap_c});text-align:center;padding:0 8px;margin:0;text-shadow:0 1px 3px rgba(0,0,0,0.8)">{e["apres_label"]}</p>
-</div>
-</div>'''
-                    else:
-                        avant_content = f'<div style="background:var(--color-background-{av_c});border-radius:var(--border-radius-md);height:90px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--color-border-{av_c});margin-bottom:8px"><p style="font-size:12px;color:var(--color-text-{av_c});padding:0 12px;text-align:center">{e["avant_label"]}</p></div>'
-                        apres_content = f'<div style="background:var(--color-background-{ap_c});border-radius:var(--border-radius-md);height:90px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--color-border-{ap_c});margin-bottom:8px"><p style="font-size:12px;color:var(--color-text-{ap_c});padding:0 12px;text-align:center">{e["apres_label"]}</p></div>'
 
                 blocs += f"""
 <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:12px">
