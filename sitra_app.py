@@ -4,7 +4,7 @@ import os
 import html
 import hmac
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, texte_gemini, url_est_sure
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, appeler_gemini_stream, texte_gemini, url_est_sure
     from screenshot_helper import get_screenshot, get_screenshot_zone, render_before_after_block, render_fallback_block, get_selector_for_issue, get_issue_texts
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
@@ -30,10 +30,8 @@ def get_secteur_info(url, html=""):
     return st.session_state[cle]
 
 # ── IA ────────────────────────────────────────────────────────────────────────
-def generer_recommandations_ia_inner(final_url, global_score, issues_str):
-    try:
-        api_key = st.secrets['GEMINI_API_KEY']
-        prompt = f"""Tu es un conseiller web professionnel qui aide des petits entrepreneurs à améliorer leur site. Explique les problèmes simplement, comme si tu parlais à quelqu'un qui ne connaît rien à l'informatique.
+def _prompt_recommandations_ia(final_url, global_score, issues_str):
+    return f"""Tu es un conseiller web professionnel qui aide des petits entrepreneurs à améliorer leur site. Explique les problèmes simplement, comme si tu parlais à quelqu'un qui ne connaît rien à l'informatique.
 
 Site : {final_url}
 Score global : {global_score}/100
@@ -53,6 +51,10 @@ Règles strictes :
 - Aucune métaphore, comparaison, image ou jeu de mots, ni dans le nom du problème ni dans la solution (interdits : objets pour illustrer, expressions imagées type "cache tes...", "arrête de...", verbes détournés de leur sens propre).
 - Français correct et sans faute : écris TOUS les accents (é, è, à, ç, ê, î, ô, û...) sur chaque mot qui en a besoin, n'invente jamais de mot qui n'existe pas en français, et relis-toi avant de répondre."""
 
+def generer_recommandations_ia_inner(final_url, global_score, issues_str):
+    try:
+        api_key = st.secrets['GEMINI_API_KEY']
+        prompt = _prompt_recommandations_ia(final_url, global_score, issues_str)
         contents = [{"role": "user", "parts": [{"text": prompt}]}]
         r = appeler_gemini(api_key, contents, timeout=45, generation_config={"maxOutputTokens": 4000})
         return texte_gemini(r), None
@@ -634,8 +636,28 @@ def render_result(result, idx=0):
         cle_reco = f"recommandations_ia_{idx}_{result['final_url'].strip().lower()}"
         if cle_reco not in st.session_state:
             if st.button("Générer les recommandations IA", key=f"btn_gen_reco_{idx}"):
-                with st.spinner("L'IA analyse votre site..."):
-                    st.session_state[cle_reco] = generer_recommandations_ia(result)
+                # Affichage progressif (streaming) plutot qu'une attente
+                # devant un simple indicateur de chargement : avec beaucoup
+                # de problemes detectes, generer un conseil pour chacun peut
+                # prendre plusieurs dizaines de secondes au total.
+                placeholder_reco = st.empty()
+                texte_accumule = ""
+                erreur = None
+                try:
+                    api_key = st.secrets['GEMINI_API_KEY']
+                    issues_str = '\n'.join(f"- {i['message']}" for i in result['all_issues'])
+                    prompt = _prompt_recommandations_ia(result['final_url'], result['global_score'], issues_str)
+                    contents = [{"role": "user", "parts": [{"text": prompt}]}]
+                    with st.spinner("L'IA analyse votre site..."):
+                        for morceau in appeler_gemini_stream(api_key, contents, timeout=45, generation_config={"maxOutputTokens": 4000}):
+                            texte_accumule += morceau
+                            placeholder_reco.markdown(texte_accumule)
+                except Exception as e:
+                    erreur = str(e)
+                if texte_accumule:
+                    st.session_state[cle_reco] = (texte_accumule, None)
+                else:
+                    st.session_state[cle_reco] = (None, erreur or "erreur inconnue")
                 st.rerun()
         else:
             recommandations, erreur_ia = st.session_state[cle_reco]
