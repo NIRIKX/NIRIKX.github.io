@@ -1152,6 +1152,27 @@ def get_connexion_historique():
         return None
 
 
+def tester_connexion_db() -> tuple:
+    """
+    Diagnostic reserve a l'admin : tente une vraie connexion a la base et
+    renvoie (True, None) si ca marche, ou (False, message_erreur) sinon -
+    contrairement a get_connexion_historique() qui avale silencieusement
+    toute erreur (necessaire pour ne jamais bloquer l'affichage cote
+    utilisateur), ceci sert justement a voir l'erreur reelle.
+    """
+    import psycopg2
+    import os
+    db_url = os.environ.get("NEON_DATABASE_URL", "")
+    if not db_url:
+        return False, "La variable NEON_DATABASE_URL est vide ou absente (secret non charge)."
+    try:
+        conn = psycopg2.connect(db_url)
+        conn.close()
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+
 def sauvegarder_historique(url: str, estimation: dict) -> bool:
     """
     Enregistre un nouveau resultat d'estimation dans l'historique permanent.
