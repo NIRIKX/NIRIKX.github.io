@@ -479,12 +479,26 @@ def _formulaire_retour(cle_suffixe):
     # Le curseur de note est hors du formulaire pour reagir en direct (les
     # widgets dans un st.form ne se mettent a jour qu'a la soumission).
     note = st.slider("Note globale", 1, 5, 3, key=f"note_{cle_suffixe}")
-    if note <= 2:
-        st.markdown("<div style='color:#dc3545;font-weight:600;font-size:0.85rem;margin-top:-8px'>🔴 Pas satisfait</div>", unsafe_allow_html=True)
-    elif note == 3:
-        st.markdown("<div style='color:#d97706;font-weight:600;font-size:0.85rem;margin-top:-8px'>🟠 Moyen</div>", unsafe_allow_html=True)
-    else:
-        st.markdown("<div style='color:#28a745;font-weight:600;font-size:0.85rem;margin-top:-8px'>🟢 Satisfait</div>", unsafe_allow_html=True)
+    _notes_info = {
+        1: ("#dc3545", "🔴 Très insatisfait"),
+        2: ("#f0653e", "🟠 Insatisfait"),
+        3: ("#d97706", "🟡 Moyen"),
+        4: ("#65a30d", "🟢 Satisfait"),
+        5: ("#16a34a", "🟢 Très satisfait"),
+    }
+    _couleur_note, _label_note = _notes_info[note]
+    st.markdown(f"""
+    <style>
+    div[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"] {{
+        background-color: {_couleur_note} !important;
+        border-color: {_couleur_note} !important;
+    }}
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:first-child {{
+        background: {_couleur_note} !important;
+    }}
+    </style>
+    <div style='color:{_couleur_note};font-weight:600;font-size:0.85rem;margin-top:-8px'>{_label_note}</div>
+    """, unsafe_allow_html=True)
     with st.form(key=f"form_retour_{cle_suffixe}"):
         entreprise = st.text_input("Nom de votre entreprise (pour qu'on sache que ça vient de vous)")
         aide = st.text_area("Qu'est-ce qui vous a le plus aidé ?")
