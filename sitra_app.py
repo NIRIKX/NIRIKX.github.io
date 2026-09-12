@@ -506,9 +506,12 @@ def _formulaire_retour(cle_suffixe):
         recommande = st.radio("Recommanderiez-vous NIRIKX à d'autres entreprises ?", ["Oui", "Non"], horizontal=True)
         envoye = st.form_submit_button("Envoyer mon avis")
         if envoye:
-            enregistrer_retour_test(note, aide, probleme, recommande == "Oui", entreprise)
-            st.session_state[cle_envoye] = True
-            st.rerun()
+            succes = enregistrer_retour_test(note, aide, probleme, recommande == "Oui", entreprise)
+            if succes:
+                st.session_state[cle_envoye] = True
+                st.rerun()
+            else:
+                st.error("Impossible d'enregistrer votre retour pour le moment (problème de connexion). Réessayez dans quelques instants.")
 
 # TEMPORAIRE : date de debut pas encore fixee pour de vrai (en attente que
 # toutes les entreprises repondent). DATE_FIN_TEST se calcule toute seule,
