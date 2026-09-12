@@ -425,19 +425,30 @@ def generer_pdf(result):
 
 st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favicon.png", layout="wide", initial_sidebar_state="expanded")
 
-# ── FIN DE LA PERIODE DE TEST GRATUITE ─────────────────────────────────────
-# Coupe l'acces pour tout le monde a une date/heure fixe (periode de test
-# avec un petit groupe d'entreprises) - pas de gestion par personne, tout
-# s'arrete en meme temps. ?admin=1 reste accessible pour pouvoir prolonger
-# si besoin.
+# ── PERIODE DE TEST GRATUITE ────────────────────────────────────────────────
+# Les entreprises testeuses recoivent le lien des qu'elles repondent "oui",
+# mais tant que TEST_DEMARRE est a False elles voient un message "pas encore
+# commence" au lieu de l'app - comme ca personne n'attend pour rien, mais
+# personne ne commence non plus avant que tout le monde ait repondu. Une
+# fois tout le monde pret, on passe TEST_DEMARRE a True ET on fixe
+# DATE_FIN_TEST a exactement une semaine a partir de ce moment-la : tout le
+# monde demarre et termine en meme temps, avec une semaine complete chacun,
+# peu importe quel jour ils ont individuellement repondu "oui".
+# ?admin=1 reste accessible a travers ces deux etapes pour pouvoir tester.
 import datetime
-# Une semaine a partir d'aujourd'hui (12/09) - a ajuster une fois que les
-# acces seront reellement envoyes aux entreprises testeuses.
-DATE_FIN_TEST = datetime.datetime(2026, 9, 19, 23, 59, tzinfo=datetime.timezone.utc)
-# Affichage du compte a rebours desactive tant que les acces n'ont pas ete
-# envoyes aux entreprises testeuses - pas de sens de l'afficher aux visiteurs
-# avant le vrai debut du test. Le blocage a DATE_FIN_TEST reste actif.
+TEST_DEMARRE = False
+DATE_FIN_TEST = datetime.datetime(2026, 9, 19, 23, 59, tzinfo=datetime.timezone.utc)  # sera recalculee au demarrage reel
 AFFICHER_COMPTE_A_REBOURS = False
+
+if not TEST_DEMARRE and st.query_params.get("admin") != "1":
+    st.markdown("""
+    <div style="text-align:center;padding:4rem 1rem">
+        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Le test n'a pas encore commencé</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">Merci pour votre intérêt pour NIRIKX ! L'accès démarre très bientôt — vous recevrez un message dès que ce sera prêt.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.stop()
+
 _maintenant = datetime.datetime.now(datetime.timezone.utc)
 if _maintenant > DATE_FIN_TEST and st.query_params.get("admin") != "1":
     st.markdown("""
