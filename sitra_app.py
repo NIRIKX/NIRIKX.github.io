@@ -426,47 +426,24 @@ def generer_pdf(result):
 st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favicon.png", layout="wide", initial_sidebar_state="expanded")
 
 # ── PERIODE DE TEST GRATUITE ────────────────────────────────────────────────
-# Les entreprises testeuses recoivent le lien des qu'elles repondent "oui",
-# mais tant que TEST_DEMARRE est a False elles voient un message "pas encore
-# commence" au lieu de l'app - comme ca personne n'attend pour rien, mais
-# personne ne commence non plus avant que tout le monde ait repondu. Une
-# fois tout le monde pret, on passe TEST_DEMARRE a True ET on fixe
-# DATE_FIN_TEST a exactement une semaine a partir de ce moment-la : tout le
-# monde demarre et termine en meme temps, avec une semaine complete chacun,
-# peu importe quel jour ils ont individuellement repondu "oui".
-# ?admin=1 reste accessible a travers ces deux etapes pour pouvoir tester.
+# Tout est pilote par deux dates fixes, sans intervention manuelle au bon
+# moment : DATE_DEBUT_TEST declenche automatiquement l'ouverture de l'acces
+# (avant, tout le monde voit "pas encore commence"), et DATE_FIN_TEST
+# (calculee automatiquement une semaine plus tard) coupe l'acces pour tout
+# le monde en meme temps. Les entreprises testeuses peuvent recevoir le
+# lien des qu'elles repondent "oui" - il ne fera rien tant que
+# DATE_DEBUT_TEST n'est pas atteinte. ?admin=1 reste accessible a travers
+# toutes les etapes pour pouvoir tester/verifier.
 import datetime
-TEST_DEMARRE = False
-DATE_FIN_TEST = datetime.datetime(2026, 9, 19, 23, 59, tzinfo=datetime.timezone.utc)  # sera recalculee au demarrage reel
-AFFICHER_COMPTE_A_REBOURS = False
 
-if not TEST_DEMARRE and st.query_params.get("admin") != "1":
-    st.markdown("""
-    <div style="text-align:center;padding:4rem 1rem">
-        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Le test n'a pas encore commencé</div>
-        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">Merci pour votre intérêt pour NIRIKX ! L'accès démarre très bientôt — vous recevrez un message dès que ce sera prêt.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.stop()
-
-_maintenant = datetime.datetime.now(datetime.timezone.utc)
-if _maintenant > DATE_FIN_TEST and st.query_params.get("admin") != "1":
-    st.markdown("""
-    <div style="text-align:center;padding:4rem 1rem">
-        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Test terminé — merci d'avoir participé !</div>
-        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : écrivez-moi à <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a> pour me dire ce qui ne vous a pas convaincu ou ce qui n'a pas fonctionné pendant le test — votre avis compte vraiment et servira à rendre l'outil plus utile, pour vous comme pour les prochains utilisateurs.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.stop()
-elif AFFICHER_COMPTE_A_REBOURS and st.query_params.get("admin") != "1":
+def _compte_a_rebours(secondes_restantes, texte_avant):
     import streamlit.components.v1 as components
-    _secondes_restantes = int((DATE_FIN_TEST - _maintenant).total_seconds())
     components.html(f"""
     <div style="text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#a090f7;font-weight:700;font-size:0.85rem;padding:16px 0 8px">
-        Fin de la période de test dans <span id="nirikx-cptdown"></span>
+        {texte_avant} <span id="nirikx-cptdown"></span>
     </div>
     <script>
-    let nirikxRestant = {_secondes_restantes};
+    let nirikxRestant = {secondes_restantes};
     function nirikxFormate(s) {{
         if (s <= 0) return "0s";
         const j = Math.floor(s / 86400); s %= 86400;
@@ -491,6 +468,41 @@ elif AFFICHER_COMPTE_A_REBOURS and st.query_params.get("admin") != "1":
     nirikxTick();
     </script>
     """, height=48)
+
+# TEMPORAIRE : date de debut pas encore fixee pour de vrai (en attente que
+# toutes les entreprises repondent). DATE_FIN_TEST se calcule toute seule,
+# une semaine pile apres DATE_DEBUT_TEST.
+DATE_DEBUT_TEST = datetime.datetime(2026, 9, 22, 9, 0, tzinfo=datetime.timezone.utc)
+DATE_FIN_TEST = DATE_DEBUT_TEST + datetime.timedelta(days=7)
+# Desactive pour l'instant (le temps que les entreprises repondent toutes) -
+# repasser a True quand demande.
+AFFICHER_COMPTE_A_REBOURS = False
+
+_maintenant = datetime.datetime.now(datetime.timezone.utc)
+_admin = st.query_params.get("admin") == "1"
+
+if _maintenant < DATE_DEBUT_TEST and not _admin:
+    st.markdown("""
+    <div style="text-align:center;padding:4rem 1rem">
+        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Le test n'a pas encore commencé</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">Merci pour votre intérêt pour NIRIKX ! L'accès démarre très bientôt.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if AFFICHER_COMPTE_A_REBOURS:
+        _compte_a_rebours(int((DATE_DEBUT_TEST - _maintenant).total_seconds()), "Le test commence dans")
+    st.stop()
+
+if _maintenant > DATE_FIN_TEST and not _admin:
+    st.markdown("""
+    <div style="text-align:center;padding:4rem 1rem">
+        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Test terminé — merci d'avoir participé !</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : écrivez-moi à <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a> pour me dire ce qui ne vous a pas convaincu ou ce qui n'a pas fonctionné pendant le test — votre avis compte vraiment et servira à rendre l'outil plus utile, pour vous comme pour les prochains utilisateurs.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.stop()
+
+if AFFICHER_COMPTE_A_REBOURS and not _admin:
+    _compte_a_rebours(int((DATE_FIN_TEST - _maintenant).total_seconds()), "Fin de la période de test dans")
 
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
