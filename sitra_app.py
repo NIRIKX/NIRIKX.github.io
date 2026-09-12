@@ -431,15 +431,15 @@ st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favi
 # s'arrete en meme temps. ?admin=1 reste accessible pour pouvoir prolonger
 # si besoin.
 import datetime
-# TEST TEMPORAIRE : dans 5 minutes a partir de 15:23 UTC le 12/09, pour
-# verifier le compte a rebours et le blocage en conditions reelles.
-DATE_FIN_TEST = datetime.datetime(2026, 9, 12, 15, 29, tzinfo=datetime.timezone.utc)
+# Une semaine a partir d'aujourd'hui (12/09) - a ajuster une fois que les
+# acces seront reellement envoyes aux entreprises testeuses.
+DATE_FIN_TEST = datetime.datetime(2026, 9, 19, 23, 59, tzinfo=datetime.timezone.utc)
 _maintenant = datetime.datetime.now(datetime.timezone.utc)
 if _maintenant > DATE_FIN_TEST and st.query_params.get("admin") != "1":
     st.markdown("""
     <div style="text-align:center;padding:4rem 1rem">
         <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Test terminé — merci d'avoir participé !</div>
-        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci pour votre retour — pour toute question, écrivez à yanisaidoune1@gmail.com.</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : écrivez-moi à <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a> pour me dire ce qui ne vous a pas convaincu ou ce qui n'a pas fonctionné pendant le test — c'est exactement ce qui m'aide le plus à améliorer l'outil.</div>
     </div>
     """, unsafe_allow_html=True)
     st.stop()
@@ -447,7 +447,7 @@ elif st.query_params.get("admin") != "1":
     import streamlit.components.v1 as components
     _secondes_restantes = int((DATE_FIN_TEST - _maintenant).total_seconds())
     components.html(f"""
-    <div style="text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#a090f7;font-weight:700;font-size:0.85rem;padding:6px 0">
+    <div style="text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#a090f7;font-weight:700;font-size:0.85rem;padding:16px 0 8px">
         Fin de la période de test dans <span id="nirikx-cptdown"></span>
     </div>
     <script>
@@ -475,7 +475,7 @@ elif st.query_params.get("admin") != "1":
     }}
     nirikxTick();
     </script>
-    """, height=32)
+    """, height=48)
 
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
