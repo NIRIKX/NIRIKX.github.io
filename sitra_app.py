@@ -4,7 +4,7 @@ import os
 import html
 import hmac
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, appeler_gemini_stream, texte_gemini, url_est_sure
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, appeler_gemini_stream, texte_gemini, url_est_sure, enregistrer_retour_test, lire_retours_test
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
     st.stop()
@@ -469,6 +469,24 @@ def _compte_a_rebours(secondes_restantes, texte_avant):
     </script>
     """, height=48)
 
+def _formulaire_retour(cle_suffixe):
+    """Petit formulaire de feedback (beta fermee) - reponses sauvegardees
+    dans la base de donnees, consultables plus tard via lire_retours_test()."""
+    cle_envoye = f"retour_envoye_{cle_suffixe}"
+    if st.session_state.get(cle_envoye):
+        st.success("Merci beaucoup pour votre retour !")
+        return
+    with st.form(key=f"form_retour_{cle_suffixe}"):
+        note = st.slider("Note globale", 1, 5, 3)
+        aide = st.text_area("Qu'est-ce qui vous a le plus aidé ?")
+        probleme = st.text_area("Qu'est-ce qui ne vous a pas convaincu ou n'a pas fonctionné ?")
+        recommande = st.radio("Recommanderiez-vous NIRIKX à d'autres entreprises ?", ["Oui", "Non"], horizontal=True)
+        envoye = st.form_submit_button("Envoyer mon avis")
+        if envoye:
+            enregistrer_retour_test(note, aide, probleme, recommande == "Oui")
+            st.session_state[cle_envoye] = True
+            st.rerun()
+
 # TEMPORAIRE : date de debut pas encore fixee pour de vrai (en attente que
 # toutes les entreprises repondent). DATE_FIN_TEST se calcule toute seule,
 # une semaine pile apres DATE_DEBUT_TEST.
@@ -494,11 +512,15 @@ if _maintenant < DATE_DEBUT_TEST and not _admin:
 
 if _maintenant > DATE_FIN_TEST and not _admin:
     st.markdown("""
-    <div style="text-align:center;padding:4rem 1rem">
+    <div style="text-align:center;padding:4rem 1rem 1.5rem">
         <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Test terminé — merci d'avoir participé !</div>
-        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : écrivez-moi à <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a> pour me dire ce qui ne vous a pas convaincu ou ce qui n'a pas fonctionné pendant le test — votre avis compte vraiment et servira à rendre l'outil plus utile, pour vous comme pour les prochains utilisateurs.</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : prenez deux minutes pour répondre ci-dessous — votre avis compte vraiment et servira à rendre l'outil plus utile, pour vous comme pour les prochains utilisateurs.</div>
     </div>
     """, unsafe_allow_html=True)
+    col_form1, col_form2, col_form3 = st.columns([1, 2, 1])
+    with col_form2:
+        _formulaire_retour("fin")
+        st.caption("Une autre question ? Écrivez à yanisaidoune1@gmail.com.")
     st.stop()
 
 if AFFICHER_COMPTE_A_REBOURS and not _admin:
@@ -2206,6 +2228,10 @@ st.markdown("""
     <div style="margin-top:0.4rem">© 2026 NIRIKX — n'est affilié à aucun des sites qu'il analyse.</div>
 </div>
 """, unsafe_allow_html=True)
+
+with st.expander("Donner mon avis sur le test"):
+    st.caption("Vous testez déjà NIRIKX ? Votre avis compte, même avant la fin du test.")
+    _formulaire_retour("pendant")
 
 with st.expander("Confidentialité"):
     st.caption("""
