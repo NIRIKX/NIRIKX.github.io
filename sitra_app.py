@@ -430,7 +430,7 @@ st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favi
 # petit groupe d'entreprises) - pas de gestion par personne, tout s'arrete
 # en meme temps. ?admin=1 reste accessible pour pouvoir prolonger si besoin.
 import datetime
-DATE_FIN_TEST = datetime.date(2026, 9, 20)
+DATE_FIN_TEST = datetime.date(2026, 9, 11)  # TEST TEMPORAIRE : date passee expres pour verifier que le blocage marche
 if datetime.date.today() > DATE_FIN_TEST and st.query_params.get("admin") != "1":
     st.markdown("""
     <div style="text-align:center;padding:4rem 1rem">
