@@ -1107,66 +1107,71 @@ ANALYSE: [3-4 phrases, rappelant que c'est une approximation]"""
         return {"score": None, "criteres": None, "concurrents_cibles": None, "points_forts": None, "points_faibles": None, "plan_action": None, "projection_min": None, "projection_max": None, "projection_texte": None, "analyse": None, "signaux_concrets": [], "error": str(e)}
 
 
-def get_connexion_historique():
+def _ouvrir_connexion_db_ou_leve():
     """
     Ouvre une connexion a la base de donnees Neon, cree la table
     d'historique si elle n'existe pas, et ajoute les colonnes manquantes
-    si la table existait deja avant ces ajouts. Retourne None si la
-    connexion echoue.
+    si la table existait deja avant ces ajouts. Leve une exception si
+    quoi que ce soit echoue (connexion, permissions, creation de table...).
     """
+    import psycopg2
+    import os
+    db_url = os.environ.get("NEON_DATABASE_URL", "")
+    if not db_url:
+        raise Exception("La variable NEON_DATABASE_URL est vide ou absente (secret non charge).")
+    conn = psycopg2.connect(db_url)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS historique_potentiel (
+            id SERIAL PRIMARY KEY,
+            url TEXT NOT NULL,
+            date_analyse TIMESTAMP DEFAULT NOW(),
+            score INTEGER,
+            criteres JSONB,
+            concurrents_cibles JSONB,
+            points_forts JSONB,
+            points_faibles JSONB,
+            plan_action JSONB,
+            analyse TEXT
+        )
+    """)
+    cur.execute("""
+        ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection TEXT
+    """)
+    cur.execute("""
+        ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection_min NUMERIC
+    """)
+    cur.execute("""
+        ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection_max NUMERIC
+    """)
+    conn.commit()
+    cur.close()
+    return conn
+
+
+def get_connexion_historique():
+    """Retourne None si la connexion echoue, sans jamais lever d'exception."""
     try:
-        import psycopg2
-        import os
-        db_url = os.environ.get("NEON_DATABASE_URL", "")
-        if not db_url:
-            return None
-        conn = psycopg2.connect(db_url)
-        cur = conn.cursor()
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS historique_potentiel (
-                id SERIAL PRIMARY KEY,
-                url TEXT NOT NULL,
-                date_analyse TIMESTAMP DEFAULT NOW(),
-                score INTEGER,
-                criteres JSONB,
-                concurrents_cibles JSONB,
-                points_forts JSONB,
-                points_faibles JSONB,
-                plan_action JSONB,
-                analyse TEXT
-            )
-        """)
-        cur.execute("""
-            ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection TEXT
-        """)
-        cur.execute("""
-            ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection_min NUMERIC
-        """)
-        cur.execute("""
-            ALTER TABLE historique_potentiel ADD COLUMN IF NOT EXISTS projection_max NUMERIC
-        """)
-        conn.commit()
-        cur.close()
-        return conn
+        return _ouvrir_connexion_db_ou_leve()
     except Exception:
         return None
 
 
 def tester_connexion_db() -> tuple:
     """
-    Diagnostic reserve a l'admin : tente une vraie connexion a la base et
-    renvoie (True, None) si ca marche, ou (False, message_erreur) sinon -
-    contrairement a get_connexion_historique() qui avale silencieusement
-    toute erreur (necessaire pour ne jamais bloquer l'affichage cote
-    utilisateur), ceci sert justement a voir l'erreur reelle.
+    Diagnostic reserve a l'admin : reproduit exactement le chemin utilise
+    par le formulaire de feedback (connexion + creation des tables
+    historique_potentiel ET retours_test) et renvoie (True, None) si tout
+    passe, ou (False, message_erreur_reel) sinon - contrairement aux
+    fonctions publiques qui avalent silencieusement toute erreur
+    (necessaire pour ne jamais bloquer l'affichage cote utilisateur).
     """
-    import psycopg2
-    import os
-    db_url = os.environ.get("NEON_DATABASE_URL", "")
-    if not db_url:
-        return False, "La variable NEON_DATABASE_URL est vide ou absente (secret non charge)."
     try:
-        conn = psycopg2.connect(db_url)
+        conn = _ouvrir_connexion_db_ou_leve()
+        cur = conn.cursor()
+        _preparer_table_retours_test(cur)
+        conn.commit()
+        cur.close()
         conn.close()
         return True, None
     except Exception as e:
