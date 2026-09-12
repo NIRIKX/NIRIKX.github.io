@@ -1319,27 +1319,34 @@ def activer_forfait(email: str, forfait: str, jours: int = 30) -> bool:
         return False
 
 
-def enregistrer_retour_test(note: int, aide: str, probleme: str, recommande: bool) -> bool:
+def _preparer_table_retours_test(cur):
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS retours_test (
+            id SERIAL PRIMARY KEY,
+            note INTEGER,
+            aide TEXT,
+            probleme TEXT,
+            recommande BOOLEAN,
+            date_creation TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    cur.execute("""
+        ALTER TABLE retours_test ADD COLUMN IF NOT EXISTS entreprise TEXT
+    """)
+
+
+def enregistrer_retour_test(note: int, aide: str, probleme: str, recommande: bool, entreprise: str = "") -> bool:
     """Enregistre un retour du formulaire de feedback de la beta fermee."""
     conn = get_connexion_historique()
     if not conn:
         return False
     try:
         cur = conn.cursor()
+        _preparer_table_retours_test(cur)
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS retours_test (
-                id SERIAL PRIMARY KEY,
-                note INTEGER,
-                aide TEXT,
-                probleme TEXT,
-                recommande BOOLEAN,
-                date_creation TIMESTAMP DEFAULT NOW()
-            )
-        """)
-        cur.execute("""
-            INSERT INTO retours_test (note, aide, probleme, recommande)
-            VALUES (%s, %s, %s, %s)
-        """, (note, aide.strip(), probleme.strip(), recommande))
+            INSERT INTO retours_test (note, aide, probleme, recommande, entreprise)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (note, aide.strip(), probleme.strip(), recommande, entreprise.strip()))
         conn.commit()
         cur.close()
         conn.close()
@@ -1359,18 +1366,9 @@ def lire_retours_test() -> list:
         return []
     try:
         cur = conn.cursor()
+        _preparer_table_retours_test(cur)
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS retours_test (
-                id SERIAL PRIMARY KEY,
-                note INTEGER,
-                aide TEXT,
-                probleme TEXT,
-                recommande BOOLEAN,
-                date_creation TIMESTAMP DEFAULT NOW()
-            )
-        """)
-        cur.execute("""
-            SELECT note, aide, probleme, recommande, date_creation
+            SELECT note, aide, probleme, recommande, date_creation, entreprise
             FROM retours_test
             ORDER BY date_creation DESC
         """)
@@ -1378,7 +1376,7 @@ def lire_retours_test() -> list:
         cur.close()
         conn.close()
         return [
-            {"note": l[0], "aide": l[1], "probleme": l[2], "recommande": l[3], "date": l[4]}
+            {"note": l[0], "aide": l[1], "probleme": l[2], "recommande": l[3], "date": l[4], "entreprise": l[5] or ""}
             for l in lignes
         ]
     except Exception:
