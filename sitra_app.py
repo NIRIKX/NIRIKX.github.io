@@ -490,7 +490,7 @@ def _formulaire_retour(cle_suffixe):
 # TEMPORAIRE : date de debut pas encore fixee pour de vrai (en attente que
 # toutes les entreprises repondent). DATE_FIN_TEST se calcule toute seule,
 # une semaine pile apres DATE_DEBUT_TEST.
-DATE_DEBUT_TEST = datetime.datetime(2026, 9, 22, 9, 0, tzinfo=datetime.timezone.utc)
+DATE_DEBUT_TEST = datetime.datetime(2026, 9, 1, 9, 0, tzinfo=datetime.timezone.utc)  # APERCU TEMPORAIRE de l'ecran de fin
 DATE_FIN_TEST = DATE_DEBUT_TEST + datetime.timedelta(days=7)
 # Desactive pour l'instant (le temps que les entreprises repondent toutes) -
 # repasser a True quand demande.
