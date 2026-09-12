@@ -425,6 +425,20 @@ def generer_pdf(result):
 
 st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favicon.png", layout="wide", initial_sidebar_state="expanded")
 
+# Rend les secrets disponibles via les variables d'environnement des le debut
+# du script (analyzer.py les lit via os.environ) - certaines fonctionnalites
+# (formulaire de feedback, ecrans de test) s'executent avant qu'une analyse
+# de site n'ait ete lancee, donc ne doivent pas dependre du code plus bas
+# dans render_result() pour que ces cles existent.
+try:
+    os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    pass
+try:
+    os.environ["NEON_DATABASE_URL"] = st.secrets["NEON_DATABASE_URL"]
+except Exception:
+    pass
+
 # ── PERIODE DE TEST GRATUITE ────────────────────────────────────────────────
 # Tout est pilote par deux dates fixes, sans intervention manuelle au bon
 # moment : DATE_DEBUT_TEST declenche automatiquement l'ouverture de l'acces
@@ -810,16 +824,6 @@ def render_result(result, idx=0):
             if st.button("Réessayer", key=f"retry_reco_{idx}"):
                 del st.session_state[cle_reco]
                 st.rerun()
-
-    import os
-    try:
-        os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
-    except Exception:
-        pass
-    try:
-        os.environ["NEON_DATABASE_URL"] = st.secrets["NEON_DATABASE_URL"]
-    except Exception:
-        pass    
 
     tabs_list = [
         "Référencement Google",
@@ -2025,11 +2029,6 @@ if mode_comparaison:
             with st.spinner("Recherche de pistes qui répondent bien..."):
                 from analyzer import fetch_site
                 import concurrent.futures
-
-                try:
-                    os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
-                except Exception:
-                    pass
 
                 site_info = fetch_site(normalize_url(url1))
                 secteur_info = get_secteur_info(url1, site_info.get("html") or "")
