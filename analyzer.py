@@ -1132,7 +1132,7 @@ def _ouvrir_connexion_db_ou_leve():
             points_forts JSONB,
             points_faibles JSONB,
             plan_action JSONB,
-            analyse TEXT
+            "analyse" TEXT
         )
     """)
     cur.execute("""
@@ -1192,7 +1192,7 @@ def sauvegarder_historique(url: str, estimation: dict) -> bool:
         cur = conn.cursor()
         cur.execute("""
             INSERT INTO historique_potentiel
-                (url, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, projection, projection_min, projection_max, analyse)
+                (url, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, projection, projection_min, projection_max, "analyse")
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             url_normalisee,
@@ -1231,7 +1231,7 @@ def lire_historique(url: str, limite: int = 10) -> list:
         url_normalisee = url.strip().lower().replace("https://", "").replace("http://", "").replace("www.", "").rstrip("/")
         cur = conn.cursor()
         cur.execute("""
-            SELECT date_analyse, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, projection, projection_min, projection_max, analyse
+            SELECT date_analyse, score, criteres, concurrents_cibles, points_forts, points_faibles, plan_action, projection, projection_min, projection_max, "analyse"
             FROM historique_potentiel
             WHERE url = %s
             ORDER BY date_analyse DESC
