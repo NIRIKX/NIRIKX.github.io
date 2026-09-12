@@ -486,12 +486,13 @@ def _formulaire_retour(cle_suffixe):
     else:
         st.markdown("<div style='color:#28a745;font-weight:600;font-size:0.85rem;margin-top:-8px'>🟢 Satisfait</div>", unsafe_allow_html=True)
     with st.form(key=f"form_retour_{cle_suffixe}"):
+        entreprise = st.text_input("Nom de votre entreprise (pour qu'on sache que ça vient de vous)")
         aide = st.text_area("Qu'est-ce qui vous a le plus aidé ?")
         probleme = st.text_area("Qu'est-ce qui ne vous a pas convaincu ou n'a pas fonctionné ?")
         recommande = st.radio("Recommanderiez-vous NIRIKX à d'autres entreprises ?", ["Oui", "Non"], horizontal=True)
         envoye = st.form_submit_button("Envoyer mon avis")
         if envoye:
-            enregistrer_retour_test(note, aide, probleme, recommande == "Oui")
+            enregistrer_retour_test(note, aide, probleme, recommande == "Oui", entreprise)
             st.session_state[cle_envoye] = True
             st.rerun()
 
@@ -599,7 +600,7 @@ if st.query_params.get("admin") == "1":
                         st.caption(f"{len(retours)} retour(s) reçu(s)")
                         for r in retours:
                             with st.container(border=True):
-                                st.markdown(f"**Note : {r['note']}/5** — Recommande : {'Oui' if r['recommande'] else 'Non'} — {r['date'].strftime('%d/%m/%Y %H:%M')}")
+                                st.markdown(f"**{r['entreprise'] or 'Entreprise non précisée'}** — Note : {r['note']}/5 — Recommande : {'Oui' if r['recommande'] else 'Non'} — {r['date'].strftime('%d/%m/%Y %H:%M')}")
                                 if r['aide']:
                                     st.markdown(f"👍 *A aidé :* {r['aide']}")
                                 if r['probleme']:
