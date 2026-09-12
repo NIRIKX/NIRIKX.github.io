@@ -425,6 +425,21 @@ def generer_pdf(result):
 
 st.set_page_config(page_title="NIRIKX | Analyseur de Sites Web", page_icon="favicon.png", layout="wide", initial_sidebar_state="expanded")
 
+# ── FIN DE LA PERIODE DE TEST GRATUITE ─────────────────────────────────────
+# Coupe l'acces pour tout le monde a une date fixe (periode de test avec un
+# petit groupe d'entreprises) - pas de gestion par personne, tout s'arrete
+# en meme temps. ?admin=1 reste accessible pour pouvoir prolonger si besoin.
+import datetime
+DATE_FIN_TEST = datetime.date(2026, 9, 20)
+if datetime.date.today() > DATE_FIN_TEST and st.query_params.get("admin") != "1":
+    st.markdown("""
+    <div style="text-align:center;padding:4rem 1rem">
+        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Test terminé — merci d'avoir participé !</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci pour votre retour — pour toute question, écrivez à yanisaidoune1@gmail.com.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.stop()
+
 # ── SIDEBAR — en premier pour que les variables existent partout ──────────────
 with st.sidebar:
     st.markdown("### Menu")
