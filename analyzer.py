@@ -1317,3 +1317,73 @@ def activer_forfait(email: str, forfait: str, jours: int = 30) -> bool:
         except Exception:
             pass
         return False
+
+
+def enregistrer_retour_test(note: int, aide: str, probleme: str, recommande: bool) -> bool:
+    """Enregistre un retour du formulaire de feedback de la beta fermee."""
+    conn = get_connexion_historique()
+    if not conn:
+        return False
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS retours_test (
+                id SERIAL PRIMARY KEY,
+                note INTEGER,
+                aide TEXT,
+                probleme TEXT,
+                recommande BOOLEAN,
+                date_creation TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        cur.execute("""
+            INSERT INTO retours_test (note, aide, probleme, recommande)
+            VALUES (%s, %s, %s, %s)
+        """, (note, aide.strip(), probleme.strip(), recommande))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True
+    except Exception:
+        try:
+            conn.close()
+        except Exception:
+            pass
+        return False
+
+
+def lire_retours_test() -> list:
+    """Relit tous les retours du formulaire de feedback, du plus recent au plus ancien."""
+    conn = get_connexion_historique()
+    if not conn:
+        return []
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS retours_test (
+                id SERIAL PRIMARY KEY,
+                note INTEGER,
+                aide TEXT,
+                probleme TEXT,
+                recommande BOOLEAN,
+                date_creation TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        cur.execute("""
+            SELECT note, aide, probleme, recommande, date_creation
+            FROM retours_test
+            ORDER BY date_creation DESC
+        """)
+        lignes = cur.fetchall()
+        cur.close()
+        conn.close()
+        return [
+            {"note": l[0], "aide": l[1], "probleme": l[2], "recommande": l[3], "date": l[4]}
+            for l in lignes
+        ]
+    except Exception:
+        try:
+            conn.close()
+        except Exception:
+            pass
+        return []
