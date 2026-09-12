@@ -439,7 +439,7 @@ if _maintenant > DATE_FIN_TEST and st.query_params.get("admin") != "1":
     st.markdown("""
     <div style="text-align:center;padding:4rem 1rem">
         <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Test terminé — merci d'avoir participé !</div>
-        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : écrivez-moi à <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a> pour me dire ce qui ne vous a pas convaincu ou ce qui n'a pas fonctionné pendant le test — c'est exactement ce qui m'aide le plus à améliorer l'outil.</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">La période de test gratuite de NIRIKX est terminée. Merci d'avoir testé l'outil !<br><br>Un dernier service : écrivez-moi à <a href="mailto:yanisaidoune1@gmail.com" style="color:#a090f7">yanisaidoune1@gmail.com</a> pour me dire ce qui ne vous a pas convaincu ou ce qui n'a pas fonctionné pendant le test — votre avis compte vraiment et servira à rendre l'outil plus utile, pour vous comme pour les prochains utilisateurs.</div>
     </div>
     """, unsafe_allow_html=True)
     st.stop()
