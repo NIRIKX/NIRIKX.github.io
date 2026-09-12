@@ -476,8 +476,16 @@ def _formulaire_retour(cle_suffixe):
     if st.session_state.get(cle_envoye):
         st.success("Merci beaucoup pour votre retour !")
         return
+    # Le curseur de note est hors du formulaire pour reagir en direct (les
+    # widgets dans un st.form ne se mettent a jour qu'a la soumission).
+    note = st.slider("Note globale", 1, 5, 3, key=f"note_{cle_suffixe}")
+    if note <= 2:
+        st.markdown("<div style='color:#dc3545;font-weight:600;font-size:0.85rem;margin-top:-8px'>🔴 Pas satisfait</div>", unsafe_allow_html=True)
+    elif note == 3:
+        st.markdown("<div style='color:#d97706;font-weight:600;font-size:0.85rem;margin-top:-8px'>🟠 Moyen</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='color:#28a745;font-weight:600;font-size:0.85rem;margin-top:-8px'>🟢 Satisfait</div>", unsafe_allow_html=True)
     with st.form(key=f"form_retour_{cle_suffixe}"):
-        note = st.slider("Note globale", 1, 5, 3)
         aide = st.text_area("Qu'est-ce qui vous a le plus aidé ?")
         probleme = st.text_area("Qu'est-ce qui ne vous a pas convaincu ou n'a pas fonctionné ?")
         recommande = st.radio("Recommanderiez-vous NIRIKX à d'autres entreprises ?", ["Oui", "Non"], horizontal=True)
@@ -581,6 +589,21 @@ if st.query_params.get("admin") == "1":
                             st.error("Erreur : impossible de se connecter à la base de données.")
                     else:
                         st.warning("Entre un email valide.")
+
+                st.divider()
+                if st.button("Voir les retours du test", key="admin_voir_retours"):
+                    retours = lire_retours_test()
+                    if not retours:
+                        st.info("Aucun retour reçu pour le moment.")
+                    else:
+                        st.caption(f"{len(retours)} retour(s) reçu(s)")
+                        for r in retours:
+                            with st.container(border=True):
+                                st.markdown(f"**Note : {r['note']}/5** — Recommande : {'Oui' if r['recommande'] else 'Non'} — {r['date'].strftime('%d/%m/%Y %H:%M')}")
+                                if r['aide']:
+                                    st.markdown(f"👍 *A aidé :* {r['aide']}")
+                                if r['probleme']:
+                                    st.markdown(f"👎 *Problème :* {r['probleme']}")
             elif mdp_saisi:
                 st.error("Mot de passe incorrect.")
 
