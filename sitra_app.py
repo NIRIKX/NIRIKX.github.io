@@ -4,7 +4,7 @@ import os
 import html
 import hmac
 try:
-    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, appeler_gemini_stream, texte_gemini, url_est_sure, enregistrer_retour_test, lire_retours_test
+    from analyzer import full_analysis, get_score_label, normalize_url, detect_secteur_et_concurrents, is_produit_web, estimer_potentiel_croissance, sauvegarder_historique, lire_historique, get_forfait_actif, activer_forfait, appeler_gemini, appeler_gemini_stream, texte_gemini, url_est_sure, enregistrer_retour_test, lire_retours_test, tester_connexion_db
 except Exception as e:
     st.error(f"Erreur d'import détectée : {e}")
     st.stop()
@@ -636,6 +636,14 @@ if st.query_params.get("admin") == "1":
                                     st.markdown(f"👍 *A aidé :* {r['aide']}")
                                 if r['probleme']:
                                     st.markdown(f"👎 *Problème :* {r['probleme']}")
+
+                st.divider()
+                if st.button("Tester la connexion à la base de données", key="admin_test_db"):
+                    ok, erreur = tester_connexion_db()
+                    if ok:
+                        st.success("Connexion à la base de données réussie.")
+                    else:
+                        st.error(f"Échec de connexion : {erreur}")
             elif mdp_saisi:
                 st.error("Mot de passe incorrect.")
 
