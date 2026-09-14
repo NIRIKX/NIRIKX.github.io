@@ -318,6 +318,25 @@ def url_est_sure(url: str) -> bool:
         return False
 
 
+def _raison_url_invalide(url: str) -> str:
+    """
+    Diagnostique pourquoi url_est_sure() a refuse une adresse, pour
+    distinguer deux cas tres differents pour l'utilisateur : une adresse
+    mal ecrite ou qui n'existe pas ("invalide"), ou une adresse qui pointe
+    reellement vers un reseau interne ("interne", le garde-fou anti-SSRF).
+    """
+    try:
+        p = urlparse(url)
+        if p.scheme not in ("http", "https") or not p.hostname:
+            return "invalide"
+        infos = socket.getaddrinfo(p.hostname, None)
+        if all(not _ip_est_interne(info[4][0]) for info in infos):
+            return "ok"
+        return "interne"
+    except Exception:
+        return "invalide"
+
+
 def fetch_site(url: str) -> dict:
     """
     Récupère le contenu d'un site et mesure le temps de réponse.
@@ -333,7 +352,10 @@ def fetch_site(url: str) -> dict:
     }
 
     if not url_est_sure(url):
-        result["error"] = "URL non autorisée (adresse invalide ou interne)"
+        if _raison_url_invalide(url) == "interne":
+            result["error"] = "URL non autorisée (adresse interne)"
+        else:
+            result["error"] = "URL invalide : vérifiez l'adresse du site"
         return result
 
     try:

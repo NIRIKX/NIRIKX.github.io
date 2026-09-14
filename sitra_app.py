@@ -764,9 +764,15 @@ def render_issues(issues):
 # ── RENDER RESULT ─────────────────────────────────────────────────────────────
 def render_result(result, idx=0):
     if result.get("error"):
-        st.warning("Impossible d'analyser ce site pour le moment. Certaines protections automatiques anti-robots bloquent parfois les outils d'analyse, même sur de petits sites — ce n'est pas forcément un choix du propriétaire du site. Réessayez dans quelques instants.")
-        with st.expander("Détail technique"):
-            st.caption(result.get("error") or "Erreur inconnue")
+        erreur = result["error"]
+        if erreur.startswith("URL invalide"):
+            st.warning("Cette adresse ne ressemble pas à un site valide. Vérifiez l'orthographe (ex : monsite.fr) et réessayez.")
+        elif erreur.startswith("URL non autorisée"):
+            st.warning("Cette adresse n'est pas prise en charge par l'analyse.")
+        else:
+            st.warning("Impossible d'analyser ce site pour le moment. Certaines protections automatiques anti-robots bloquent parfois les outils d'analyse, même sur de petits sites — ce n'est pas forcément un choix du propriétaire du site. Réessayez dans quelques instants.")
+            with st.expander("Détail technique"):
+                st.caption(erreur or "Erreur inconnue")
         return
 
     label_txt, _, label_color = get_score_label(result["global_score"])
