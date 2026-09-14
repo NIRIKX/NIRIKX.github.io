@@ -771,8 +771,6 @@ def render_result(result, idx=0):
             st.warning("Cette adresse n'est pas prise en charge par l'analyse.")
         else:
             st.warning("Impossible d'analyser ce site pour le moment. Certaines protections automatiques anti-robots bloquent parfois les outils d'analyse, même sur de petits sites — ce n'est pas forcément un choix du propriétaire du site. Réessayez dans quelques instants.")
-            with st.expander("Détail technique"):
-                st.caption(erreur or "Erreur inconnue")
         return
 
     label_txt, _, label_color = get_score_label(result["global_score"])
