@@ -1,0 +1,23 @@
+name: Garder NIRIKX éveillée
+
+# Streamlit Cloud (offre gratuite) met l'application en veille apres un
+# moment sans visite : le premier client tombe alors sur un ecran
+# "Zzzz... l'appli dort" au lieu de l'outil. Ce robot visite l'app
+# toutes les 6 heures pour qu'elle ne s'endorme jamais. Tourne sur
+# l'infrastructure GitHub (gratuite), independamment de tout autre
+# systeme.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Visiter l'application
+        run: |
+          curl -sS -o /dev/null -w "Reponse HTTP : %{http_code}\n" \
+            --max-time 30 --retry 3 --retry-delay 10 \
+            "https://mon-audit-seo-fehcwhwv93dpppsti9f5gi.streamlit.app"
