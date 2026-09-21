@@ -5,11 +5,13 @@ name: Garder NIRIKX éveillée
 # "Zzzz... l'appli dort" au lieu de l'outil. Un simple curl ne suffit
 # pas a l'empecher (ni a la reveiller si elle dort deja) : il faut un
 # vrai navigateur qui clique sur le bouton de reveil. Ce robot tourne
-# toutes les 6 heures sur l'infrastructure GitHub (gratuite).
+# toutes les 2 heures sur l'infrastructure GitHub (gratuite) - ca ne
+# supprime pas la limite du plan gratuit Streamlit, mais ca reduit
+# fortement le risque qu'un visiteur tombe sur l'ecran de veille.
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 */2 * * *"
   workflow_dispatch: {}
 
 jobs:
