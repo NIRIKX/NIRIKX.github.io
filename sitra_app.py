@@ -527,13 +527,16 @@ def _formulaire_retour(cle_suffixe):
             else:
                 st.error("Impossible d'enregistrer votre retour pour le moment (problème de connexion). Réessayez dans quelques instants.")
 
-# Date de lancement reelle : mardi 29/09 a 9h30 (heure francaise), moment ou
-# les emails sont envoyes aux 15 entreprises. DATE_FIN_TEST se calcule toute
-# seule, une semaine pile apres DATE_DEBUT_TEST.
-DATE_DEBUT_TEST = datetime.datetime(2026, 9, 29, 7, 30, tzinfo=datetime.timezone.utc)  # 9h30 heure francaise (UTC+2)
+# EN ATTENTE : mardi 29/09 9h30, les emails d'invitation partent aux 15
+# entreprises, mais elles ne repondront pas toutes en meme temps. La page
+# "le test n'a pas encore commence" doit donc rester affichee au-dela de
+# cette date, jusqu'a ce qu'on sache que tout le monde a repondu "oui" -
+# c'est a ce moment-la (pas avant) qu'il faudra remettre DATE_DEBUT_TEST a
+# la vraie date/heure de lancement. Date volontairement lointaine en
+# attendant cette confirmation.
+DATE_DEBUT_TEST = datetime.datetime(2026, 10, 31, 9, 0, tzinfo=datetime.timezone.utc)
 DATE_FIN_TEST = DATE_DEBUT_TEST + datetime.timedelta(days=7)
-# Garde le compte a rebours cache : les entreprises ne repondront pas toutes
-# tout de suite, pas besoin de l'afficher. Repasser a True si demande.
+# Garde le compte a rebours cache. Repasser a True si demande.
 AFFICHER_COMPTE_A_REBOURS = False
 
 _maintenant = datetime.datetime.now(datetime.timezone.utc)
