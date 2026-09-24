@@ -545,8 +545,8 @@ _admin = st.query_params.get("admin") == "1"
 if _maintenant < DATE_DEBUT_TEST and not _admin:
     st.markdown("""
     <div style="text-align:center;padding:4rem 1rem">
-        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Le test n'a pas encore commencé</div>
-        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">Merci pour votre intérêt pour NIRIKX ! L'accès démarre très bientôt.</div>
+        <div style="font-size:1.4rem;font-weight:700;color:#a090f7;margin-bottom:0.8rem">Presque prêt pour vous !</div>
+        <div style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto">Vous faites partie des 15 entreprises sélectionnées pour tester NIRIKX en avant-première. Dès l'ouverture, une semaine complète pour découvrir exactement ce qui freine votre site — et comment le corriger. Restez à l'affût, l'accès arrive très vite.</div>
     </div>
     """, unsafe_allow_html=True)
     if AFFICHER_COMPTE_A_REBOURS:
