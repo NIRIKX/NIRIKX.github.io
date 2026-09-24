@@ -40,7 +40,6 @@
   .hero-title span { background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
   .hero-sub { font-size:clamp(1rem,2vw,1.2rem); color:var(--muted); max-width:560px; line-height:1.7; margin-bottom:3rem; font-weight:300; animation:fadeUp 0.6s 0.2s ease both; }
   .hero-actions { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.6s 0.3s ease both; }
-  .views-badge { margin-top:2rem; color:var(--muted); font-size:0.85rem; animation:fadeUp 0.6s 0.4s ease both; }
   .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; border:none; padding:1rem 2.5rem; border-radius:12px; font-family:'DM Sans',sans-serif; font-weight:500; font-size:1rem; cursor:pointer; text-decoration:none; transition:all 0.2s; box-shadow:0 0 40px rgba(124,106,247,0.3); display:inline-block; }
   .btn-primary:hover { transform:translateY(-2px); box-shadow:0 0 60px rgba(124,106,247,0.5); }
   .btn-secondary { background:transparent; color:var(--text); border:1px solid var(--border); padding:1rem 2.5rem; border-radius:12px; font-family:'DM Sans',sans-serif; font-weight:500; font-size:1rem; cursor:pointer; text-decoration:none; transition:all 0.2s; display:inline-block; }
@@ -168,7 +167,6 @@
     <a href="#pricing" class="btn-primary">Analyser mon site</a>
     <a href="#pricing" class="btn-secondary">Voir les forfaits</a>
   </div>
-  <div class="views-badge">👁️ <span id="view-count">...</span> personnes ont déjà utilisé NIRIKX</div>
 </section>
 
 <div class="separator-bar">
@@ -270,6 +268,7 @@
       <a href="https://mon-audit-seo-fehcwhwv93dpppsti9f5gi.streamlit.app/?plan=premium" class="plan-btn plan-btn-paid" target="_blank">Choisir Premium</a>
     </div>
   </div>
+</section>
 
 <section class="cta-section">
   <h2 class="cta-title reveal">Votre site est-il<br><span style="background:linear-gradient(135deg,#7c6af7,#f07cf7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">vraiment optimisé ?</span></h2>
@@ -309,14 +308,6 @@
     entries.forEach((e,i) => { if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*80); });
   }, {threshold:0.1});
   reveals.forEach(el=>obs.observe(el));
-
-  // Vues
-  function updateViews() {
-    let v = parseInt(localStorage.getItem('sitra_views')||'0');
-    v++; localStorage.setItem('sitra_views',v);
-    document.getElementById('view-count').textContent = (v+142).toLocaleString('fr-FR');
-  }
-  updateViews();
 
   // Intro : le X (en premier, en grand) se dessine en contour violet puis se remplit + recule en même temps ; puis N I R I K se dessinent l'une après l'autre et se remplissent ensemble ; pause pour laisser voir le mot ; puis explosion de particules
   document.body.style.overflow = 'hidden';
