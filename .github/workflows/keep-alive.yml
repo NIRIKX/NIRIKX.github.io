@@ -1,0 +1,30 @@
+name: Garder NIRIKX éveillée
+
+# Streamlit Cloud (offre gratuite) met l'application en veille apres un
+# moment sans visite : le premier client tombe alors sur un ecran
+# "Zzzz... l'appli dort" au lieu de l'outil. Un simple curl ne suffit
+# pas a l'empecher (ni a la reveiller si elle dort deja) : il faut un
+# vrai navigateur qui clique sur le bouton de reveil. Ce robot tourne
+# toutes les 2 heures sur l'infrastructure GitHub (gratuite) - ca ne
+# supprime pas la limite du plan gratuit Streamlit, mais ca reduit
+# fortement le risque qu'un visiteur tombe sur l'ecran de veille.
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer Playwright
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Visiter l'application et la réveiller si besoin
+        run: python .github/scripts/keep_nirikx_awake.py
