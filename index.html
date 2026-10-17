@@ -52,13 +52,9 @@
   .report-3d { position:relative; transform-origin:50% 30%; will-change:transform,opacity; background:#ffffff; border:1px solid var(--border); border-radius:18px; box-shadow:0 30px 70px -35px rgba(40,30,20,0.35); overflow:hidden; text-align:left; }
   /* "armed" = animation prete a jouer (pose par le script) : sans script, le rapport reste simplement visible. */
   .report-3d.armed { opacity:0; transform:translateY(90px) rotateX(38deg) rotateY(-16deg) scale(0.85); }
-  .report-3d.armed.play { animation:report-enter 1.4s cubic-bezier(.2,.85,.25,1) forwards, report-float 7s ease-in-out 1.4s infinite; }
+  .report-3d.armed.play { animation:report-enter 1.4s cubic-bezier(.2,.85,.25,1) forwards; }
   @keyframes report-enter { 0%{opacity:0;transform:translateY(90px) rotateX(38deg) rotateY(-16deg) scale(0.85)} 50%{opacity:1} 100%{opacity:1;transform:translateY(0) rotateX(0) rotateY(0) scale(1)} }
-  @keyframes report-float { 0%,100%{opacity:1;transform:translateY(0) rotateX(0) rotateY(0) scale(1)} 50%{opacity:1;transform:translateY(-12px) rotateX(2deg) rotateY(-2.5deg) scale(1)} }
-  .report-3d::after { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 40%,rgba(29,122,135,0.06) 50%,transparent 60%); transform:translateX(-100%); pointer-events:none; }
-  .report-3d.live::after { animation:report-scan 5s ease-in-out 0.6s infinite; }
-  @keyframes report-scan { 0%{transform:translateX(-100%)} 40%,100%{transform:translateX(100%)} }
-  .report-3d.resetting, .report-3d.resetting *, .report-3d.resetting::after { transition:none !important; animation:none !important; }
+  .report-3d.resetting, .report-3d.resetting * { transition:none !important; animation:none !important; }
   .report-bar { display:flex; align-items:center; gap:0.45rem; padding:0.85rem 1.2rem; border-bottom:1px solid var(--border); background:rgba(40,30,20,0.03); }
   .report-dot { width:10px; height:10px; border-radius:50%; opacity:0.85; }
   .report-dot:nth-child(1) { background:#ff5f57; } .report-dot:nth-child(2) { background:#febc2e; } .report-dot:nth-child(3) { background:#28c840; }
@@ -173,7 +169,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .report-3d { transform:none; opacity:1; }
-    .report-3d, .report-3d *, .report-3d::after { transition:none !important; animation:none !important; }
+    .report-3d, .report-3d * { transition:none !important; animation:none !important; }
   }
 
   @media(max-width:768px) {
@@ -566,7 +562,7 @@
         run++;
         playing = false;
         report.classList.add('resetting');
-        report.classList.remove('play', 'filled', 'live');
+        report.classList.remove('play', 'filled');
         counter.textContent = '0';
         issues.forEach(i => { i.el.classList.remove('show', 'typed'); i.text.classList.remove('typing'); i.text.textContent = ''; });
         void report.offsetWidth;
@@ -607,9 +603,8 @@
           await wait(200);
         }
         if (id === run) {
-          report.classList.add('live');
           // Jouee jusqu'au bout : on ne la rejoue plus en revenant sur le rapport,
-          // qui reste dans son etat final (il flotte doucement).
+          // qui reste immobile dans son etat final.
           observer.disconnect();
         }
       };
