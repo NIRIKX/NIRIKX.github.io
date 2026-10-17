@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politique de confidentialité · NIRIKX</title>
+<meta name="description" content="Ce que NIRIKX fait de vos informations, expliqué simplement.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root { --bg:#ffffff; --band:#f5f5f7; --border:rgba(40,30,20,0.10); --accent:#1d7a87; --text:#1b1915; --muted:#655d55; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans', sans-serif; line-height:1.7; }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 4rem; border-bottom:1px solid var(--border); }
+  .logo { font-family:'Syne', sans-serif; font-weight:800; font-size:1.4rem; color:var(--accent); text-decoration:none; }
+  .nav-cta { background:var(--text); color:#ffffff; padding:0.6rem 1.5rem; border-radius:8px; font-weight:500; font-size:0.9rem; text-decoration:none; }
+  main { max-width:760px; margin:0 auto; padding:4rem 1.5rem 5rem; }
+  .label { color:var(--accent); font-size:0.8rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; margin-bottom:1rem; }
+  h1 { font-family:'Syne', sans-serif; font-weight:800; font-size:clamp(2rem, 5vw, 3rem); line-height:1.15; letter-spacing:-1px; margin-bottom:1rem; }
+  .maj { color:var(--muted); font-size:0.9rem; margin-bottom:2.5rem; }
+  p { margin-bottom:1.2rem; }
+  ul { list-style:none; margin:1.5rem 0 2rem; }
+  li { background:var(--band); border-radius:12px; padding:1.1rem 1.3rem; margin-bottom:0.8rem; }
+  li strong { display:block; margin-bottom:0.2rem; }
+  a { color:var(--accent); }
+  footer { border-top:1px solid var(--border); padding:2rem 1.5rem; text-align:center; color:var(--muted); font-size:0.8rem; }
+  footer a { color:var(--muted); }
+  @media (max-width:768px) { nav { padding:1rem 1.5rem; } main { padding:3rem 1.25rem 4rem; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="./">NIRIKX</a>
+  <a class="nav-cta" href="https://nirikx.streamlit.app">Analyser mon site</a>
+</nav>
+
+<main>
+  <div class="label">Vos données</div>
+  <h1>Politique de confidentialité</h1>
+  <p class="maj">Dernière mise à jour : 17 octobre 2026</p>
+
+  <p>NIRIKX est un projet indépendant, pas une entreprise avec un service dédié à la protection des données. Voici simplement, en clair, ce que l'outil fait de vos informations :</p>
+
+  <ul>
+    <li><strong>Formulaire de contact (page d'accueil)</strong>Votre nom, votre email et votre message passent par un relais sécurisé (Cloudflare) pour que nous puissions vous répondre. Ils ne servent qu'à ça, et ne sont jamais revendus ni partagés.</li>
+    <li><strong>Inscription au test</strong>Le nom de votre entreprise, votre email et l'adresse de votre site sont gardés dans une base de données (Neon) pour gérer votre accès et vous recontacter au sujet du test. Jamais revendus ni partagés.</li>
+    <li><strong>Liste d'attente</strong>Votre email sert uniquement à vous prévenir du lancement de NIRIKX.</li>
+    <li><strong>Site que vous analysez</strong>L'URL et le contenu de la page sont envoyés à Google (API Gemini) pour générer les recommandations et le contenu IA. NIRIKX ne conserve pas le contenu du site lui-même.</li>
+    <li><strong>Audit visuel</strong>L'adresse de votre site est envoyée à Microlink, un service qui prend une capture du haut de la page, puis cette capture est envoyée à Google (API Gemini) pour donner l'avis. Si vous envoyez vous-même des captures d'écran, elles sont aussi envoyées à Google (API Gemini) pour l'avis. NIRIKX ne garde aucune capture.</li>
+    <li><strong>Email Pro/Premium</strong>Demandé uniquement si vous activez un forfait Pro/Premium, pour associer cet accès à votre compte. Stocké dans la même base de données, jamais revendu ni partagé.</li>
+    <li><strong>Historique du potentiel de croissance</strong>Les résultats sont sauvegardés (associés à l'URL analysée, pas à une personne) pour afficher votre progression dans le temps.</li>
+    <li><strong>Hébergement</strong>La page d'accueil est hébergée par GitHub Pages, l'outil d'analyse par Streamlit Community Cloud. Les polices d'écriture sont chargées depuis Google Fonts.</li>
+  </ul>
+
+  <p>Une question sur vos données, ou envie qu'on les supprime ? Écrivez à <a href="mailto:yanisaidoune1@gmail.com">yanisaidoune1@gmail.com</a>.</p>
+</main>
+
+<footer>
+  © 2026 NIRIKX. NIRIKX n'est affilié à aucun des sites qu'il analyse. · <a href="./">Retour à l'accueil</a>
+</footer>
+
+</body>
+</html>
