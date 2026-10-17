@@ -121,7 +121,7 @@
   /* ── PRICING ── */
   .pricing { padding:6rem 4rem; max-width:1200px; margin:0 auto; }
   .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-top:1rem; }
-  .pricing-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2.5rem; position:relative; transition:transform 0.3s,border-color 0.3s; }
+  .pricing-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2.5rem; position:relative; display:flex; flex-direction:column; transition:transform 0.3s,border-color 0.3s; }
   .pricing-card:hover { transform:translateY(-6px); }
   .pricing-card.popular { border-color:var(--text); }
   .popular-badge { position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--on-accent); padding:0.3rem 1.2rem; border-radius:999px; font-size:0.75rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
@@ -135,10 +135,10 @@
   .plan-features li.excluded { color:#9a9189; }
   .plan-features li::before { content:'✓'; color:var(--accent); font-weight:700; flex-shrink:0; margin-top:1px; }
   .plan-features li.excluded::before { content:'×'; color:#9a9189; }
-  .plan-btn { display:block; text-align:center; padding:0.9rem; border-radius:10px; font-weight:600; font-size:0.95rem; text-decoration:none; transition:all 0.2s; }
+  .plan-btn { display:block; margin-top:auto; text-align:center; padding:0.9rem; border-radius:10px; font-weight:600; font-size:0.95rem; text-decoration:none; transition:all 0.2s; }
   .plan-btn-free { background:transparent; border:1px solid var(--border); color:var(--text); }
   .plan-btn-free:hover { border-color:var(--accent); color:var(--accent); }
-  .plan-btn-paid { background:var(--text); color:var(--on-accent); border:none; }
+  .plan-btn-paid { background:var(--text); color:var(--on-accent); border:1px solid var(--text); }
   .plan-btn-paid:hover { opacity:0.9; transform:translateY(-1px); }
 
   /* ── CONTACT ── */
@@ -304,7 +304,7 @@
 <div class="pricing-grid">
     <div class="pricing-card reveal">
       <div class="plan-name">Gratuit</div>
-      <div class="plan-price">0€</div>
+      <div class="plan-price">0&nbsp;€</div>
       <div class="plan-desc">Pour découvrir l'état de votre site, aussi souvent que vous voulez</div>
       <ul class="plan-features">
         <li class="included">Analyses illimitées, sans limite de temps</li>
@@ -324,7 +324,7 @@
     <div class="pricing-card popular reveal">
       <div class="popular-badge">Recommandé</div>
       <div class="plan-name">Pro</div>
-      <div class="plan-price">39,99€ <span>/ Accès 30 jours, sans abonnement</span></div>
+      <div class="plan-price">39,99&nbsp;€ <span>/ Accès 30 jours, sans abonnement</span></div>
       <div class="plan-desc">Pour corriger votre site vous-même</div>
       <ul class="plan-features">
         <li class="included">Tout Gratuit inclus</li>
@@ -341,7 +341,7 @@
     </div>
     <div class="pricing-card reveal">
       <div class="plan-name">Premium</div>
-      <div class="plan-price">89,99€ <span>/ Accès 30 jours, sans abonnement</span></div>
+      <div class="plan-price">89,99&nbsp;€ <span>/ Accès 30 jours, sans abonnement</span></div>
       <div class="plan-desc">Pour développer votre activité et votre communication</div>
       <ul class="plan-features">
         <li class="included">Tout Pro inclus</li>
