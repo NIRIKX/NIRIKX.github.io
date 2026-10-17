@@ -6,8 +6,13 @@
 <title>Politique de confidentialité · NIRIKX</title>
 <meta name="description" content="Ce que NIRIKX fait de vos informations, expliqué simplement.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Polices hebergees sur le site lui-meme (et non chez Google Fonts). */
+  @font-face { font-family:'Syne'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/syne-latin-700-normal.woff2) format('woff2'); }
+  @font-face { font-family:'Syne'; font-style:normal; font-weight:800; font-display:swap; src:url(fonts/syne-latin-800-normal.woff2) format('woff2'); }
+  @font-face { font-family:'DM Sans'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/dm-sans-latin-400-normal.woff2) format('woff2'); }
+  @font-face { font-family:'DM Sans'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/dm-sans-latin-500-normal.woff2) format('woff2'); }
+  @font-face { font-family:'DM Sans'; font-style:normal; font-weight:600; font-display:swap; src:url(fonts/dm-sans-latin-600-normal.woff2) format('woff2'); }
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
   :root { --bg:#ffffff; --band:#f5f5f7; --border:rgba(40,30,20,0.10); --accent:#1d7a87; --text:#1b1915; --muted:#655d55; }
   body { background:var(--bg); color:var(--text); font-family:'DM Sans', sans-serif; line-height:1.7; }
@@ -22,6 +27,10 @@
   ul { list-style:none; margin:1.5rem 0 2rem; }
   li { background:var(--band); border-radius:12px; padding:1.1rem 1.3rem; margin-bottom:0.8rem; }
   li strong { display:block; margin-bottom:0.2rem; }
+  .base { display:block; margin-top:0.5rem; color:var(--muted); font-size:0.9rem; }
+  h2 { font-family:'Syne', sans-serif; font-weight:700; font-size:1.35rem; line-height:1.3; margin:2.8rem 0 1rem; }
+  .droits li { background:none; border-radius:0; padding:0 0 0 1.2rem; margin-bottom:0.4rem; position:relative; }
+  .droits li::before { content:''; position:absolute; left:0; top:0.7em; width:6px; height:6px; border-radius:50%; background:var(--accent); }
   a { color:var(--accent); }
   footer { border-top:1px solid var(--border); padding:2rem 1.5rem; text-align:center; color:var(--muted); font-size:0.8rem; }
   footer a { color:var(--muted); }
@@ -40,20 +49,37 @@
   <h1>Politique de confidentialité</h1>
   <p class="maj">Dernière mise à jour : 17 octobre 2026</p>
 
-  <p>NIRIKX est un projet indépendant, pas une entreprise avec un service dédié à la protection des données. Voici simplement, en clair, ce que l'outil fait de vos informations :</p>
+  <p>NIRIKX est un projet indépendant, pas une entreprise avec un service dédié à la protection des données. Voici simplement, en clair, ce que l'outil fait de vos informations. Pour toute question, une seule adresse : <a href="mailto:yanisaidoune1@gmail.com">yanisaidoune1@gmail.com</a>.</p>
 
+  <h2>Ce que NIRIKX fait de vos informations</h2>
   <ul>
-    <li><strong>Formulaire de contact (page d'accueil)</strong>Votre nom, votre email et votre message passent par un relais sécurisé (Cloudflare) pour que nous puissions vous répondre. Ils ne servent qu'à ça, et ne sont jamais revendus ni partagés.</li>
-    <li><strong>Inscription au test</strong>Le nom de votre entreprise, votre email et l'adresse de votre site sont gardés dans une base de données (Neon) pour gérer votre accès et vous recontacter au sujet du test. Jamais revendus ni partagés.</li>
-    <li><strong>Liste d'attente</strong>Votre email sert uniquement à vous prévenir du lancement de NIRIKX.</li>
-    <li><strong>Site que vous analysez</strong>L'URL et le contenu de la page sont envoyés à Google (API Gemini) pour générer les recommandations et le contenu IA. NIRIKX ne conserve pas le contenu du site lui-même.</li>
-    <li><strong>Audit visuel</strong>L'adresse de votre site est envoyée à Microlink, un service qui prend une capture du haut de la page, puis cette capture est envoyée à Google (API Gemini) pour donner l'avis. Si vous envoyez vous-même des captures d'écran, elles sont aussi envoyées à Google (API Gemini) pour l'avis. NIRIKX ne garde aucune capture.</li>
-    <li><strong>Email Pro/Premium</strong>Demandé uniquement si vous activez un forfait Pro/Premium, pour associer cet accès à votre compte. Stocké dans la même base de données, jamais revendu ni partagé.</li>
-    <li><strong>Historique du potentiel de croissance</strong>Les résultats sont sauvegardés (associés à l'URL analysée, pas à une personne) pour afficher votre progression dans le temps.</li>
-    <li><strong>Hébergement</strong>La page d'accueil est hébergée par GitHub Pages, l'outil d'analyse par Streamlit Community Cloud. Les polices d'écriture sont chargées depuis Google Fonts.</li>
+    <li><strong>Formulaire de contact (page d'accueil)</strong>Votre nom, votre email et votre message passent par Cloudflare puis par Resend (un service d'envoi d'emails), et arrivent dans notre boîte mail (Gmail). Ils servent seulement à vous répondre.<span class="base">Base légale : intérêt légitime (vous nous écrivez pour avoir une réponse).</span></li>
+    <li><strong>Inscription au test</strong>Le nom de votre entreprise, votre email et l'adresse de votre site sont gardés dans une base de données (Neon), pour gérer votre accès et vous recontacter au sujet du test.<span class="base">Base légale : exécution du contrat (c'est nécessaire pour vous donner l'accès que vous demandez).</span></li>
+    <li><strong>Liste d'attente</strong>Votre email (et le nom de votre entreprise, si vous le donnez) est gardé dans la même base de données, seulement pour vous prévenir du lancement de NIRIKX.<span class="base">Base légale : consentement (vous l'avez demandé, et vous pouvez changer d'avis à tout moment).</span></li>
+    <li><strong>Votre avis sur le test</strong>Votre note, vos réponses et, si vous le donnez, le nom de votre entreprise sont gardés dans la même base de données, sans votre email, pour améliorer NIRIKX.<span class="base">Base légale : consentement (vous choisissez de donner votre avis).</span></li>
+    <li><strong>Site que vous analysez</strong>L'adresse et le contenu de la page sont envoyés à Google (API Gemini) pour préparer les conseils et les textes. NIRIKX ne garde pas le contenu du site lui-même.<span class="base">Base légale : exécution du contrat (c'est nécessaire pour faire l'analyse que vous demandez).</span></li>
+    <li><strong>Audit visuel</strong>L'adresse de votre site est envoyée à Microlink, un service qui prend une capture du haut de la page. Cette capture est ensuite envoyée à Google (API Gemini) pour donner l'avis. Si vous envoyez vous-même des captures d'écran, elles sont aussi envoyées à Google (API Gemini). NIRIKX ne garde aucune capture.<span class="base">Base légale : exécution du contrat (c'est nécessaire pour faire l'audit que vous demandez).</span></li>
+    <li><strong>Email Pro/Premium</strong>Demandé seulement si vous activez un forfait Pro ou Premium, pour associer cet accès à votre email. Gardé dans la même base de données.<span class="base">Base légale : exécution du contrat (c'est nécessaire pour activer votre forfait).</span></li>
+    <li><strong>Historique du potentiel de croissance</strong>Les résultats des analyses sont gardés, associés à l'adresse du site analysé et non à une personne, pour afficher votre progression dans le temps.<span class="base">Base légale : intérêt légitime (vous montrer votre progression).</span></li>
+    <li><strong>Hébergement et adresse IP</strong>La page d'accueil est hébergée par GitHub Pages et l'outil d'analyse par Streamlit Community Cloud. Comme pour tout site, ces hébergeurs voient votre adresse IP quand vous visitez une page, et peuvent la garder un temps pour la sécurité. Certaines icônes de l'outil sont chargées depuis jsDelivr, qui voit aussi votre adresse IP. Les polices d'écriture, elles, sont hébergées sur le site NIRIKX lui-même.<span class="base">Base légale : intérêt légitime (afficher les pages et protéger le site).</span></li>
   </ul>
 
-  <p>Une question sur vos données, ou envie qu'on les supprime ? Écrivez à <a href="mailto:yanisaidoune1@gmail.com">yanisaidoune1@gmail.com</a>.</p>
+  <p>Vos informations ne sont jamais vendues, et ne sont jamais utilisées pour de la publicité. NIRIKX n'ajoute aucun cookie de publicité ni de mesure d'audience. Streamlit, qui héberge l'outil d'analyse, peut utiliser ses propres cookies : voir <a href="https://streamlit.io/privacy" target="_blank" rel="noopener">sa politique de confidentialité</a>.</p>
+
+  <h2>Envois en dehors de l'Europe</h2>
+  <p>Plusieurs services cités plus haut sont des entreprises américaines (Google, GitHub, Streamlit, Cloudflare, Resend, Neon), et Microlink utilise des serveurs dans plusieurs pays. Vos informations peuvent donc être traitées en dehors de l'Union européenne, notamment aux États-Unis. Ces envois s'appuient sur les garanties prévues par le RGPD, comme le cadre de protection des données UE–États-Unis (« Data Privacy Framework ») ou les clauses contractuelles types de la Commission européenne.</p>
+
+  <h2>Vos droits</h2>
+  <p>À tout moment, vous pouvez nous demander :</p>
+  <ul class="droits">
+    <li>de voir les informations que NIRIKX a sur vous ;</li>
+    <li>de les corriger ;</li>
+    <li>de les supprimer ;</li>
+    <li>de ne plus les utiliser, ou de les utiliser moins ;</li>
+    <li>de vous les envoyer dans un fichier ;</li>
+    <li>de retirer votre accord (par exemple, pour quitter la liste d'attente).</li>
+  </ul>
+  <p>Écrivez simplement à <a href="mailto:yanisaidoune1@gmail.com">yanisaidoune1@gmail.com</a> : vous aurez une réponse en moins d'un mois. Si vous pensez que vos droits ne sont pas respectés, vous pouvez aussi faire une réclamation auprès de la CNIL, sur <a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>.</p>
 </main>
 
 <footer>
