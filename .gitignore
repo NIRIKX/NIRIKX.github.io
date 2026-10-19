@@ -1,0 +1,3 @@
+# Secrets : jamais sur GitHub (le site public n'en a besoin d'aucun).
+.env
+.env.*

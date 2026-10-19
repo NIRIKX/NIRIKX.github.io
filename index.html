@@ -361,6 +361,8 @@
     <div><label>Votre nom</label><input type="text" id="c-nom" placeholder="Jean Dupont"></div>
     <div><label>Votre email</label><input type="email" id="c-email" placeholder="jean@exemple.fr"></div>
     <div><label>Votre message</label><textarea id="c-msg" placeholder="Décrivez votre question ou problème..."></textarea></div>
+    <!-- Piege a robots : case invisible pour les visiteurs, que seuls les robots remplissent. -->
+    <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="c-site">Ne pas remplir</label><input type="text" id="c-site" tabindex="-1" autocomplete="off"></div>
     <button class="btn-primary" id="contact-btn" style="width:100%" onclick="sendContactAI()">Envoyer le message</button>
     <p style="color:var(--muted);font-size:0.8rem;text-align:center;margin-top:1rem">Vos informations servent seulement à vous répondre. <a href="confidentialite.html" style="color:inherit">En savoir plus</a></p>
     <div id="contact-error" style="display:none;color:#dc3545;font-size:0.9rem;margin-top:1rem;text-align:center">Merci de remplir tous les champs.</div>
@@ -524,12 +526,14 @@
       const r=await fetch(CONTACT_WORKER_URL,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({nom, email, msg})
+        // site_web et t (temps passe sur la page) servent au relais a reperer les robots.
+        body:JSON.stringify({nom, email, msg, site_web:document.getElementById('c-site').value, t:Math.round(performance.now())})
       });
+      if(r.status===429){ respText.textContent="Vous avez envoyé plusieurs messages d'affilée. Réessayez dans quelques minutes."; throw 'deja_affiche'; }
       if(!r.ok) throw new Error('echec envoi');
       respText.textContent="Merci pour votre message ! On vous répond par email sous 24h.";
     }catch(e){
-      respText.textContent="Une erreur est survenue lors de l'envoi. Réessayez, ou écrivez-nous directement par email.";
+      if(e!=='deja_affiche') respText.textContent="Une erreur est survenue lors de l'envoi. Réessayez, ou écrivez-nous directement par email.";
     }
 
     loading.style.display='none';
