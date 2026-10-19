@@ -12,6 +12,7 @@
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <!-- FAVICON : symbole "Bascule" (avant/apres) -->
+<link rel="canonical" href="https://nirikx.github.io/">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='20%2020%2060%2060'%3E%20%3Cpath%20d='M30%2026%20h30%20a8%208%200%200%201%208%208%20v34%20z'%20fill='%231d7a87'/%3E%20%3Cpath%20d='M70%2074%20h-30%20a8%208%200%200%201%20-8%20-8%20v-34%20z'%20fill='%233aa8b8'/%3E%20%3C/svg%3E">
 <style>
@@ -98,6 +99,11 @@
   .issue-cat { margin-left:auto; color:var(--muted); font-size:0.75rem; opacity:0; transition:opacity 0.4s ease; }
   .issue.typed .issue-cat, .report-3d:not(.armed) .issue-cat { opacity:1; }
   .showcase-caption { text-align:center; color:var(--muted); font-size:0.8rem; margin-top:2.5rem; opacity:0.8; }
+  /* Vraie capture de l'appli, sous l'exemple anime. Le bas s'efface : la page continue dans l'appli. */
+  .vraie-analyse { max-width:980px; margin:4.5rem auto 0; text-align:center; }
+  .vraie-analyse-titre { font-family:'Syne',sans-serif; font-weight:700; font-size:1.3rem; margin-bottom:1.5rem; }
+  .vraie-analyse img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:14px; -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent); mask-image:linear-gradient(to bottom,#000 78%,transparent); }
+  .vraie-analyse figcaption { color:var(--muted); font-size:0.8rem; margin-top:0.8rem; }
 
 
   /* ── SECTIONS ── */
@@ -262,6 +268,11 @@
     </div>
   </div>
   <p class="showcase-caption">Exemple de rapport : les chiffres sont donnés à titre d'illustration.</p>
+  <figure class="vraie-analyse">
+    <h3 class="vraie-analyse-titre">Une vraie analyse, faite avec l'appli</h3>
+    <a href="vraie-analyse.webp" target="_blank" rel="noopener" title="Voir la capture en grand"><img src="vraie-analyse.webp" width="1265" height="830" loading="lazy" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, et ce qu'il faut améliorer."></a>
+    <figcaption>Capture d'écran de l'appli : la page d'accueil de NIRIKX analysée par NIRIKX, le 19 octobre 2026.</figcaption>
+  </figure>
 </section>
 
 
