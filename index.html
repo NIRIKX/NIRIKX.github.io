@@ -104,6 +104,12 @@
   .vraie-analyse-titre { font-family:'Syne',sans-serif; font-weight:700; font-size:1.3rem; margin-bottom:1.5rem; }
   .vraie-analyse img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:14px; -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent); mask-image:linear-gradient(to bottom,#000 78%,transparent); }
   .vraie-analyse figcaption { color:var(--muted); font-size:0.8rem; margin-top:0.8rem; }
+  /* Capture en grand : fenetre par-dessus la page, fermee par la croix, un appui a cote ou Echap. */
+  .zoom-analyse { padding:0; border:none; background:transparent; position:fixed; inset:0; margin:auto; width:fit-content; height:fit-content; max-width:96vw; max-height:92vh; overflow:visible; }
+  .zoom-analyse::backdrop { background:rgba(20,18,15,0.85); }
+  .zoom-analyse img { display:block; max-width:96vw; max-height:80vh; width:auto; height:auto; border-radius:10px; }
+  .zoom-fermer { position:fixed; top:14px; right:14px; width:44px; height:44px; border-radius:50%; border:none; background:#ffffff; color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.35); }
+  .zoom-fermer svg { width:18px; height:18px; }
 
 
   /* ── SECTIONS ── */
@@ -270,9 +276,13 @@
   <p class="showcase-caption">Exemple de rapport : les chiffres sont donnés à titre d'illustration.</p>
   <figure class="vraie-analyse">
     <h3 class="vraie-analyse-titre">Une vraie analyse, faite avec l'appli</h3>
-    <a href="vraie-analyse.webp" target="_blank" rel="noopener" title="Voir la capture en grand"><img src="vraie-analyse.webp" width="1265" height="830" loading="lazy" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, et ce qu'il faut améliorer."></a>
+    <a href="vraie-analyse.webp" id="ouvrir-zoom" title="Voir la capture en grand"><img src="vraie-analyse.webp" width="1265" height="830" loading="lazy" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, et ce qu'il faut améliorer."></a>
     <figcaption>Capture d'écran de l'appli : la page d'accueil de NIRIKX analysée par NIRIKX, le 19 octobre 2026.</figcaption>
   </figure>
+  <dialog class="zoom-analyse" id="zoom-analyse" aria-label="Capture d'écran en grand">
+    <button type="button" class="zoom-fermer" id="fermer-zoom" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+    <img src="vraie-analyse.webp" width="1265" height="830" alt="Capture d'écran de l'appli NIRIKX en grand : analyse de nirikx.github.io.">
+  </dialog>
 </section>
 
 
@@ -636,6 +646,17 @@
       report.classList.add('filled');
     }
 
+  })();
+</script>
+<script>
+  // Capture en grand dans une fenetre par-dessus la page (sans script, le lien ouvre simplement l'image).
+  (function () {
+    const zoom = document.getElementById('zoom-analyse');
+    if (!zoom || !zoom.showModal) return;
+    document.getElementById('ouvrir-zoom').addEventListener('click', e => { e.preventDefault(); zoom.showModal(); });
+    document.getElementById('fermer-zoom').addEventListener('click', () => zoom.close());
+    // Un appui a cote de l'image (sur le fond sombre) ferme aussi.
+    zoom.addEventListener('click', e => { if (e.target === zoom) zoom.close(); });
   })();
 </script>
 </body>
