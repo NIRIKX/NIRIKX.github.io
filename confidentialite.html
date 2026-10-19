@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Politique de confidentialité · NIRIKX</title>
 <meta name="description" content="Ce que NIRIKX fait de vos informations, expliqué simplement.">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='20%2020%2060%2060'%3E%20%3Cpath%20d='M30%2026%20h30%20a8%208%200%200%201%208%208%20v34%20z'%20fill='%231d7a87'/%3E%20%3Cpath%20d='M70%2074%20h-30%20a8%208%200%200%201%20-8%20-8%20v-34%20z'%20fill='%233aa8b8'/%3E%20%3C/svg%3E">
 <style>
   /* Polices hebergees sur le site lui-meme (et non chez Google Fonts). */
@@ -17,7 +18,8 @@
   :root { --bg:#ffffff; --band:#f5f5f7; --border:rgba(40,30,20,0.10); --accent:#1d7a87; --text:#1b1915; --muted:#655d55; }
   body { background:var(--bg); color:var(--text); font-family:'DM Sans', sans-serif; line-height:1.7; }
   nav { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 4rem; border-bottom:1px solid var(--border); }
-  .logo { font-family:'Syne', sans-serif; font-weight:800; font-size:1.4rem; color:var(--accent); text-decoration:none; }
+  .logo { font-family:'Syne', sans-serif; font-weight:800; font-size:1.4rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:0.45rem; }
+  .logo-symbole { width:1.15em; height:1.15em; flex-shrink:0; }
   .nav-cta { background:var(--text); color:#ffffff; padding:0.6rem 1.5rem; border-radius:8px; font-weight:500; font-size:0.9rem; text-decoration:none; }
   main { max-width:760px; margin:0 auto; padding:4rem 1.5rem 5rem; }
   .label { color:var(--accent); font-size:0.8rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; margin-bottom:1rem; }
@@ -40,7 +42,7 @@
 <body>
 
 <nav>
-  <a class="logo" href="./">NIRIKX</a>
+  <a class="logo" href="./"><svg class="logo-symbole" viewBox="20 20 60 60" aria-hidden="true"><path d="M30 26 h30 a8 8 0 0 1 8 8 v34 z" fill="#1d7a87"/><path d="M70 74 h-30 a8 8 0 0 1 -8 -8 v-34 z" fill="#3aa8b8"/></svg>NIRIKX</a>
   <a class="nav-cta" href="https://nirikx.streamlit.app">Analyser mon site</a>
 </nav>
 

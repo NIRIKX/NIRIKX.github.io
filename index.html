@@ -12,6 +12,7 @@
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <!-- FAVICON : symbole "Bascule" (avant/apres) -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='20%2020%2060%2060'%3E%20%3Cpath%20d='M30%2026%20h30%20a8%208%200%200%201%208%208%20v34%20z'%20fill='%231d7a87'/%3E%20%3Cpath%20d='M70%2074%20h-30%20a8%208%200%200%201%20-8%20-8%20v-34%20z'%20fill='%233aa8b8'/%3E%20%3C/svg%3E">
 <style>
   /* Polices hebergees sur le site lui-meme (et non chez Google Fonts). */
@@ -35,7 +36,8 @@
 
   /* ── NAV ── */
   nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:1.2rem 4rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); background:rgba(255,255,255,0.85); }
-  .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.4rem; color:var(--accent); }
+  .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.4rem; color:var(--accent); display:flex; align-items:center; gap:0.45rem; }
+  .logo-symbole { width:1.15em; height:1.15em; flex-shrink:0; }
   .nav-links { display:flex; gap:2rem; align-items:center; }
   .nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; transition:color 0.2s; }
   .nav-links a:hover { color:var(--text); }
@@ -105,10 +107,7 @@
   .section-title { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem); font-weight:800; text-align:center; letter-spacing:-1px; margin-bottom:4rem; }
   .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; }
   #features, #pricing { background:var(--band); box-shadow:0 0 0 100vmax var(--band); clip-path:inset(0 -100vmax); }
-  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2rem; transition:border-color 0.3s,transform 0.3s; position:relative; overflow:hidden; }
-  .feature-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:0; transition:opacity 0.3s; }
-  .feature-card:hover { border-color:rgba(58,168,184,0.3); transform:translateY(-4px); }
-  .feature-card:hover::before { opacity:1; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2rem; }
   .feature-num { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:var(--accent); margin-bottom:0.8rem; }
   .feature-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:0.6rem; }
   .feature-desc { color:var(--muted); font-size:0.9rem; line-height:1.6; }
@@ -125,8 +124,7 @@
   /* ── PRICING ── */
   .pricing { padding:6rem 4rem; max-width:1200px; margin:0 auto; }
   .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; margin-top:1rem; }
-  .pricing-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2.5rem; position:relative; display:flex; flex-direction:column; transition:transform 0.3s,border-color 0.3s; }
-  .pricing-card:hover { transform:translateY(-6px); }
+  .pricing-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2.5rem; position:relative; display:flex; flex-direction:column; }
   .pricing-card.popular { border-color:var(--text); }
   .popular-badge { position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--on-accent); padding:0.3rem 1.2rem; border-radius:999px; font-size:0.75rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
   .plan-name { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; margin-bottom:0.5rem; }
@@ -169,8 +167,6 @@
   .footer-bottom { max-width:1100px; margin:3rem auto 0; padding-top:1.5rem; border-top:1px solid var(--border); text-align:center; color:var(--muted); font-size:0.75rem; opacity:0.8; }
 
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-  .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.6s ease,transform 0.6s ease; }
-  .reveal.visible { opacity:1; transform:translateY(0); }
   .ni-wrap { position:relative; display:inline-block; }
   .ni-outline { color:transparent; -webkit-text-stroke:1.5px #1b1915; opacity:0; transition:opacity 0.18s ease; }
   .ni-fill { background:linear-gradient(160deg,#1d7a87 0%,#2a8f9d 45%,#3aa8b8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; opacity:0; transition:opacity 0.3s ease; }
@@ -215,7 +211,7 @@
 </div>
 
 <nav>
-  <div class="nav-logo">NIRIKX</div>
+  <div class="nav-logo"><svg class="logo-symbole" viewBox="20 20 60 60" aria-hidden="true"><path d="M30 26 h30 a8 8 0 0 1 8 8 v34 z" fill="#1d7a87"/><path d="M70 74 h-30 a8 8 0 0 1 -8 -8 v-34 z" fill="#3aa8b8"/></svg>NIRIKX</div>
   <div class="nav-links">
     <a href="#features">Fonctionnalités</a>
     <a href="#pricing">Forfaits</a>
@@ -273,35 +269,35 @@
 
 <section class="section" id="features">
   <div class="section-label">Ce que NIRIKX analyse</div>
-  <h2 class="section-title reveal">Ce que NIRIKX vérifie sur votre site</h2>
+  <h2 class="section-title">Ce que NIRIKX vérifie sur votre site</h2>
   <div class="features-grid">
-    <div class="feature-card reveal"><div class="feature-num">01</div><div class="feature-title">Être mieux placé sur Google</div><div class="feature-desc">NIRIKX vérifie les points que Google regarde sur votre page (titre, description, images…) et vous dit quoi corriger pour apparaître plus haut dans les résultats.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">02</div><div class="feature-title">Un site facile à utiliser</div><div class="feature-desc">Menu, boutons, contact : votre site est-il facile à utiliser&nbsp;? NIRIKX détecte ce qui bloque vos visiteurs.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">03</div><div class="feature-title">Un site rapide qui ne fait pas fuir</div><div class="feature-desc">53&nbsp;% des visites sur mobile sont abandonnées si la page met plus de 3 secondes à charger (étude Google). NIRIKX mesure la vitesse de votre site et vous dit comment l'améliorer.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">04</div><div class="feature-title">Une belle première impression</div><div class="feature-desc">Polices, couleurs, aperçu sur les réseaux sociaux : votre site inspire-t-il confiance&nbsp;?</div></div>
-    <div class="feature-card reveal"><div class="feature-num">05</div><div class="feature-title">Comparez-vous à un concurrent</div><div class="feature-desc">Choisissez un concurrent, ou laissez NIRIKX vous en proposer, et voyez où il fait mieux que vous.</div></div>
-    <div class="feature-card reveal"><div class="feature-num">06</div><div class="feature-title">Des textes prêts à publier</div><div class="feature-desc">Posts pour les réseaux sociaux, emails et annonces, écrits pour vous et adaptés à votre entreprise.</div></div>
+    <div class="feature-card"><div class="feature-num">01</div><div class="feature-title">Être mieux placé sur Google</div><div class="feature-desc">NIRIKX vérifie les points que Google regarde sur votre page (titre, description, images…) et vous dit quoi corriger pour apparaître plus haut dans les résultats.</div></div>
+    <div class="feature-card"><div class="feature-num">02</div><div class="feature-title">Un site facile à utiliser</div><div class="feature-desc">Menu, boutons, contact : votre site est-il facile à utiliser&nbsp;? NIRIKX détecte ce qui bloque vos visiteurs.</div></div>
+    <div class="feature-card"><div class="feature-num">03</div><div class="feature-title">Un site rapide qui ne fait pas fuir</div><div class="feature-desc">53&nbsp;% des visites sur mobile sont abandonnées si la page met plus de 3 secondes à charger (étude Google). NIRIKX mesure la vitesse de votre site et vous dit comment l'améliorer.</div></div>
+    <div class="feature-card"><div class="feature-num">04</div><div class="feature-title">Une belle première impression</div><div class="feature-desc">Polices, couleurs, aperçu sur les réseaux sociaux : votre site inspire-t-il confiance&nbsp;?</div></div>
+    <div class="feature-card"><div class="feature-num">05</div><div class="feature-title">Comparez-vous à un concurrent</div><div class="feature-desc">Choisissez un concurrent, ou laissez NIRIKX vous en proposer, et voyez où il fait mieux que vous.</div></div>
+    <div class="feature-card"><div class="feature-num">06</div><div class="feature-title">Des textes prêts à publier</div><div class="feature-desc">Posts pour les réseaux sociaux, emails et annonces, écrits pour vous et adaptés à votre entreprise.</div></div>
   </div>
 </section>
 
 <section class="how" id="how">
   <div class="how-inner">
     <div class="section-label">Comment ça marche</div>
-    <h2 class="section-title reveal">4 étapes, aucune compétence technique</h2>
+    <h2 class="section-title">4 étapes, aucune compétence technique</h2>
     <div class="steps">
-      <div class="step reveal"><div class="step-number">01</div><div class="step-title">Entrez votre URL</div><div class="step-desc">Collez l'adresse de votre site et lancez l'analyse.</div></div>
-      <div class="step reveal"><div class="step-number">02</div><div class="step-title">NIRIKX visite votre site</div><div class="step-desc">Il vérifie les points importants en quelques secondes.</div></div>
-      <div class="step reveal"><div class="step-number">03</div><div class="step-title">Rapport clair</div><div class="step-desc">Score par catégorie et liste des problèmes expliqués simplement.</div></div>
-      <div class="step reveal"><div class="step-number">04</div><div class="step-title">Propositions de corrections</div><div class="step-desc">NIRIKX vous dit quoi corriger en priorité, avec un avant/après.</div></div>
+      <div class="step"><div class="step-number">01</div><div class="step-title">Entrez votre URL</div><div class="step-desc">Collez l'adresse de votre site et lancez l'analyse.</div></div>
+      <div class="step"><div class="step-number">02</div><div class="step-title">NIRIKX visite votre site</div><div class="step-desc">Il vérifie les points importants en quelques secondes.</div></div>
+      <div class="step"><div class="step-number">03</div><div class="step-title">Rapport clair</div><div class="step-desc">Score par catégorie et liste des problèmes expliqués simplement.</div></div>
+      <div class="step"><div class="step-number">04</div><div class="step-title">Propositions de corrections</div><div class="step-desc">NIRIKX vous dit quoi corriger en priorité, avec un avant/après.</div></div>
     </div>
   </div>
 </section>
 
 <section class="pricing" id="pricing">
   <div class="section-label">Forfaits</div>
-  <h2 class="section-title reveal">Choisissez votre forfait</h2>
+  <h2 class="section-title">Choisissez votre forfait</h2>
 <div class="pricing-grid">
-    <div class="pricing-card reveal">
+    <div class="pricing-card">
       <div class="plan-name">Gratuit</div>
       <div class="plan-price">0&nbsp;€</div>
       <div class="plan-desc">Pour découvrir l'état de votre site, aussi souvent que vous voulez</div>
@@ -320,7 +316,7 @@
       </ul>
       <a href="https://nirikx.streamlit.app" class="plan-btn plan-btn-free" target="_blank">Commencer gratuitement</a>
     </div>
-    <div class="pricing-card popular reveal">
+    <div class="pricing-card popular">
       <div class="popular-badge">Recommandé</div>
       <div class="plan-name">Pro</div>
       <div class="plan-price">39,99&nbsp;€ <span>/ Accès 30 jours, sans abonnement</span></div>
@@ -338,7 +334,7 @@
       </ul>
       <a href="https://nirikx.streamlit.app/?plan=pro" class="plan-btn plan-btn-paid" target="_blank">Choisir Pro</a>
     </div>
-    <div class="pricing-card reveal">
+    <div class="pricing-card">
       <div class="plan-name">Premium</div>
       <div class="plan-price">89,99&nbsp;€ <span>/ Accès 30 jours, sans abonnement</span></div>
       <div class="plan-desc">Pour développer votre activité et votre communication</div>
@@ -354,16 +350,16 @@
 </section>
 
 <section class="cta-section">
-  <h2 class="cta-title reveal">Votre site est-il<br><span style="color:var(--accent)">vraiment optimisé&nbsp;?</span></h2>
-  <p class="cta-sub reveal">Découvrez-le en 30 secondes.</p>
-  <a href="#pricing" class="btn-primary reveal">Analyser mon site</a>
+  <h2 class="cta-title">Votre site est-il<br><span style="color:var(--accent)">vraiment optimisé&nbsp;?</span></h2>
+  <p class="cta-sub">Découvrez-le en 30 secondes.</p>
+  <a href="#pricing" class="btn-primary">Analyser mon site</a>
 </section>
 
 <section class="contact-section" id="contact">
   <div class="section-label">Contact</div>
-  <h2 class="section-title reveal" style="margin-bottom:0">Une question&nbsp;?</h2>
-  <p style="color:var(--muted);margin-top:1rem;margin-bottom:0" class="reveal">Décrivez votre question ou votre problème, on vous répond par email sous peu.</p>
-  <div class="contact-form reveal">
+  <h2 class="section-title" style="margin-bottom:0">Une question&nbsp;?</h2>
+  <p style="color:var(--muted);margin-top:1rem;margin-bottom:0">Décrivez votre question ou votre problème, on vous répond par email sous peu.</p>
+  <div class="contact-form">
     <div><label>Votre nom</label><input type="text" id="c-nom" placeholder="Jean Dupont"></div>
     <div><label>Votre email</label><input type="email" id="c-email" placeholder="jean@exemple.fr"></div>
     <div><label>Votre message</label><textarea id="c-msg" placeholder="Décrivez votre question ou problème..."></textarea></div>
@@ -407,13 +403,6 @@
 </footer>
 
 <script>
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((e,i) => { if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*80); });
-  }, {threshold:0.1});
-  reveals.forEach(el=>obs.observe(el));
-
   // Intro : le X (en premier, en grand) se dessine en contour violet puis se remplit + recule en même temps ; puis N I R I K se dessinent l'une après l'autre et se remplissent ensemble ; pause pour laisser voir le mot ; puis explosion de particules
   document.body.style.overflow = 'hidden';
   const sWrap   = document.getElementById('sitra-wrap');
