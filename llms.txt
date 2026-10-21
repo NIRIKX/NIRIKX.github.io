@@ -1,0 +1,22 @@
+# NIRIKX
+
+> NIRIKX analyse le site d'une petite entreprise et explique en français simple ce qui fait partir ses visiteurs, et comment le corriger.
+
+NIRIKX est un outil en ligne pour les petites entreprises, commerçants, artisans et indépendants. On tape l'adresse d'un site : NIRIKX donne un score sur 5 critères (référencement Google, navigation, contenu, apparence, vitesse), liste les problèmes trouvés et propose des corrections. Pendant la phase de test, NIRIKX est gratuit.
+
+## Pages principales
+
+- [Accueil](https://nirikx.github.io/): présentation, exemple de rapport, forfaits et contact
+- [Appli NIRIKX](https://nirikx.streamlit.app): l'outil d'analyse
+- [Conditions d'utilisation](https://nirikx.github.io/cgu.html): les règles d'utilisation
+- [Politique de confidentialité](https://nirikx.github.io/confidentialite.html): ce que NIRIKX fait des informations
+
+## Forfaits
+
+- Gratuit : 0 €
+- Pro : 39,99 € pour 30 jours, sans abonnement
+- Premium : 89,99 € pour 30 jours, sans abonnement
+
+## Contact
+
+- Email : yanisaidoune1@gmail.com
