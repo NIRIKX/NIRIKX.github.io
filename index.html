@@ -105,9 +105,9 @@
   .vraie-analyse img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:14px; -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent); mask-image:linear-gradient(to bottom,#000 78%,transparent); }
   .vraie-analyse figcaption { color:var(--muted); font-size:0.8rem; margin-top:0.8rem; }
   /* Capture en grand : fenetre par-dessus la page, fermee par la croix, un appui a cote ou Echap. */
-  .zoom-analyse { padding:0; border:none; background:transparent; position:fixed; inset:0; margin:auto; width:fit-content; height:fit-content; max-width:96vw; max-height:92vh; overflow:visible; }
+  .zoom-analyse { padding:0; border:none; background:transparent; position:fixed; inset:0; margin:auto; width:fit-content; height:fit-content; max-width:96vw; max-height:92vh; overflow:auto; border-radius:10px; }
   .zoom-analyse::backdrop { background:rgba(20,18,15,0.85); }
-  .zoom-analyse img { display:block; max-width:96vw; max-height:80vh; width:auto; height:auto; border-radius:10px; }
+  .zoom-analyse img { display:block; width:min(96vw, 1229px); height:auto; }
   .zoom-fermer { position:fixed; top:14px; right:14px; width:44px; height:44px; border-radius:50%; border:none; background:#ffffff; color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.35); }
   .zoom-fermer svg { width:18px; height:18px; }
 
@@ -276,12 +276,12 @@
   <p class="showcase-caption">Exemple de rapport : les chiffres sont donnés à titre d'illustration.</p>
   <figure class="vraie-analyse">
     <h3 class="vraie-analyse-titre">Une vraie analyse, faite avec l'appli</h3>
-    <a href="vraie-analyse.webp" id="ouvrir-zoom" title="Voir la capture en grand"><img src="vraie-analyse.webp" width="1265" height="830" loading="lazy" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, et ce qu'il faut améliorer."></a>
-    <figcaption>Capture d'écran de l'appli : la page d'accueil de NIRIKX analysée par NIRIKX, le 19 octobre 2026.</figcaption>
+    <a href="vraie-analyse-complete.webp" id="ouvrir-zoom" title="Voir toute l'analyse en grand"><img src="vraie-analyse.webp?v=2" width="1229" height="893" loading="lazy" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, les points à corriger en premier et l'onglet Référencement Google."></a>
+    <figcaption>Capture d'écran de l'appli : la page d'accueil de NIRIKX analysée par NIRIKX, le 22 octobre 2026. Cliquez pour la voir en entier.</figcaption>
   </figure>
   <dialog class="zoom-analyse" id="zoom-analyse" aria-label="Capture d'écran en grand">
     <button type="button" class="zoom-fermer" id="fermer-zoom" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
-    <img src="vraie-analyse.webp" width="1265" height="830" alt="Capture d'écran de l'appli NIRIKX en grand : analyse de nirikx.github.io.">
+    <img src="vraie-analyse-complete.webp" width="1229" height="1176" alt="Capture d'écran de l'appli NIRIKX en entier : analyse de nirikx.github.io, avec les scores, les points à corriger en premier et le détail du référencement Google.">
   </dialog>
 </section>
 
