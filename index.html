@@ -429,7 +429,11 @@
   // Visite d'un robot (service qui photographie la page, navigateur automatise) : pas d'animation,
   // il voit directement la page, comme un visiteur une fois l'animation finie.
   const visiteRobot = navigator.webdriver === true || /HeadlessChrome/i.test(navigator.userAgent);
-  if (visiteRobot) document.getElementById('intro-screen').style.display = 'none';
+  // Une seule fois par visite : en revenant d'une autre page (conditions, confidentialite...)
+  // ou vers un endroit precis de la page (#forfaits...), on retrouve directement la page.
+  let introDejaVue = false;
+  try { introDejaVue = sessionStorage.getItem('nx-intro-vue') === '1'; sessionStorage.setItem('nx-intro-vue', '1'); } catch (e) {}
+  if (visiteRobot || introDejaVue || location.hash.length > 1) document.getElementById('intro-screen').style.display = 'none';
   else document.body.style.overflow = 'hidden';
   const sWrap   = document.getElementById('sitra-wrap');
   const canvas  = document.getElementById('particle-canvas');
