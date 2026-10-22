@@ -346,7 +346,7 @@
         <li class="excluded">Audit visuel de votre site par l'IA</li>
         <li class="excluded">Génération de contenu</li>
       </ul>
-      <a href="https://nirikx.streamlit.app" class="plan-btn plan-btn-free" target="_blank">Commencer gratuitement</a>
+      <a href="https://nirikx.streamlit.app" class="plan-btn plan-btn-free" target="_blank" rel="noopener">Commencer gratuitement</a>
     </div>
     <div class="pricing-card popular">
       <div class="popular-badge">Recommandé</div>
@@ -364,7 +364,7 @@
         <li class="excluded">Génération de contenu</li>
         <li class="excluded">Potentiel de croissance</li>
       </ul>
-      <a href="https://nirikx.streamlit.app/?plan=pro" class="plan-btn plan-btn-paid" target="_blank">Choisir Pro</a>
+      <a href="https://nirikx.streamlit.app/?plan=pro" class="plan-btn plan-btn-paid" target="_blank" rel="noopener">Choisir Pro</a>
     </div>
     <div class="pricing-card">
       <div class="plan-name">Premium</div>
@@ -376,7 +376,7 @@
         <li class="included">Génération de contenu : posts Instagram, LinkedIn, Facebook, email, publicités Google Ads</li>
         <li class="included">Potentiel de croissance : estimation chiffrée, plan d'action, évolution dans le temps</li>
       </ul>
-      <a href="https://nirikx.streamlit.app/?plan=premium" class="plan-btn plan-btn-paid" target="_blank">Choisir Premium</a>
+      <a href="https://nirikx.streamlit.app/?plan=premium" class="plan-btn plan-btn-paid" target="_blank" rel="noopener">Choisir Premium</a>
     </div>
   </div>
 </section>
@@ -396,7 +396,7 @@
     <div><label>Votre email</label><input type="email" id="c-email" placeholder="jean@exemple.fr"></div>
     <div><label>Votre message</label><textarea id="c-msg" placeholder="Décrivez votre question ou problème..."></textarea></div>
     <!-- Piege a robots : case invisible pour les visiteurs, que seuls les robots remplissent. -->
-    <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="c-site">Ne pas remplir</label><input type="text" id="c-site" tabindex="-1" autocomplete="off"></div>
+    <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="c-zq">Laisser vide</label><input type="text" id="c-zq" name="zq" tabindex="-1" autocomplete="off"></div>
     <button class="btn-primary" id="contact-btn" style="width:100%" onclick="sendContactAI()">Envoyer le message</button>
     <p style="color:var(--muted);font-size:0.8rem;text-align:center;margin-top:1rem">Vos informations servent seulement à vous répondre. <a href="confidentialite.html" style="color:inherit">En savoir plus</a></p>
     <div id="contact-error" style="display:none;color:#dc3545;font-size:0.9rem;margin-top:1rem;text-align:center">Merci de remplir tous les champs.</div>
@@ -569,7 +569,7 @@
         method:'POST',
         headers:{'Content-Type':'application/json'},
         // site_web et t (temps passe sur la page) servent au relais a reperer les robots.
-        body:JSON.stringify({nom, email, msg, site_web:document.getElementById('c-site').value, t:Math.round(performance.now())})
+        body:JSON.stringify({nom, email, msg, site_web:document.getElementById('c-zq').value, t:Math.round(performance.now())})
       });
       if(r.status===429){ respText.textContent="Vous avez envoyé plusieurs messages d'affilée. Réessayez dans quelques minutes."; throw 'deja_affiche'; }
       if(!r.ok) throw new Error('echec envoi');

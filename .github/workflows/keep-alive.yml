@@ -14,6 +14,10 @@ on:
     - cron: "0 */2 * * *"
   workflow_dispatch: {}
 
+# Le robot n'a besoin que de lire le dépôt.
+permissions:
+  contents: read
+
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -24,7 +28,7 @@ jobs:
           python-version: "3.11"
       - name: Installer Playwright
         run: |
-          pip install playwright
+          pip install playwright==1.63.0
           playwright install --with-deps chromium
       - name: Visiter l'application et la réveiller si besoin
         run: python .github/scripts/keep_nirikx_awake.py
