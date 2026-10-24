@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 20 60 60">
-  <path d="M30 26 h30 a8 8 0 0 1 8 8 v34 z" fill="#1d7a87"/>
-  <path d="M70 74 h-30 a8 8 0 0 1 -8 -8 v-34 z" fill="#3aa8b8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="21.88 21.88 56.24 56.24">
+  <path d="M30 26 h30 a8 8 0 0 1 8 8 v34 z" fill="#1d7a87" transform="translate(0.11 -2.12)"/>
+  <path d="M70 74 h-30 a8 8 0 0 1 -8 -8 v-34 z" fill="#3aa8b8" transform="translate(-0.11 2.12)"/>
 </svg>
