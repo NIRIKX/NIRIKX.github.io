@@ -31,6 +31,8 @@
 
   /* ── INTRO ── */
   #intro-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:#ffffff; display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:1.5rem; }
+  #intro-passer { position:absolute; right:1.5rem; bottom:1.5rem; z-index:4; background:transparent; border:1px solid rgba(27,25,21,0.18); border-radius:999px; padding:0.45rem 1.1rem; font-family:'DM Sans', sans-serif; font-size:0.85rem; color:#655d55; cursor:pointer; }
+  #intro-passer:hover, #intro-passer:focus-visible { color:#1b1915; border-color:rgba(27,25,21,0.45); }
   .intro-glow { position:absolute; width:400px; height:400px; background:radial-gradient(ellipse,rgba(58,168,184,0.2) 0%,transparent 70%); border-radius:50%; animation:pulse-glow 2s ease-in-out infinite alternate; }
   @keyframes pulse-glow { from{transform:scale(0.9);opacity:0.4} to{transform:scale(1.1);opacity:0.9} }
   @keyframes spin { to{transform:rotate(360deg)} }
@@ -225,6 +227,7 @@
  <!-- INTRO — le X se dessine puis se remplit de violet, les autres lettres apparaissent, puis explosion de particules -->
 <div id="intro-screen">
   <div class="intro-glow"></div>
+  <button id="intro-passer" type="button">Passer</button>
   <canvas id="particle-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;display:none"></canvas>
   <div id="sitra-wrap" style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:100%;">
     <div id="nirikx-title" style="display:flex;align-items:baseline;justify-content:center;font-family:'Arial Black',Impact,sans-serif;font-size:clamp(5rem,14vw,8.5rem);font-weight:900;line-height:1;letter-spacing:0.04em;filter:none;">
@@ -447,8 +450,28 @@
   // ou vers un endroit precis de la page (#forfaits...), on retrouve directement la page.
   let introDejaVue = false;
   try { introDejaVue = sessionStorage.getItem('nx-intro-vue') === '1'; sessionStorage.setItem('nx-intro-vue', '1'); } catch (e) {}
-  if (visiteRobot || introDejaVue || location.hash.length > 1) document.getElementById('intro-screen').style.display = 'none';
+  // Reglage « moins d'animations » du systeme : pas d'intro non plus.
+  const moinsAnimations = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const introVisible = !(visiteRobot || introDejaVue || moinsAnimations || location.hash.length > 1);
+  if (!introVisible) document.getElementById('intro-screen').style.display = 'none';
   else document.body.style.overflow = 'hidden';
+  // Un clic, une touche ou un mouvement pour faire defiler : on passe directement a la page.
+  let introPassee = false;
+  function passerIntro(){
+    if (introPassee) return;
+    introPassee = true;
+    const intro = document.getElementById('intro-screen');
+    document.body.style.overflow = '';
+    if (!intro) return;
+    intro.style.transition = 'opacity 0.3s ease'; intro.style.opacity = '0';
+    setTimeout(() => intro.remove(), 300);
+  }
+  if (introVisible) {
+    document.getElementById('intro-screen').addEventListener('click', passerIntro);
+    window.addEventListener('keydown', passerIntro, { once: true });
+    window.addEventListener('wheel', passerIntro, { once: true, passive: true });
+    window.addEventListener('touchmove', passerIntro, { once: true, passive: true });
+  }
   const sWrap   = document.getElementById('sitra-wrap');
   const canvas  = document.getElementById('particle-canvas');
   const ctx2    = canvas.getContext('2d');
@@ -534,6 +557,7 @@
     if(particles.length>0) requestAnimationFrame(animParticles);
   }
   setTimeout(()=>{
+    if (introPassee) return;
     canvas.style.display='block';
     spawnParticles();animParticles();
     sWrap.style.transition='transform 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.6s ease';
@@ -543,6 +567,8 @@
     document.querySelector('.intro-glow').style.opacity='0';
   },6440);
   setTimeout(()=>{
+    if (introPassee) return;
+    introPassee = true;
     const intro=document.getElementById('intro-screen');
     intro.style.transition='opacity 0.6s ease';intro.style.opacity='0';
     document.body.style.overflow='';
