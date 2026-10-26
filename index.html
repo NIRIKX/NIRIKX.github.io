@@ -64,50 +64,12 @@
   .btn-secondary { background:transparent; color:var(--text); border:1px solid var(--border); padding:1rem 2.5rem; border-radius:12px; font-family:'DM Sans',sans-serif; font-weight:500; font-size:1rem; cursor:pointer; text-decoration:none; transition:all 0.2s; display:inline-block; }
   .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
 
-  /* ── RAPPORT 3D ── */
+  /* ── CE QUE VOUS RECEVEZ ── */
   .showcase { padding:2rem 2rem 7rem; position:relative; }
   .showcase-label { text-align:center; color:var(--accent); font-size:0.8rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; margin-bottom:2.5rem; }
-  .showcase-stage { perspective:1400px; max-width:980px; margin:0 auto; }
-  .report-3d { position:relative; transform-origin:50% 30%; will-change:transform,opacity; background:#ffffff; border:1px solid var(--border); border-radius:18px; box-shadow:0 30px 70px -35px rgba(40,30,20,0.35); overflow:hidden; text-align:left; }
   /* "armed" = animation prete a jouer (pose par le script) : sans script, le rapport reste simplement visible. */
-  .report-3d.armed { opacity:0; transform:translateY(90px) rotateX(38deg) rotateY(-16deg) scale(0.85); }
-  .report-3d.armed.play { animation:report-enter 1.4s cubic-bezier(.2,.85,.25,1) forwards; }
-  @keyframes report-enter { 0%{opacity:0;transform:translateY(90px) rotateX(38deg) rotateY(-16deg) scale(0.85)} 50%{opacity:1} 100%{opacity:1;transform:translateY(0) rotateX(0) rotateY(0) scale(1)} }
-  .report-3d.resetting, .report-3d.resetting * { transition:none !important; animation:none !important; }
-  .report-bar { display:flex; align-items:center; gap:0.45rem; padding:0.85rem 1.2rem; border-bottom:1px solid var(--border); background:rgba(40,30,20,0.03); }
-  .report-dot { width:10px; height:10px; border-radius:50%; opacity:0.85; }
-  .report-dot:nth-child(1) { background:#ff5f57; } .report-dot:nth-child(2) { background:#febc2e; } .report-dot:nth-child(3) { background:#28c840; }
-  .report-url { margin-left:0.8rem; color:var(--muted); font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .report-tag { margin-left:auto; font-size:0.7rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--accent); border:1px solid rgba(58,168,184,0.4); border-radius:999px; padding:0.15rem 0.6rem; flex-shrink:0; }
-  .report-body { display:grid; grid-template-columns:240px 1fr; gap:2.5rem; padding:2.2rem; align-items:center; }
-  .report-main { display:flex; flex-direction:column; align-items:center; gap:0.5rem; }
-  .report-ring { position:relative; width:150px; height:150px; margin-bottom:0.4rem; }
-  .report-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
-  .ring-bg { fill:none; stroke:rgba(40,30,20,0.08); stroke-width:10; }
-  .ring-fg { fill:none; stroke:#fd7e14; stroke-width:10; stroke-linecap:round; stroke-dasharray:326.73; stroke-dashoffset:326.73; transition:stroke-dashoffset 1.6s cubic-bezier(.22,1,.36,1); }
-  .report-3d.filled .ring-fg, .report-3d:not(.armed) .ring-fg { stroke-dashoffset:91.48; }
-  .ring-value { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1.8rem; line-height:1; color:var(--text); }
-  .ring-value small { font-family:'DM Sans',sans-serif; font-size:0.8rem; color:var(--muted); font-weight:500; margin-top:0.3rem; }
-  .report-main-label { color:var(--muted); font-size:0.85rem; }
-  .report-main-status { color:#c2570c; font-weight:700; font-size:0.95rem; }
-  .report-metrics { display:grid; gap:1.2rem; }
-  .metric { display:grid; grid-template-columns:110px 1fr 40px; align-items:center; gap:1rem; font-size:0.9rem; }
-  .metric span { color:var(--text); }
-  .metric i { display:block; height:8px; border-radius:999px; background:rgba(40,30,20,0.08); overflow:hidden; }
-  .metric em { display:block; height:100%; border-radius:999px; background:var(--c); transform:scaleX(0); transform-origin:left; transition:transform 1.4s cubic-bezier(.22,1,.36,1); }
-  .report-3d.filled .metric em, .report-3d:not(.armed) .metric em { transform:scaleX(var(--v)); }
-  .metric:nth-child(2) em { transition-delay:0.12s; } .metric:nth-child(3) em { transition-delay:0.24s; } .metric:nth-child(4) em { transition-delay:0.36s; }
-  .metric b { text-align:right; font-family:'Syne',sans-serif; font-weight:700; color:color-mix(in srgb, var(--c) 72%, black); }
-  .report-issues { border-top:1px solid var(--border); padding:1.5rem 2.2rem 2rem; }
-  .report-issues-title { font-size:0.75rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:0.9rem; }
-  .issue { display:flex; align-items:center; gap:0.8rem; padding:0.7rem 0.9rem; border-radius:10px; background:rgba(40,30,20,0.03); border:1px solid var(--border); font-size:0.9rem; margin-bottom:0.5rem; opacity:0; transform:translateY(8px); transition:opacity 0.5s ease, transform 0.5s ease; }
-  .issue.show, .report-3d:not(.armed) .issue { opacity:1; transform:none; }
-  .issue-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .issue-cat { margin-left:auto; color:var(--muted); font-size:0.75rem; opacity:0; transition:opacity 0.4s ease; }
-  .issue.typed .issue-cat, .report-3d:not(.armed) .issue-cat { opacity:1; }
-  .showcase-caption { text-align:center; color:var(--muted); font-size:0.8rem; margin-top:2.5rem; opacity:0.8; }
   /* Vraie capture de l'appli, sous l'exemple anime. Le bas s'efface : la page continue dans l'appli. */
-  .vraie-analyse { max-width:980px; margin:4.5rem auto 0; text-align:center; }
+  .vraie-analyse { max-width:980px; margin:0 auto; text-align:center; }
   .vraie-analyse-titre { font-family:'Syne',sans-serif; font-weight:700; font-size:1.3rem; margin-bottom:1.5rem; }
   .vraie-analyse img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:14px; -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent); mask-image:linear-gradient(to bottom,#000 78%,transparent); }
   .vraie-analyse figcaption { color:var(--muted); font-size:0.8rem; margin-top:0.8rem; }
@@ -200,11 +162,6 @@
   .ni-outline.show { opacity:1; }
   .ni-fill.show { opacity:1; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .report-3d { transform:none; opacity:1; }
-    .report-3d, .report-3d * { transition:none !important; animation:none !important; }
-  }
-
   @media(max-width:768px) {
     nav { padding:1rem 1.5rem; }
     /* Telephone : les liens passent dans un menu qui s'ouvre avec le bouton ☰. */
@@ -225,11 +182,6 @@
     .how { padding:4rem 1.5rem; }
     .cta-section { padding:4rem 1.5rem; }
     .showcase { padding:1rem 1rem 4rem; }
-    .report-body { grid-template-columns:1fr; gap:1.8rem; padding:1.5rem; }
-    .metric { grid-template-columns:90px 1fr 32px; gap:0.7rem; font-size:0.85rem; }
-    .report-issues { padding:1.2rem 1.5rem 1.5rem; }
-    .issue-cat { display:none; }
-    .report-url { font-size:0.7rem; }
     footer { padding:3rem 1.5rem 1.5rem; }
     .footer-cols { grid-template-columns:1fr 1fr; gap:2rem; }
     .footer-brand, .footer-contact { grid-column:1 / -1; }
@@ -273,43 +225,11 @@
   </div>
 </section>
 
-<section class="showcase" aria-label="Exemple de rapport NIRIKX">
+<section class="showcase" aria-label="Exemple d'analyse NIRIKX">
   <div class="showcase-label">Ce que vous recevez</div>
-  <div class="showcase-stage">
-    <div class="report-3d" id="report-3d">
-      <div class="report-bar">
-        <span class="report-dot"></span><span class="report-dot"></span><span class="report-dot"></span>
-        <span class="report-url">Rapport NIRIKX · votre-site.fr</span>
-        <span class="report-tag">Exemple</span>
-      </div>
-      <div class="report-body">
-        <div class="report-main">
-          <div class="report-ring">
-            <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg>
-            <div class="ring-value"><span class="report-count" data-to="72">72</span><small>/100</small></div>
-          </div>
-          <div class="report-main-label">Score global</div>
-          <div class="report-main-status">À améliorer</div>
-        </div>
-        <div class="report-metrics">
-          <div class="metric" style="--v:0.78;--c:#ffc107"><span>Google</span><i><em></em></i><b>78</b></div>
-          <div class="metric" style="--v:0.81;--c:#ffc107"><span>Navigation</span><i><em></em></i><b>81</b></div>
-          <div class="metric" style="--v:0.70;--c:#fd7e14"><span>Apparence</span><i><em></em></i><b>70</b></div>
-          <div class="metric" style="--v:0.58;--c:#fd7e14"><span>Vitesse</span><i><em></em></i><b>58</b></div>
-        </div>
-      </div>
-      <div class="report-issues">
-        <div class="report-issues-title">Problèmes détectés</div>
-        <div class="issue"><span class="issue-dot" style="background:#dc3545"></span><span class="issue-text">Site trop lent (4,2 secondes)</span><span class="issue-cat">Vitesse</span></div>
-        <div class="issue"><span class="issue-dot" style="background:#fd7e14"></span><span class="issue-text">Description Google manquante</span><span class="issue-cat">Google</span></div>
-        <div class="issue"><span class="issue-dot" style="background:#ffc107"></span><span class="issue-text">3 photos sans description</span><span class="issue-cat">Apparence</span></div>
-      </div>
-    </div>
-  </div>
-  <p class="showcase-caption">Exemple de rapport : les chiffres sont donnés à titre d'illustration.</p>
   <figure class="vraie-analyse">
     <h3 class="vraie-analyse-titre">Une vraie analyse, faite avec l'appli</h3>
-    <a href="vraie-analyse-complete.webp" id="ouvrir-zoom" title="Voir toute l'analyse en grand"><img src="vraie-analyse.webp?v=2" width="1229" height="893" loading="lazy" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, les points à corriger en premier et l'onglet Référencement Google."></a>
+    <a href="vraie-analyse-complete.webp" id="ouvrir-zoom" title="Voir toute l'analyse en grand"><img src="vraie-analyse.webp?v=2" width="1229" height="893" alt="Capture d'écran de l'appli NIRIKX : analyse de nirikx.github.io, score global de 98 sur 100, les points à corriger en premier et l'onglet Référencement Google."></a>
     <figcaption>Capture d'écran de l'appli : la page d'accueil de NIRIKX analysée par NIRIKX, le 22 octobre 2026. Cliquez pour la voir en entier.</figcaption>
   </figure>
   <dialog class="zoom-analyse" id="zoom-analyse" aria-label="Capture d'écran en grand">
@@ -675,92 +595,6 @@
       charger();
     }
     section.addEventListener('focusin', charger);
-  })();
-</script>
-<script>
-  (function () {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Rapport 3D : quand il apparait, il arrive en pivotant, le score monte, les jauges
-    // se remplissent, puis les problemes s'ecrivent. La sequence se rejoue a chaque
-    // fois qu'il revient a l'ecran.
-    const report = document.getElementById('report-3d');
-    if (report && !reduce) {
-      const stage = report.parentElement;
-      const counter = report.querySelector('.report-count');
-      const issues = Array.from(report.querySelectorAll('.issue')).map(el => {
-        const text = el.querySelector('.issue-text');
-        return { el, text, full: text.textContent };
-      });
-      // Chaque lecture recoit un numero : une lecture interrompue (rapport sorti de l'ecran) s'arrete d'elle-meme.
-      let run = 0, playing = false;
-      const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-      const reset = () => {
-        run++;
-        playing = false;
-        report.classList.add('resetting');
-        report.classList.remove('play', 'filled');
-        counter.textContent = '0';
-        issues.forEach(i => { i.el.classList.remove('show', 'typed'); i.text.classList.remove('typing'); i.text.textContent = ''; });
-        void report.offsetWidth;
-        report.classList.remove('resetting');
-      };
-
-      const countUp = (id, to, duration) => {
-        const start = performance.now();
-        const tick = now => {
-          if (id !== run) return;
-          const t = Math.min(1, (now - start) / duration);
-          counter.textContent = Math.round(to * (1 - Math.pow(1 - t, 3)));
-          if (t < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      };
-
-      const play = async () => {
-        const id = ++run;
-        playing = true;
-        report.classList.add('play');
-        await wait(900); if (id !== run) return;
-        report.classList.add('filled');
-        countUp(id, Number(counter.dataset.to), 1600);
-        await wait(1100);
-        for (const i of issues) {
-          if (id !== run) return;
-          i.el.classList.add('show');
-          await wait(250);
-          i.text.classList.add('typing');
-          for (let n = 1; n <= i.full.length; n++) {
-            if (id !== run) return;
-            i.text.textContent = i.full.slice(0, n);
-            await wait(28);
-          }
-          i.text.classList.remove('typing');
-          i.el.classList.add('typed');
-          await wait(200);
-        }
-        if (id === run) {
-          // Jouee jusqu'au bout : on ne la rejoue plus en revenant sur le rapport,
-          // qui reste immobile dans son etat final.
-          observer.disconnect();
-        }
-      };
-
-      report.classList.add('armed');
-      reset();
-      // Interrompue avant la fin (rapport sorti de l'ecran), elle repart de zero au retour.
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting && e.intersectionRatio >= 0.35) { if (!playing) play(); }
-          else if (!e.isIntersecting && playing) reset();
-        });
-      }, { threshold: [0, 0.35] });
-      observer.observe(stage);
-    } else if (report) {
-      report.classList.add('filled');
-    }
-
   })();
 </script>
 <script>
